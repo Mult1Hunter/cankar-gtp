@@ -107,7 +107,7 @@ def ingest(dump: Path, out: Path, *, min_chars: int = 400) -> WikipediaStats:
     with writer:
         for i, page in enumerate(_iter_pages(dump), 1):
             if i % 20000 == 0:
-                logger.info(f"  scanned {i} pages, kept {stats.docs}")
+                logger.info(f"  scanned {i} pages, kept {writer.n_docs}")
             if page.ns != "0":
                 stats.non_ns0 += 1
                 continue

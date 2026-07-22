@@ -32,11 +32,19 @@ Do not build serving or the Laravel orchestrator before the styler exists.
 
 - [x] Wikivir/Wikisource crawler via MediaWiki API: Cankar + 14 PD authors, attribution/catalog guards (PR #9, #10)
 - [x] Works registry as source of truth + dLib.si gap-fill with OCR quality gates *(added in-flight - ADR 0004)*
-- [ ] Slovenian Wikipedia dump ingestion (modern vocabulary - mitigates topic gap, per Agent A2)
+- [x] Slovenian Wikipedia dump ingestion: 125,670 articles / 65.3M words, streaming
       (also: extract a SourceCrawler protocol - rule-of-two deferral, wikivir+dlib share the shape)
 - [x] Clean (mwparserfromhell), NFC-normalize -> JSONL shards with manifests
-- [ ] Dedupe + chunk (merge stage; consumes registry/collisions.md annotations)
-- [ ] Stats report: tokens per source/author. Targets: ~3-5M tokens Cankar, ~200-300M general Slovene
+- [ ] Dedupe + chunk (merge stage; consumes registry/works/NOTES.md annotations; Wikipedia geo-stub near-dups)
+- [ ] Stats report: tokens per source/author
+- ⚠️ **Yield correction (measured 2026-07):** Cankar 1.65M words; 14 PD authors 6.0M;
+      Wikipedia 65.3M -> corpus ~73M words ≈ **~110-140M tokens**. The original
+      ~200-300M general-Slovene target is **unreachable from Wikipedia alone** (~half
+      the low end). Options at Phase 3 sizing: accept ~120M tokens (data-constrained;
+      a ~15-30M model is the honest compute-optimal-with-repetition size, not 40M -
+      see Phase 3 model-size line), or add a general-Slovene source (KAS/Gigafida/CC).
+      The Cankar slice (1.65M words) is the true bottleneck - Phase 5 synthetic pairs
+      exist to multiply it.
 - **Licensing (B5):** publish reproducible corpus-*building scripts*, not the merged corpus
   (Wikipedia is CC BY-SA; Cankar is PD; the merged blob inherits share-alike obligations)
 - **Attribution:** README "Data sources" is the canonical credit statement (dLib.si
@@ -70,7 +78,12 @@ Do not build serving or the Laravel orchestrator before the styler exists.
 - [ ] **Calibration first (B3):** 30-min tokens/sec measurement + tested checkpoint-resume *before* the long run
 - [ ] `setup.sh`: pod -> clone -> deps -> pull data (HF/R2) -> tmux train -> checkpoint-sync loop. Target: <5 min to training, unattended
 - [ ] Cost discipline: terminate (not stop), delete volumes after sync, `--max-hours` self-terminating flag
-- [ ] ~30-50M params, bf16, flash attention; W&B free tier for live loss curves (blog artifact)
+- [ ] **Model size (revised from measured data, 2026-07):** ~120M-token budget makes
+      the original 40-50M target data-constrained (Chinchilla single-epoch optimal
+      for 120M tok ≈ 6M params; ~4 epochs ≈ 24M). Target **~15-30M params** and let
+      the eval harness decide whether scaling up lowers held-out perplexity or just
+      burns GPU. Specialization + Phase-5 synthetic pairs add effective Cankar signal.
+- [ ] bf16, flash attention; W&B free tier for live loss curves (blog artifact)
 - [ ] Model config: RunPod 4090 for experiments, A100 for the final run
 - Reference: total compute ~ 50-100x *less* than nanochat's $100 speedrun; budget anxiety = zero
 
