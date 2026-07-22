@@ -49,7 +49,7 @@ Return exactly this structure:
 - **Stats:** the numbers from step 1, plus the sanity-band check
 - **Findings:** numbered, each with doc title + a short quoted snippet of the dirt
 - **Suggested `clean()` extensions:** concrete regex or mwparserfromhell handling
-  suggestions for `scripts/crawl_wikivir.py`, one per dirt class found
+  suggestions for `scripts/corpus/crawl_wikivir.py`, one per dirt class found
 - **Not actionable:** dirt you saw but recommend ignoring, and why
 
 Be specific and quote real snippets - the maintainer acts on this report without

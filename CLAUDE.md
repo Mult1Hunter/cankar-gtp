@@ -36,12 +36,19 @@ before any push.
 
 - All work lands via PR - never push `main` directly.
 - Run the `corpus-qa` agent on every fresh JSONL shard before it enters the pipeline.
+- Every ingested document maps to a works-registry entry (`registry/`, ADR 0004);
+  unmatched source records go to triage reports, never silently dropped.
 - Validation ladder, provenance rules (MANIFEST.json, prompt hashing): ADR 0003.
 
 ## Layout
 
-- `scripts/` - pipeline entry points, `bin/` - env-driven ops helpers ,
-  `docs/decisions/` - ADRs (`adr` skill), `data/` (gitignored) - working data.
+- **Stage subpackages** (ADR 0005): `cankar/core/` = cross-stage contracts,
+  `cankar/corpus/` = Phase-1 pipeline. Each future stage adds one
+  `cankar/<stage>/` + `scripts/<stage>/` + `tests/<stage>/` when its phase
+  starts - the root never grows.
+- `registry/` - works source of truth + coverage reports (ADR 0004),
+  `bin/` - env-driven ops helpers, `docs/decisions/` - ADRs (`adr` skill),
+  `data/` (gitignored) - working data.
 - Target monorepo layout & arrival phases: ADR 0002. Personal notes -> sibling
   private repo `../cankar-gtp-meta`, never here.
 
@@ -53,5 +60,5 @@ before any push.
 
 ## Current phase
 
-Phase 1 - corpus building. Next: run `scripts/crawl_wikivir.py`, verify token counts,
+Phase 1 - corpus building. Next: run `scripts/corpus/crawl_wikivir.py`, verify token counts,
 add Wikipedia dump ingestion. (Canonical status: ROADMAP checkboxes.)
