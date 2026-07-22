@@ -66,6 +66,21 @@ def _ingest_wikipedia(args: argparse.Namespace) -> int:
     return 0
 
 
+def _dedup(args: argparse.Namespace) -> int:
+    import json
+
+    from cankar.corpus.dedup import find_near_duplicates, write_dedup_report
+
+    groups: dict[str, list[dict]] = {"wikipedia": [], "literary": []}
+    for shard in sorted(args.corpus_dir.glob("*.jsonl")):
+        bucket = "wikipedia" if shard.stem == "wikipedia" else "literary"
+        groups[bucket] += [json.loads(line) for line in shard.open()]
+    results = {name: find_near_duplicates(docs)[0] for name, docs in groups.items() if docs}
+    write_dedup_report(results, args.out)
+    print(f"wrote {args.out}", file=sys.stderr)
+    return 0
+
+
 def _stats(args: argparse.Namespace) -> int:
     import json
 
@@ -158,6 +173,11 @@ def register(parser: argparse.ArgumentParser) -> None:
     p.add_argument("--corpus-dir", type=Path, default=Path("data/corpus"))
     p.add_argument("--out", type=Path, default=Path("registry/reports/corpus-quality.md"))
     p.set_defaults(func=_stats)
+
+    p = sub.add_parser("dedup", help="near-duplicate report (MinHash) -> committed snapshot")
+    p.add_argument("--corpus-dir", type=Path, default=Path("data/corpus"))
+    p.add_argument("--out", type=Path, default=Path("registry/reports/near-duplicates.md"))
+    p.set_defaults(func=_dedup)
 
     p = sub.add_parser("validate", help="registry validation + cross-author collisions")
     p.add_argument("--registry", type=Path)
