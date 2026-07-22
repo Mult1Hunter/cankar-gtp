@@ -30,30 +30,14 @@ from __future__ import annotations
 
 import argparse
 import sys
-import time
 from pathlib import Path
 
 import requests
 
-from cankar.clean import clean_wikitext, is_index_title, is_redirect
-from cankar.manifest import ShardManifest, git_sha, sha256_of, utc_now_iso, write_manifest
-from cankar.schema import CorpusDoc
-
-API = "https://sl.wikisource.org/w/api.php"
-UA = "CankarGTP-corpus-builder/0.1 (+https://nextgen-solutions.xyz; educational project)"
-SLEEP = 0.5  # polite delay between API calls, seconds
-BATCH = 50  # max titles per content request (API limit for non-bots)
-
-
-def api_get(session: requests.Session, params: dict) -> dict:
-    params = {"format": "json", "formatversion": "2", **params}
-    resp = session.get(API, params=params, timeout=30)
-    resp.raise_for_status()
-    data = resp.json()
-    if "error" in data:
-        raise RuntimeError(f"API error: {data['error']}")
-    time.sleep(SLEEP)
-    return data
+from cankar.core.manifest import ShardManifest, git_sha, sha256_of, utc_now_iso, write_manifest
+from cankar.core.schema import CorpusDoc
+from cankar.corpus.clean import clean_wikitext, is_index_title, is_redirect
+from cankar.corpus.wikisource import api_get, fetch_wikitext, make_session
 
 
 def titles_from_category(session: requests.Session, category: str) -> list[str]:
@@ -102,33 +86,6 @@ def expand_subpages(session: requests.Session, titles: list[str]) -> list[str]:
     return out
 
 
-def fetch_wikitext(session: requests.Session, titles: list[str]) -> dict[str, str]:
-    """Raw wikitext for up to BATCH titles per request."""
-    result: dict[str, str] = {}
-    for i in range(0, len(titles), BATCH):
-        chunk = titles[i : i + BATCH]
-        data = api_get(
-            session,
-            {
-                "action": "query",
-                "prop": "revisions",
-                "rvprop": "content",
-                "rvslots": "main",
-                "titles": "|".join(chunk),
-            },
-        )
-        for page in data["query"]["pages"]:
-            if page.get("missing"):
-                continue
-            revs = page.get("revisions")
-            if not revs:
-                continue
-            result[page["title"]] = revs[0]["slots"]["main"]["content"]
-        done = min(i + BATCH, len(titles))
-        print(f"  fetched {done}/{len(titles)} pages", file=sys.stderr)
-    return result
-
-
 def parse_band(spec: str | None) -> tuple[int, int] | None:
     if not spec:
         return None
@@ -158,8 +115,7 @@ def main() -> None:
     if not args.category and not args.author:
         ap.error("need at least one --category or --author")
 
-    session = requests.Session()
-    session.headers["User-Agent"] = UA
+    session = make_session()
 
     titles: list[str] = []
     for cat in args.category:
@@ -182,6 +138,7 @@ def main() -> None:
         titles = sorted(set(expand_subpages(session, titles)))
         print(f"{len(titles)} titles after subpage expansion", file=sys.stderr)
 
+    print(f"fetching {len(titles)} pages ...", file=sys.stderr)
     pages = fetch_wikitext(session, titles)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
@@ -210,7 +167,7 @@ def main() -> None:
 
     manifest = ShardManifest(
         source=args.source,
-        script="scripts/crawl_wikivir.py",
+        script="scripts/corpus/crawl_wikivir.py",
         git_sha=git_sha(),
         retrieved_at=utc_now_iso(),
         args={

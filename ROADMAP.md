@@ -35,6 +35,9 @@ Do not build serving or the Laravel orchestrator before the styler exists.
 - [ ] Stats report: tokens per source/author. Targets: ~3-5M tokens Cankar, ~200-300M general Slovene
 - **Licensing (B5):** publish reproducible corpus-*building scripts*, not the merged corpus
   (Wikipedia is CC BY-SA; Cankar is PD; the merged blob inherits share-alike obligations)
+- **Attribution:** README "Data sources" is the canonical credit statement (dLib.si
+  citation required by its terms; Wikipedia CC BY-SA; Wikivir contributors) - every
+  published artifact (HF datasets/models, demo pages) repeats it
 
 ## Phase 2 - Tokenizer (1 session)
 

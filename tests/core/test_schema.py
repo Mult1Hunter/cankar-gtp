@@ -7,8 +7,8 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from cankar.manifest import ShardManifest, manifest_path, sha256_of, write_manifest
-from cankar.schema import CorpusDoc
+from cankar.core.manifest import ShardManifest, manifest_path, sha256_of, write_manifest
+from cankar.core.schema import CorpusDoc
 
 
 def make_doc(**overrides: object) -> CorpusDoc:

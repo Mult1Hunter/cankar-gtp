@@ -5,9 +5,9 @@ from pathlib import Path
 
 import pytest
 
-from cankar.clean import clean_wikitext, is_index_title, is_redirect
+from cankar.corpus.clean import clean_wikitext, is_index_title, is_redirect
 
-FIXTURES = Path(__file__).parent / "fixtures"
+FIXTURES = Path(__file__).parent.parent / "fixtures"
 
 
 @pytest.mark.parametrize("slug", ["ada", "noc"])

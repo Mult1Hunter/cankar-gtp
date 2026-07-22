@@ -28,7 +28,7 @@ redistributed - licensing note in ROADMAP Phase 1):
 
 ```bash
 uv sync
-uv run scripts/crawl_wikivir.py --category "Kategorija:Ivan Cankar" \
+uv run scripts/corpus/crawl_wikivir.py --category "Kategorija:Ivan Cankar" \
     --out data/corpus/cankar.jsonl
 ```
 
@@ -36,6 +36,25 @@ uv run scripts/crawl_wikivir.py --category "Kategorija:Ivan Cankar" \
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) (setup, commit conventions) and
 [SECURITY.md](SECURITY.md) (private vulnerability reporting).
+
+## Data sources and attribution
+
+Training text comes from public sources; per-document provenance (source URL,
+identifiers, retrieval metadata) is recorded in the works registry (`registry/`)
+and shard manifests:
+
+- **Wikivir / Slovene Wikisource** (sl.wikisource.org) - hand-transcribed
+  public-domain literature, courtesy of the Wikisource contributor community.
+- **Digitalna knjiznica Slovenije - dLib.si** (National and University Library
+  of Slovenia) - digitized public-domain editions. Only works carrying dLib's
+  public-domain rights mark are ingested, and dLib.si is cited here as their
+  source, per the dLib terms of use.
+- **Wikipedia (Slovenian)** - planned; text is CC BY-SA, attributed to Wikipedia
+  contributors.
+
+The merged training corpus is **not redistributed** (CC BY-SA share-alike vs.
+public-domain mixing - see ROADMAP Phase 1). Any published artifact built from
+this data (HF datasets, model cards, demo pages) repeats these credits.
 
 ## License
 
