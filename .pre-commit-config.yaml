@@ -1,0 +1,38 @@
+# `uv run pre-commit install` installs BOTH stages below (see default_install_hook_types).
+default_install_hook_types: [pre-commit, commit-msg]
+
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.22
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+        args: ["--maxkb=1024"] # weights/data belong on HF Hub, not in git
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  # Commit message convention (UPPERCASE types) — see CONTRIBUTING.md.
+  # Local script, not conventional-pre-commit: that hook is case-insensitive
+  # (verified 2026-07) and cannot enforce the uppercase requirement.
+  - repo: local
+    hooks:
+      - id: commit-msg-format
+        name: commit message format (UPPERCASE types)
+        entry: bin/check-commit-msg.sh
+        language: script
+        stages: [commit-msg]

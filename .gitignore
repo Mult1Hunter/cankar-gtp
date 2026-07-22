@@ -1,0 +1,37 @@
+# --- secrets ---
+.env
+*.key
+*.pem
+
+# --- python ---
+__pycache__/
+*.pyc
+.venv/
+.uv-cache/
+.ruff_cache/
+
+# --- data & artifacts (live on HF Hub / R2, never in git) ---
+# (mirrored by the commit skill's hard-block list — sync both on change)
+data/
+checkpoints/
+*.pt
+*.bin
+*.safetensors
+*.gguf
+*.onnx
+wandb/
+
+# --- generated analysis artifacts ---
+graphify-out/
+
+# --- claude code (machine-local) ---
+.claude/settings.local.json
+
+# --- scratch (personal notes live in ../cankar-gtp-meta; see docs) ---
+scratch/
+notes
+
+# --- os / editor ---
+.DS_Store
+.idea/
+.vscode/
