@@ -18,7 +18,7 @@ from cankar.core.paths import (
     works_registries,
     works_registry,
 )
-from cankar.corpus import dlib, ingest, seed, wikivir
+from cankar.corpus import dlib, ingest, seed, wikipedia, wikivir
 from cankar.corpus.coverage import cross_author_collisions, write_collisions, write_coverage
 from cankar.corpus.registry import Registry
 
@@ -58,6 +58,11 @@ def _seed(args: argparse.Namespace) -> int:
 
 def _ingest(args: argparse.Namespace) -> int:
     ingest.ingest(None if args.all else [args.author_slug])
+    return 0
+
+
+def _ingest_wikipedia(args: argparse.Namespace) -> int:
+    wikipedia.ingest(args.dump, args.out, min_chars=args.min_chars)
     return 0
 
 
@@ -126,6 +131,14 @@ def register(parser: argparse.ArgumentParser) -> None:
     g.add_argument("--author-slug")
     g.add_argument("--all", action="store_true")
     p.set_defaults(func=_ingest)
+
+    p = sub.add_parser("ingest-wikipedia", help="ingest a slwiki dump as general-Slovene text")
+    p.add_argument(
+        "--dump", required=True, type=Path, help="path to slwiki-*-pages-articles.xml.bz2"
+    )
+    p.add_argument("--out", required=True, type=Path)
+    p.add_argument("--min-chars", type=int, default=400)
+    p.set_defaults(func=_ingest_wikipedia)
 
     p = sub.add_parser("validate", help="registry validation + cross-author collisions")
     p.add_argument("--registry", type=Path)
