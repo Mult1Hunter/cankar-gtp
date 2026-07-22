@@ -6,7 +6,7 @@ authors = [{ name = "Matic Korošec" }]
 requires-python = ">=3.11"
 
 dependencies = [
-    # Phase 1 — corpus
+    # Phase 1 - corpus
     "requests>=2.32",
     "mwparserfromhell>=0.6.6",
     "pydantic>=2.7",
@@ -27,7 +27,7 @@ tooling = [
 ]
 
 # Phase 2+ deps (torch, tokenizers, anthropic, wandb) are added when those
-# phases start — keep the lockfile honest about what each stage needs.
+# phases start - keep the lockfile honest about what each stage needs.
 
 [build-system]
 requires = ["hatchling"]

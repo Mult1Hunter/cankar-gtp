@@ -11,7 +11,7 @@ __pycache__/
 .ruff_cache/
 
 # --- data & artifacts (live on HF Hub / R2, never in git) ---
-# (mirrored by the commit skill's hard-block list — sync both on change)
+# (mirrored by the commit skill's hard-block list - sync both on change)
 data/
 checkpoints/
 *.pt

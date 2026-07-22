@@ -28,7 +28,7 @@ repos:
       - id: trailing-whitespace
         exclude: ^tests/fixtures/.*\.wikitext$ # raw source bytes, must stay verbatim
 
-  # Commit message convention (UPPERCASE types) — see CONTRIBUTING.md.
+  # Commit message convention (UPPERCASE types) - see CONTRIBUTING.md.
   # Local script, not conventional-pre-commit: that hook is case-insensitive
   # (verified 2026-07) and cannot enforce the uppercase requirement.
   - repo: local

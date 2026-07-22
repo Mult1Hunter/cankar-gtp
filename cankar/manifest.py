@@ -1,7 +1,7 @@
 """Shard provenance manifests (ADR 0003): regenerate and diff to verify.
 
 Every corpus shard `<name>.jsonl` gets a sibling `<name>.manifest.json` that is
-the authority on its expected schema, counts, and sanity band — the corpus-qa
+the authority on its expected schema, counts, and sanity band - the corpus-qa
 agent reads it before auditing.
 """
 

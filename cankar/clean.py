@@ -1,5 +1,5 @@
-"""Wiki markup → plain NFC text. Shared by the Wikivir crawler and (later)
-the Wikipedia dump ingester — one clean() so both corpora get identical
+"""Wiki markup -> plain NFC text. Shared by the Wikivir crawler and (later)
+the Wikipedia dump ingester - one clean() so both corpora get identical
 normalization (golden-tested in tests/test_clean.py)."""
 
 from __future__ import annotations
@@ -12,11 +12,11 @@ import mwparserfromhell
 REDIRECT_RE = re.compile(r"^\s*#(redirect|preusmeritev)", re.IGNORECASE)
 # category wikilinks survive strip_code() as bare "Kategorija:X" text lines
 CATEGORY_LINE_RE = re.compile(r"^(Kategorija|Category):\S.*$", re.MULTILINE)
-# strip_code() inlines <ref> footnote CONTENTS into prose — remove refs wholesale
+# strip_code() inlines <ref> footnote CONTENTS into prose - remove refs wholesale
 REF_RE = re.compile(r"<ref[^>/]*(?:/>|>.*?</ref>)", re.DOTALL | re.IGNORECASE)
-# Wikisource caret-notation footnote lines ("^Zgodovina črtica.") — never legit prose
+# Wikisource caret-notation footnote lines ("^Zgodovina črtica.") - never legit prose
 CARET_LINE_RE = re.compile(r"^\^.*$", re.MULTILINE)
-# index/catalog page titles ("Seznam del Ivana Cankarja") — bibliographies, not literature
+# index/catalog page titles ("Seznam del Ivana Cankarja") - bibliographies, not literature
 INDEX_TITLE_RE = re.compile(r"^(Abecedni )?[Ss]eznam ")
 
 
