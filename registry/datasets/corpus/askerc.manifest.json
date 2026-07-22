@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source": "wikivir",
+  "script": "scripts/corpus/crawl_wikivir.py",
+  "git_sha": "ee2afa8",
+  "retrieved_at": "2026-07-22T19:03:20+00:00",
+  "args": {
+    "category": [
+      "Kategorija:Anton Aškerc"
+    ],
+    "author": [
+      "Anton Aškerc"
+    ],
+    "expand_subpages": false,
+    "min_chars": 400,
+    "author_label": "Anton Aškerc"
+  },
+  "n_docs": 45,
+  "n_chars": 1003244,
+  "n_words": 178246,
+  "sha256": "c99c6fc3826bf5449a77fdc9bc03981afffa6bb2c3c7e4daf09245e5f118a007",
+  "expected_band_words": null
+}

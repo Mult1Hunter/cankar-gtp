@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source": "wikivir",
+  "script": "scripts/corpus/crawl_wikivir.py",
+  "git_sha": "ee2afa8",
+  "retrieved_at": "2026-07-22T19:01:51+00:00",
+  "args": {
+    "category": [
+      "Kategorija:Fran Levstik"
+    ],
+    "author": [
+      "Fran Levstik"
+    ],
+    "expand_subpages": false,
+    "min_chars": 400,
+    "author_label": "Fran Levstik"
+  },
+  "n_docs": 100,
+  "n_chars": 2204023,
+  "n_words": 380598,
+  "sha256": "2288c05722c725cbb375ccc5b8d8d88028a75260965638331b1da0e3d93abcb9",
+  "expected_band_words": null
+}

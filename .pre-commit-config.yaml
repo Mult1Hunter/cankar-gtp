@@ -35,6 +35,6 @@ repos:
     hooks:
       - id: commit-msg-format
         name: commit message format (UPPERCASE types)
-        entry: bin/check-commit-msg.sh
+        entry: ops/check-commit-msg.sh
         language: script
         stages: [commit-msg]

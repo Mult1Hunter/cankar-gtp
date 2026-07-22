@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source": "wikivir",
+  "script": "scripts/corpus/crawl_wikivir.py",
+  "git_sha": "ee2afa8",
+  "retrieved_at": "2026-07-22T19:02:19+00:00",
+  "args": {
+    "category": [
+      "Kategorija:Zofka Kveder"
+    ],
+    "author": [
+      "Zofka Kveder"
+    ],
+    "expand_subpages": false,
+    "min_chars": 400,
+    "author_label": "Zofka Kveder"
+  },
+  "n_docs": 95,
+  "n_chars": 2452239,
+  "n_words": 443125,
+  "sha256": "f15ad538868debcb9aaf3a085379a87f1139f68714d325f05841f1e5d3079722",
+  "expected_band_words": null
+}

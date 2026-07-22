@@ -4,7 +4,7 @@ from pathlib import Path
 
 from cankar.corpus.catalog import parse_catalog
 
-FIXTURES = Path(__file__).parent.parent / "fixtures"
+FIXTURES = Path(__file__).parent.parent / "fixtures" / "corpus"
 
 
 def test_author_index() -> None:

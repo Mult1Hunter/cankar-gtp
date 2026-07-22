@@ -22,7 +22,7 @@ uv run pre-commit install  # installs pre-commit AND commit-msg hooks
 
 ## Commits
 
-Enforced by the commit-msg hook (`bin/check-commit-msg.sh`):
+Enforced by the commit-msg hook (`ops/check-commit-msg.sh`):
 
 ```
 TYPE: imperative summary

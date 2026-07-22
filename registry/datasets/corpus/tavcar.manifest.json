@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source": "wikivir",
+  "script": "scripts/corpus/crawl_wikivir.py",
+  "git_sha": "ee2afa8",
+  "retrieved_at": "2026-07-22T19:00:53+00:00",
+  "args": {
+    "category": [
+      "Kategorija:Ivan Tavčar"
+    ],
+    "author": [
+      "Ivan Tavčar"
+    ],
+    "expand_subpages": false,
+    "min_chars": 400,
+    "author_label": "Ivan Tavčar"
+  },
+  "n_docs": 58,
+  "n_chars": 5161953,
+  "n_words": 901817,
+  "sha256": "1fee386523b71d8a06b651f86500778f74f8f14f4ddfce0d1ffac5a6dd251bd4",
+  "expected_band_words": null
+}

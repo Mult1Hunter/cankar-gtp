@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source": "wikivir",
+  "script": "scripts/corpus/crawl_wikivir.py",
+  "git_sha": "ee2afa8",
+  "retrieved_at": "2026-07-22T19:02:40+00:00",
+  "args": {
+    "category": [
+      "Kategorija:Fran Govekar"
+    ],
+    "author": [
+      "Fran Govekar"
+    ],
+    "expand_subpages": false,
+    "min_chars": 400,
+    "author_label": "Fran Govekar"
+  },
+  "n_docs": 24,
+  "n_chars": 3208210,
+  "n_words": 562419,
+  "sha256": "cefe8bd4c8e72a67a4f24136fbc35eeaf5c4c98362a0efb478ba0ad26e68dccb",
+  "expected_band_words": null
+}

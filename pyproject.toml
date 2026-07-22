@@ -16,8 +16,12 @@ dependencies = [
 Homepage = "https://nextgen-solutions.xyz"
 Repository = "https://github.com/Mult1Hunter/cankar-gtp"
 
+[project.scripts]
+cankar = "cankar.cli:main"
+
 [dependency-groups]
 dev = [
+    "import-linter>=2.0",
     "pre-commit>=4.0",
     "pytest>=8.3",
     "ruff>=0.15",
@@ -42,3 +46,11 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+
+[tool.importlinter]
+root_package = "cankar"
+
+[[tool.importlinter.contracts]]
+name = "core is the bottom layer; stages sit above it and stay independent"
+type = "layers"
+layers = ["cankar.corpus", "cankar.core"]

@@ -28,7 +28,7 @@ redistributed - licensing note in ROADMAP Phase 1):
 
 ```bash
 uv sync
-uv run scripts/corpus/crawl_wikivir.py --category "Kategorija:Ivan Cankar" \
+uv run cankar corpus crawl-wikivir --category "Kategorija:Ivan Cankar" \
     --out data/corpus/cankar.jsonl
 ```
 

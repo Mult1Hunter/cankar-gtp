@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from cankar.core.manifest import ShardManifest, manifest_path, sha256_of, write_manifest
+from cankar.core.manifest import ShardManifest, sha256_of, write_manifest
 from cankar.core.schema import CorpusDoc
 
 
@@ -62,7 +62,7 @@ def test_manifest_roundtrip(tmp_path: Path) -> None:
         sha256=sha256_of(shard),
         expected_band_words=(1_500_000, 3_000_000),
     )
-    out = write_manifest(shard, m)
-    assert out == manifest_path(shard) == tmp_path / "x.manifest.json"
+    out = write_manifest(m, tmp_path / "ledger" / "x.manifest.json")
+    assert out == tmp_path / "ledger" / "x.manifest.json"
     loaded = ShardManifest.model_validate(json.loads(out.read_text()))
     assert loaded == m

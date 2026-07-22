@@ -13,7 +13,7 @@ from cankar.corpus.clean import (
     looks_like_index,
 )
 
-FIXTURES = Path(__file__).parent.parent / "fixtures"
+FIXTURES = Path(__file__).parent.parent / "fixtures" / "corpus"
 
 
 @pytest.mark.parametrize("slug", ["ada", "noc"])

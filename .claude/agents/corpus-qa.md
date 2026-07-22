@@ -14,7 +14,8 @@ head-style sampling).
 ## Input
 
 A path to one or more JSONL shards (e.g. `data/corpus/cankar.jsonl`). If a
-`MANIFEST.json` sits beside the shard (ADR 0003 provenance), read it first - it is
+manifest exists at `registry/datasets/corpus/<shard-stem>.manifest.json` (committed
+provenance ledger, ADR 0007), read it first - it is
 the authority on expected schema, doc/token counts, and sanity band, and overrides
 anything hardcoded below. Fallback schema for early crawl shards:
 `{"title", "url", "text", "n_chars"}`.
@@ -49,7 +50,7 @@ Return exactly this structure:
 - **Stats:** the numbers from step 1, plus the sanity-band check
 - **Findings:** numbered, each with doc title + a short quoted snippet of the dirt
 - **Suggested `clean()` extensions:** concrete regex or mwparserfromhell handling
-  suggestions for `scripts/corpus/crawl_wikivir.py`, one per dirt class found
+  suggestions for `cankar/corpus/wikivir.py` (via `cankar corpus crawl-wikivir`), one per dirt class found
 - **Not actionable:** dirt you saw but recommend ignoring, and why
 
 Be specific and quote real snippets - the maintainer acts on this report without
