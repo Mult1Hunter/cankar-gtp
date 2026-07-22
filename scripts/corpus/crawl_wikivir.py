@@ -36,7 +36,13 @@ import requests
 
 from cankar.core.manifest import ShardManifest, git_sha, sha256_of, utc_now_iso, write_manifest
 from cankar.core.schema import CorpusDoc
-from cankar.corpus.clean import clean_wikitext, is_index_title, is_redirect
+from cankar.corpus.clean import (
+    clean_wikitext,
+    is_by_other_author,
+    is_index_title,
+    is_redirect,
+    looks_like_index,
+)
 from cankar.corpus.wikisource import api_get, fetch_wikitext, make_session
 
 
@@ -110,6 +116,13 @@ def main() -> None:
     ap.add_argument(
         "--expected-band", default=None, help="MIN,MAX expected total words (manifest sanity band)"
     )
+    ap.add_argument(
+        "--not-by",
+        action="append",
+        default=[],
+        help="other roster author (repeatable): titles ending (Their Name) are "
+        "essays BY them ABOUT this author - excluded (attribution guard)",
+    )
     args = ap.parse_args()
 
     if not args.category and not args.author:
@@ -142,15 +155,29 @@ def main() -> None:
     pages = fetch_wikitext(session, titles)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    n_docs = n_chars = n_words = n_skipped = 0
+    n_docs = n_chars = n_words = n_skipped = n_misattr = n_indexdoc = 0
     with args.out.open("w", encoding="utf-8") as f:
         for title, wikitext in sorted(pages.items()):
             if is_redirect(wikitext):
                 n_skipped += 1
                 continue
+            true_author = is_by_other_author(title, args.not_by)
+            if true_author:
+                print(
+                    f"  attribution guard: {title!r} is by {true_author} - skipped", file=sys.stderr
+                )
+                n_misattr += 1
+                continue
             text = clean_wikitext(wikitext)
             if len(text) < args.min_chars:
                 n_skipped += 1
+                continue
+            if looks_like_index(text):
+                print(
+                    f"  index-content guard: {title!r} looks like a bibliography - skipped",
+                    file=sys.stderr,
+                )
+                n_indexdoc += 1
                 continue
             doc = CorpusDoc(
                 title=title,
@@ -187,7 +214,8 @@ def main() -> None:
 
     print(
         f"\nwrote {args.out} (+ {mpath.name})\n"
-        f"  docs:    {n_docs} (skipped {n_skipped}: redirects/too short)\n"
+        f"  docs:    {n_docs} (skipped {n_skipped}: redirects/too short; "
+        f"{n_misattr} misattributed, {n_indexdoc} index-content)\n"
         f"  chars:   {n_chars:,}\n"
         f"  words:   {n_words:,}\n"
         f"  ~tokens: {n_chars // 4:,} "

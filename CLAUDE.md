@@ -35,6 +35,9 @@ before any push.
 ## Engineering system (ADR 0003)
 
 - All work lands via PR - never push `main` directly.
+- Non-trivial code starts with a **design brief** (`design-brief` skill); at
+  new-subsystem scale an architect agent critiques it first. Heuristics ship
+  only after real-data calibration with committed fixtures (ADR 0006).
 - Run the `corpus-qa` agent on every fresh JSONL shard before it enters the pipeline.
 - Every ingested document maps to a works-registry entry (`registry/`, ADR 0004);
   unmatched source records go to triage reports, never silently dropped.

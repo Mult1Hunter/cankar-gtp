@@ -44,6 +44,7 @@ def main() -> None:
     ap.add_argument("--min-year", type=int, default=None)
     ap.add_argument("--max-year", type=int, default=None)
     ap.add_argument("--cross", nargs="*", type=Path, help="registries for cross-author check")
+    ap.add_argument("--strict", action="store_true", help="cross collisions also fail the run")
     args = ap.parse_args()
 
     problems: list[str] = []
@@ -53,14 +54,18 @@ def main() -> None:
         reg = Registry.load(args.registry, args.author)
         problems += reg.validate(min_year=args.min_year, max_year=args.max_year)
         print(f"{args.registry}: {len(reg.works)} works", file=sys.stderr)
-    if args.cross:
-        problems += cross_author_collisions(args.cross)
+
+    # cross-author title collisions are usually DIFFERENT works sharing a
+    # generic title - they need human confirmation, not a red build
+    confirmations = cross_author_collisions(args.cross) if args.cross else []
+    for c in confirmations:
+        print(f"CONFIRM: {c}")
 
     for p in problems:
         print(f"PROBLEM: {p}")
-    if problems:
+    if problems or (confirmations and args.strict):
         sys.exit(1)
-    print("registry valid")
+    print(f"registry valid ({len(confirmations)} cross-author collisions to confirm)")
 
 
 if __name__ == "__main__":

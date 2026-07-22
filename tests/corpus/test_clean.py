@@ -5,7 +5,13 @@ from pathlib import Path
 
 import pytest
 
-from cankar.corpus.clean import clean_wikitext, is_index_title, is_redirect
+from cankar.corpus.clean import (
+    clean_wikitext,
+    is_by_other_author,
+    is_index_title,
+    is_redirect,
+    looks_like_index,
+)
 
 FIXTURES = Path(__file__).parent.parent / "fixtures"
 
@@ -86,3 +92,56 @@ def test_caret_footnote_lines_removed() -> None:
 def test_is_index_title(title: str, expected: bool) -> None:
     """List/bibliography pages are catalogs, not literature (corpus-qa finding)."""
     assert is_index_title(title) is expected
+
+
+def test_div_tags_and_magic_words_stripped() -> None:
+    """corpus-qa finding, PD-authors audit (Izprehodi po Gorjancih, Zivalske podobe)."""
+    raw = '__FORCETOC__\n<div style="text-align:right;">\nGorjanci so čudovita gora.\n</div>\n'
+    assert clean_wikitext(raw) == "Gorjanci so čudovita gora."
+
+
+def test_looks_like_index_detects_bibliography() -> None:
+    """corpus-qa finding: index pages that dodge the Seznam title rule."""
+    biblio = "\n".join(f"Pesem številka {i}" for i in range(20))
+    assert looks_like_index(biblio) is True
+    prose = "\n".join(
+        f"To je daljši stavek pripovedne proze, ki se konča s piko, tako pišejo pisatelji {i}."
+        for i in range(20)
+    )
+    assert looks_like_index(prose) is False
+    assert looks_like_index("Kratko besedilo.") is False  # too few lines to judge
+
+
+@pytest.mark.parametrize(
+    ("fixture", "expected"),
+    [
+        ("poem_ubezni_kralj", False),  # famous ballad - amputated by the naive rule
+        ("poem_na_trgu", False),  # sparse-punctuation verse, the hardest pass case
+        ("biblio_kazalo_levstik", True),  # comma-riddled index, the hardest fail case
+    ],
+)
+def test_looks_like_index_verse_vs_catalog(fixture: str, expected: bool) -> None:
+    """Real-page regression set for the verse/bibliography boundary.
+
+    The first roster crawl dropped ~150 poems because verse shares short
+    unpunctuated lines with title lists; these fixtures pin the calibrated
+    two-dimension rule (internal punctuation + digit-bearing lines).
+    """
+    text = clean_wikitext((FIXTURES / f"{fixture}.wikitext").read_text())
+    assert looks_like_index(text) is expected
+
+
+@pytest.mark.parametrize(
+    ("title", "roster", "expected"),
+    [
+        ("Josip Stritar (Ivan Tavčar)", ["Ivan Tavčar", "Fran Levstik"], "Ivan Tavčar"),
+        ("Levstik (Josip Stritar)", ["Josip Stritar"], "Josip Stritar"),
+        ("Ada (Ivan Cankar)", ["Ivan Tavčar"], None),  # own-author disambiguator
+        ("Pesem (odlomek)", ["Ivan Tavčar"], None),  # unrelated parenthetical
+        ("Brez oklepaja", ["Ivan Tavčar"], None),
+    ],
+)
+def test_is_by_other_author(title: str, roster: list[str], expected: str | None) -> None:
+    """Attribution guard (corpus-qa finding): essays BY roster authors ABOUT the
+    crawled author must not enter the subject's shard."""
+    assert is_by_other_author(title, roster) == expected

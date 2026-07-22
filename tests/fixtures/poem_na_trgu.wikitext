@@ -1,0 +1,57 @@
+{{naslov
+| prejšnji= Jagned
+| naslednji=Šumi les
+| naslov= Na trgu
+| poglavje= ([[Poezije (Kette)|Poezije]])
+| avtor= Dragotin Kette
+| licenca=javna last
+| obdelano= 3
+}}
+<poem>
+Noč trudna
+molči,
+nezamudna
+beži
+čez mestni trg luna sanjava.
+Vse v mraku
+mirnó,
+na vodnjaku
+samó
+tih veterc z vodoj poigrava.
+
+Vodice
+šumé
+in rosice
+pršé
+brez konca v broneno kotanjo;
+brezdanj je
+ta vir,
+šepetanje,
+nemir
+brezkončna, kot misli so nanjo.
+
+Pa blizi
+ni cest,
+ah, v Elizij
+do zvezd
+ne morete kaplje šumeče.
+In smele
+željé
+do Angéle
+mojé
+hitite zaman hrepeneče ...
+
+Noč trudna
+molči,
+nezamudna
+beži
+čez mestni trg luna sanjava,
+ki ruši
+pokoj
+moji duši
+nocoj,
+brezskrbno pa deklica spava.
+</poem>
+[[Kategorija:Dragotin Kette]]
+[[Kategorija:Pesmi]] 
+[[Kategorija:19. stoletje]]
