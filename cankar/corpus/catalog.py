@@ -12,6 +12,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 
+from cankar.corpus.registry import WorkFlag
+
 ENTRY_RE = re.compile(r"^\*+\s*\[\[([^\]|]+)(?:\|[^\]]*)?\]\](.*)$")
 SECTION_RE = re.compile(r"^=+\s*([^=]+?)\s*=+\s*$")
 YEAR_RE = re.compile(r",\s*(\d{4})")
@@ -28,7 +30,7 @@ class CatalogEntry:
     year: int | None = None
     genre: str | None = None
     alias_of: str | None = None  # set for "gl. [[X]]" cross-reference lines
-    flags: list[str] = field(default_factory=list)
+    flags: list[WorkFlag] = field(default_factory=list)
 
 
 @dataclass
@@ -53,17 +55,17 @@ def parse_catalog(wikitext: str) -> tuple[list[CatalogEntry], AuthorMeta]:
             name = sec.group(1).strip().casefold()
             section = None if name in NON_WORK_SECTIONS else sec.group(1).strip()
             continue
-        m = ENTRY_RE.match(line)
-        if not m:
+        entry = ENTRY_RE.match(line)
+        if not entry:
             continue
-        title, tail = m.group(1).strip(), m.group(2)
+        title, tail = entry.group(1).strip(), entry.group(2)
         gl = GL_RE.search(tail)
-        year_m = YEAR_RE.search(tail)
-        flags = ["prevod"] if "(prevod)" in tail or title.endswith("(prevod)") else []
+        year_match = YEAR_RE.search(tail)
+        flags = [WorkFlag.PREVOD] if "(prevod)" in tail or title.endswith("(prevod)") else []
         entries.append(
             CatalogEntry(
                 title=title,
-                year=int(year_m.group(1)) if year_m else None,
+                year=int(year_match.group(1)) if year_match else None,
                 genre=section,
                 alias_of=gl.group(1).strip() if gl else None,
                 flags=flags,

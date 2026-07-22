@@ -3,10 +3,13 @@
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 
 from cankar.corpus.registry import (
     Registry,
+    Source,
     SourceRef,
+    SourceStatus,
     normalize_for_author,
     normalize_title,
     slugify,
@@ -44,24 +47,35 @@ def test_upsert_find_alias_roundtrip() -> None:
 def test_add_source_idempotent_and_upgrade() -> None:
     reg = Registry("Ivan Cankar")
     w = reg.upsert("Jure", year=1907)
-    reg.add_source(w, SourceRef(source="dlib", id="URN:X", status="candidate"))
-    reg.add_source(w, SourceRef(source="dlib", id="URN:X", status="ingested", year=1907))
+    reg.add_source(w, SourceRef(source=Source.DLIB, id="URN:X", status=SourceStatus.CANDIDATE))
+    reg.add_source(
+        w, SourceRef(source=Source.DLIB, id="URN:X", status=SourceStatus.INGESTED, year=1907)
+    )
     assert len(w.sources) == 1
-    assert w.sources[0].status == "ingested"
+    assert w.sources[0].status is SourceStatus.INGESTED
     # ingested is never downgraded
-    reg.add_source(w, SourceRef(source="dlib", id="URN:X", status="candidate"))
-    assert w.sources[0].status == "ingested"
+    reg.add_source(w, SourceRef(source=Source.DLIB, id="URN:X", status=SourceStatus.CANDIDATE))
+    assert w.sources[0].status is SourceStatus.INGESTED
 
 
 def test_unknown_status_rejected() -> None:
-    with pytest.raises(ValueError, match="unknown status"):
-        SourceRef(source="dlib", id="URN:X", status="whatever")
+    with pytest.raises(ValidationError):
+        SourceRef(source=Source.DLIB, id="URN:X", status="whatever")
+
+
+def test_enums_serialize_as_plain_strings() -> None:
+    """Registry JSONL on disk must stay byte-compatible (ADR 0008)."""
+    ref = SourceRef(source=Source.DLIB, id="URN:X", status=SourceStatus.CANDIDATE)
+    assert '"source":"dlib"' in ref.model_dump_json()
+    assert '"status":"candidate"' in ref.model_dump_json()
 
 
 def test_validate_year_range() -> None:
     reg = Registry("Ivan Cankar")
     w = reg.upsert("Jure")
-    reg.add_source(w, SourceRef(source="dlib", id="URN:X", status="candidate", year=1850))
+    reg.add_source(
+        w, SourceRef(source=Source.DLIB, id="URN:X", status=SourceStatus.CANDIDATE, year=1850)
+    )
     problems = reg.validate(min_year=1891, max_year=1958)
     assert any("outside plausible range" in p for p in problems)
 
@@ -69,8 +83,8 @@ def test_validate_year_range() -> None:
 def test_save_load_roundtrip(tmp_path: Path) -> None:
     reg = Registry("Ivan Cankar")
     w = reg.upsert("Jure", year=1907, genre="črtica")
-    reg.add_source(w, SourceRef(source="wikivir", id="Jure", status="ingested"))
+    reg.add_source(w, SourceRef(source=Source.WIKIVIR, id="Jure", status=SourceStatus.INGESTED))
     path = tmp_path / "reg.jsonl"
     reg.save(path)
     again = Registry.load(path, "Ivan Cankar")
-    assert again.find("Jure").sources[0].status == "ingested"
+    assert again.find("Jure").sources[0].status is SourceStatus.INGESTED

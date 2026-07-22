@@ -11,11 +11,11 @@ are plain ns-0 pages; category listings are richer than index pages (Cankar:
 
 from __future__ import annotations
 
-import sys
-import time
+import logging
+from dataclasses import dataclass
+from pathlib import Path
 
-import requests
-
+from cankar.core.http import PoliteSession
 from cankar.core.manifest import ShardManifest, git_sha, sha256_of, utc_now_iso, write_manifest
 from cankar.core.paths import dataset_manifest
 from cankar.core.schema import CorpusDoc
@@ -27,30 +27,37 @@ from cankar.corpus.clean import (
     looks_like_index,
 )
 
+logger = logging.getLogger(__name__)
+
 API = "https://sl.wikisource.org/w/api.php"
-UA = "CankarGTP-corpus-builder/0.1 (+https://nextgen-solutions.xyz; educational project)"
-SLEEP = 0.5  # polite delay between API calls, seconds
 BATCH = 50  # max titles per content request (API limit for non-bots)
 
 
-def make_session() -> requests.Session:
-    session = requests.Session()
-    session.headers["User-Agent"] = UA
-    return session
+@dataclass
+class CrawlStats:
+    """Typed result of a Wikivir crawl (ADR 0008: no stringly stat dicts)."""
+
+    docs: int = 0
+    chars: int = 0
+    words: int = 0
+    skipped: int = 0
+    misattributed: int = 0
+    index_docs: int = 0
 
 
-def api_get(session: requests.Session, params: dict) -> dict:
+def make_session() -> PoliteSession:
+    return PoliteSession(sleep=0.5, timeout=30)
+
+
+def api_get(session: PoliteSession, params: dict) -> dict:
     params = {"format": "json", "formatversion": "2", **params}
-    resp = session.get(API, params=params, timeout=30)
-    resp.raise_for_status()
-    data = resp.json()
+    data = session.get(API, params=params).json()
     if "error" in data:
         raise RuntimeError(f"API error: {data['error']}")
-    time.sleep(SLEEP)
     return data
 
 
-def fetch_wikitext(session: requests.Session, titles: list[str]) -> dict[str, str]:
+def fetch_wikitext(session: PoliteSession, titles: list[str]) -> dict[str, str]:
     """Raw wikitext for any number of titles, BATCH per request."""
     result: dict[str, str] = {}
     for i in range(0, len(titles), BATCH):
@@ -72,7 +79,7 @@ def fetch_wikitext(session: requests.Session, titles: list[str]) -> dict[str, st
     return result
 
 
-def titles_from_category(session: requests.Session, category: str) -> list[str]:
+def titles_from_category(session: PoliteSession, category: str) -> list[str]:
     """All ns-0 member titles of a category, following continuation."""
     titles: list[str] = []
     params = {
@@ -91,14 +98,14 @@ def titles_from_category(session: requests.Session, category: str) -> list[str]:
         params = {**params, **cont}
 
 
-def titles_from_author_page(session: requests.Session, author_page: str) -> list[str]:
+def titles_from_author_page(session: PoliteSession, author_page: str) -> list[str]:
     """ns-0 links from an author index page (the author's work list)."""
     data = api_get(session, {"action": "parse", "page": author_page, "prop": "links"})
     links = data["parse"]["links"]
     return [link["title"] for link in links if link.get("ns") == 0 and link.get("exists", True)]
 
 
-def expand_subpages(session: requests.Session, titles: list[str]) -> list[str]:
+def expand_subpages(session: PoliteSession, titles: list[str]) -> list[str]:
     """For each title, also collect 'Title/...' subpages (chaptered works)."""
     out = list(titles)
     for title in titles:
@@ -127,64 +134,57 @@ def crawl(
     *,
     categories: list[str],
     author_pages: list[str],
-    out,
+    out: Path,
     author_label: str | None = None,
     source: str = "wikivir",
     min_chars: int = 400,
     expand: bool = False,
     expected_band: str | None = None,
     not_by: list[str] | None = None,
-) -> dict[str, int]:
+) -> CrawlStats:
     """Full crawl flow: list, guard, fetch, clean, write shard + committed manifest."""
     not_by = not_by or []
     session = make_session()
 
     titles: list[str] = []
     for cat in categories:
-        print(f"listing {cat} ...", file=sys.stderr)
+        logger.info(f"listing {cat} ...")
         titles += titles_from_category(session, cat)
     for page in author_pages:
-        print(f"listing links on {page} ...", file=sys.stderr)
+        logger.info(f"listing links on {page} ...")
         titles += titles_from_author_page(session, page)
 
     # author index pages and Seznam/list pages are catalogs, not literature
     excluded = set(author_pages) | {t for t in set(titles) if is_index_title(t)}
     titles = sorted(set(titles) - excluded)
-    print(
-        f"{len(titles)} unique titles ({len(excluded)} index/list pages excluded)", file=sys.stderr
-    )
+    logger.info(f"{len(titles)} unique titles ({len(excluded)} index/list pages excluded)")
 
     if expand:
         titles = sorted(set(expand_subpages(session, titles)))
-        print(f"{len(titles)} titles after subpage expansion", file=sys.stderr)
+        logger.info(f"{len(titles)} titles after subpage expansion")
 
-    print(f"fetching {len(titles)} pages ...", file=sys.stderr)
+    logger.info(f"fetching {len(titles)} pages ...")
     pages = fetch_wikitext(session, titles)
 
     out.parent.mkdir(parents=True, exist_ok=True)
-    stats = {"docs": 0, "chars": 0, "words": 0, "skipped": 0, "misattributed": 0, "index_docs": 0}
+    stats = CrawlStats()
     with out.open("w", encoding="utf-8") as f:
         for title, wikitext in sorted(pages.items()):
             if is_redirect(wikitext):
-                stats["skipped"] += 1
+                stats.skipped += 1
                 continue
             true_author = is_by_other_author(title, not_by)
             if true_author:
-                print(
-                    f"  attribution guard: {title!r} is by {true_author} - skipped", file=sys.stderr
-                )
-                stats["misattributed"] += 1
+                logger.info(f"  attribution guard: {title!r} is by {true_author} - skipped")
+                stats.misattributed += 1
                 continue
             text = clean_wikitext(wikitext)
             if len(text) < min_chars:
-                stats["skipped"] += 1
+                stats.skipped += 1
                 continue
             if looks_like_index(text):
-                print(
-                    f"  index-content guard: {title!r} looks like a bibliography - skipped",
-                    file=sys.stderr,
-                )
-                stats["index_docs"] += 1
+                logger.info(f"  index-content guard: {title!r} looks like a bibliography - skipped")
+                stats.index_docs += 1
                 continue
             doc = CorpusDoc(
                 title=title,
@@ -195,9 +195,9 @@ def crawl(
                 author=author_label,
             )
             f.write(doc.model_dump_json() + "\n")
-            stats["docs"] += 1
-            stats["chars"] += len(text)
-            stats["words"] += len(text.split())
+            stats.docs += 1
+            stats.chars += len(text)
+            stats.words += len(text.split())
 
     manifest = ShardManifest(
         source=source,
@@ -211,19 +211,18 @@ def crawl(
             "min_chars": min_chars,
             "author_label": author_label,
         },
-        n_docs=stats["docs"],
-        n_chars=stats["chars"],
-        n_words=stats["words"],
+        n_docs=stats.docs,
+        n_chars=stats.chars,
+        n_words=stats.words,
         sha256=sha256_of(out),
         expected_band_words=parse_band(expected_band),
     )
     mpath = write_manifest(manifest, dataset_manifest("corpus", out.stem))
 
-    print(
+    logger.info(
         f"\nwrote {out} (manifest: {mpath})\n"
-        f"  docs:    {stats['docs']} (skipped {stats['skipped']}: redirects/too short; "
-        f"{stats['misattributed']} misattributed, {stats['index_docs']} index-content)\n"
-        f"  words:   {stats['words']:,}",
-        file=sys.stderr,
+        f"  docs:    {stats.docs} (skipped {stats.skipped}: redirects/too short; "
+        f"{stats.misattributed} misattributed, {stats.index_docs} index-content)\n"
+        f"  words:   {stats.words:,}"
     )
     return stats
