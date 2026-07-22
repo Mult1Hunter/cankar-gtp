@@ -21,17 +21,20 @@ Do not build serving or the Laravel orchestrator before the styler exists.
 
 ## Phase 0 - Environment (half a day)
 
-- [ ] uv project init; PyTorch + CUDA 12.x; verify `torch.cuda.is_available()`
+- [x] uv project init
+- [ ] PyTorch + CUDA 12.x; verify `torch.cuda.is_available()` (deps arrive with Phase 2/3 per pyproject policy)
 - [ ] Clone nanochat; read the speedrun script end-to-end
 - [ ] Watch Karpathy "Let's build GPT" (nanoGPT stays *reading material*, nanochat is the codebase)
 - [ ] RunPod account + **spending limit set** + one 15-min throwaway pod to validate workflow
-- [ ] Repo init (public from commit #1), .gitignore, .env.example, gitleaks pre-commit hook + CI
+- [x] Repo init (public from commit #1), .gitignore, .env.example, gitleaks pre-commit hook + CI
 
 ## Phase 1 - Corpus (1-2 sessions)
 
-- [ ] Wikivir/Wikisource crawler via MediaWiki API: all Cankar + broader Slovene PD literature category
+- [x] Wikivir/Wikisource crawler via MediaWiki API: Cankar + 14 PD authors, attribution/catalog guards (PR #9, #10)
+- [x] Works registry as source of truth + dLib.si gap-fill with OCR quality gates *(added in-flight - ADR 0004)*
 - [ ] Slovenian Wikipedia dump ingestion (modern vocabulary - mitigates topic gap, per Agent A2)
-- [ ] Clean (mwparserfromhell), normalize, dedupe, chunk -> JSONL shards
+- [x] Clean (mwparserfromhell), NFC-normalize -> JSONL shards with manifests
+- [ ] Dedupe + chunk (merge stage; consumes registry/collisions.md annotations)
 - [ ] Stats report: tokens per source/author. Targets: ~3-5M tokens Cankar, ~200-300M general Slovene
 - **Licensing (B5):** publish reproducible corpus-*building scripts*, not the merged corpus
   (Wikipedia is CC BY-SA; Cankar is PD; the merged blob inherits share-alike obligations)

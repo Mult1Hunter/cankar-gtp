@@ -48,8 +48,13 @@ At phase completion (see ROADMAP.md) tag the merge commit: `v0.1-tinycankar`,
 `v0.2-base`, ... Tags anchor blog posts. Push tags only after the
 `public-hygiene` skill passes.
 
-## 5. Phase transitions
+## 5. ROADMAP tracking (mandatory)
 
-ROADMAP checkboxes are the canonical phase status. A commit that completes a phase
-must also update both status mirrors in the same commit: the CLAUDE.md
-"Current phase" section and the README status line.
+ROADMAP checkboxes are the canonical status. Two triggers:
+
+- **Deliverable completed** (any PR): tick its `- [ ]` in ROADMAP.md IN THE SAME
+  PR - reference the PR number on the line. Work added in-flight (not on the
+  roadmap) gets a new checked line marked *(added in-flight - ADR NNNN)*.
+  The PR template carries this as a mandatory checklist item.
+- **Phase completed**: additionally sync both status mirrors in the same commit:
+  CLAUDE.md "Current phase" and the README status line.
