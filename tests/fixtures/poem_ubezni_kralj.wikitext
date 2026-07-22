@@ -1,0 +1,66 @@
+{{naslov
+| prejšnji= Sovražnikom
+| naslednji= Kako je to hudo
+| naslov= Ubežni kralj
+| poglavje= ([[Poezije (Levstik)|Poezija]])
+| avtor= Fran Levstik
+|licenca=javna last
+}}
+
+<poem>
+Noč je temna, podkve jeklo poje;
+lej, po gozdu kralj ubežen jaha;
+zgubil vojsko, zgubil zemlje svoje,
+skriva se ko zver po lesu plaha.
+Nima žene, hčere ne sinova,
+vse mu vzela vražna je sekira;
+koča vsaka duri mu zapira,
+spremljevalca nima pot njegova.
+
+In zajezdi v gosto perje lésa;
+konj se zdrzne, noče dalj bežati,
+vstran zahrska, kvišku pné ušesa,
+brezno vidi pred sebój zijati. –
+Kralj pa gleda in zastonj ugiblje,
+s konja stopi, k veji ga priveže,
+plašč pogrne, nanj ves truden leže,
+sladki sen nad breznom ga zaziblje.
+
+Dahnejo mu sanje v trudno glavo:
+Stol kraljevi iz zemljé mu rase;
+on pak seda nanj s častjo in slavo,
+bógat, venčan ko nekdanje čase.
+Zida se nad njim poslopje širno,
+razsvetljeno, v zlatu lesketaje,
+stavijo se veže na vse kraje;
+zunaj čuje straže hojo mirno.
+
+Prebudi se bobnov ropotanje,
+prebudi se grom trobent vojaških;
+vstane žvenket in ostrog rožljanje;
+ide truma vojvodov junaških,
+gre med njimi knez iz zemlje tuje,
+ki mu hotel je zemljo vzeti. –
+Zmagan ide, ž njim tovarši ujeti,
+klanja se mu, silni meč daruje.
+
+Zadonijo spet trobente glasne
+in prikaže se obraz kraljice;
+ž njo sinovi, ž njo so hčere krasne,
+njej visoke strežejo device.
+Tu gospoda kralju vsa zavpije:
+“Bog ti slavo hrani čase večne,
+svetlim vnukom tvojim dneve srečne!”
+Hrum veseli po dvoranah bije.
+
+Vzdahne v živih sanjah kralj: “Carujem!
+Oh podobe gledal sem neznane,
+da ubežen skrivam se po tujem!”
+V sanjah kvišku kakor jelen plane;
+hoče k svojim – roke širi – pada!
+Meč z oklepom v dno breznà brenkoče;
+konj se trga, podkve udar ropoče;
+krokotajo vrani iz prepada!
+</poem>
+
+[[kategorija:Fran Levstik]]

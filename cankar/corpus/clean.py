@@ -18,11 +18,60 @@ REF_RE = re.compile(r"<ref[^>/]*(?:/>|>.*?</ref>)", re.DOTALL | re.IGNORECASE)
 CARET_LINE_RE = re.compile(r"^\^.*$", re.MULTILINE)
 # index/catalog page titles ("Seznam del Ivana Cankarja") - bibliographies, not literature
 INDEX_TITLE_RE = re.compile(r"^(Abecedni )?[Ss]eznam ")
+# raw HTML div tags and MediaWiki magic words survive strip_code()
+DIV_RE = re.compile(r"</?div[^>]*>", re.IGNORECASE)
+MAGIC_WORD_RE = re.compile(r"__[A-Z]+__")
 
 
 def is_index_title(title: str) -> bool:
     """True for list/bibliography pages that must not enter the corpus."""
     return bool(INDEX_TITLE_RE.match(title))
+
+
+def looks_like_index(
+    text: str,
+    title_ratio_threshold: float = 0.65,
+    digit_ratio_threshold: float = 0.10,
+) -> bool:
+    """Content-based bibliography detector (corpus-qa finding, PD-authors audit).
+
+    VERSE shares short unpunctuated lines with title lists - a naive short-line
+    rule amputated ~150 poems on the first roster crawl. Two dimensions separate
+    the classes (calibrated 2026-07 on real Wikivir pages; title_ratio/digit_ratio):
+    poems Ubezni kralj 0.02/0.00, Pijanec 0.29/0.00, Na trgu 0.60/0.00 vs
+    bibliographies Zbrano delo (Kette) 0.83/0.00, Lojze Grozde 0.79/0.16,
+    Kazalo (Levstik) 0.35/0.56. Internal punctuation marks natural language;
+    digit-bearing lines (years, page numbers) mark catalogs.
+    """
+    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+    if len(lines) < 10:
+        return False
+    title_like = sum(
+        1
+        for ln in lines
+        if len(ln) < 60
+        and not ln.endswith((".", "!", "?", "«", "“", '"'))
+        and not any(c in ln for c in ",;:!?.")
+    ) / len(lines)
+    digit = sum(1 for ln in lines if any(ch.isdigit() for ch in ln)) / len(lines)
+    return title_like > title_ratio_threshold or (
+        digit > digit_ratio_threshold and title_like > 0.30
+    )
+
+
+def is_by_other_author(title: str, other_authors: list[str]) -> str | None:
+    """Attribution guard (corpus-qa finding): a title like "Josip Stritar
+    (Ivan Tavcar)" is an essay ABOUT the subject BY the parenthetical author.
+    Returns the true author's name when the parenthetical names someone else
+    on the roster."""
+    m = re.search(r"\(([^)]+)\)\s*$", title)
+    if not m:
+        return None
+    inner = m.group(1).strip()
+    for other in other_authors:
+        if inner == other:
+            return other
+    return None
 
 
 def is_redirect(wikitext: str) -> bool:
@@ -34,6 +83,8 @@ def clean_wikitext(wikitext: str) -> str:
     wikitext = REF_RE.sub("", wikitext)
     code = mwparserfromhell.parse(wikitext)
     text = code.strip_code(normalize=True, collapse=True)
+    text = DIV_RE.sub("", text)
+    text = MAGIC_WORD_RE.sub("", text)
     text = unicodedata.normalize("NFC", text)
     text = CATEGORY_LINE_RE.sub("", text)
     text = CARET_LINE_RE.sub("", text)

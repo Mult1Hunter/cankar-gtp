@@ -1,0 +1,116 @@
+# PD-author roster for the Wikivir crawl (ROADMAP Phase 1, extended list).
+# PD gate: author died before 1956 (70y rule, checked 2026). death_year is
+# cross-checked against the {{Avtor}} infobox at seed time.
+# category_pages: size at recon time (2026-07) - drift sanity, not a hard band.
+
+[[authors]]
+name = "Ivan Tavčar"
+slug = "tavcar"
+category = "Kategorija:Ivan Tavčar"
+index_page = "Ivan Tavčar"
+death_year = 1923
+category_pages = 47
+
+[[authors]]
+name = "Josip Jurčič"
+slug = "jurcic"
+category = "Kategorija:Josip Jurčič"
+index_page = "Josip Jurčič"
+death_year = 1881
+category_pages = 70
+
+[[authors]]
+name = "Janko Kersnik"
+slug = "kersnik"
+category = "Kategorija:Janko Kersnik"
+index_page = "Janko Kersnik"
+death_year = 1897
+category_pages = 45
+
+[[authors]]
+name = "Janez Trdina"
+slug = "trdina"
+category = "Kategorija:Janez Trdina"
+index_page = "Janez Trdina"
+death_year = 1905
+category_pages = 18
+
+[[authors]]
+name = "Fran Levstik"
+slug = "levstik"
+category = "Kategorija:Fran Levstik"
+index_page = "Fran Levstik"
+death_year = 1887
+category_pages = 56
+
+[[authors]]
+name = "Josip Stritar"
+slug = "stritar"
+category = "Kategorija:Josip Stritar"
+index_page = "Josip Stritar"
+death_year = 1923
+category_pages = 44
+
+[[authors]]
+name = "Zofka Kveder"
+slug = "kveder"
+category = "Kategorija:Zofka Kveder"
+index_page = "Zofka Kveder"
+death_year = 1926
+category_pages = 93
+
+[[authors]]
+name = "Fran Govekar"
+slug = "govekar"
+category = "Kategorija:Fran Govekar"
+index_page = "Fran Govekar"
+death_year = 1949
+category_pages = 22
+
+[[authors]]
+name = "Fran Milčinski"
+slug = "milcinski"
+category = "Kategorija:Fran Milčinski"
+index_page = "Fran Milčinski"
+death_year = 1932
+category_pages = 145
+
+[[authors]]
+name = "Fran Erjavec"
+slug = "erjavec"
+category = "Kategorija:Fran Erjavec"
+index_page = "Fran Erjavec"
+death_year = 1887
+category_pages = 27
+
+[[authors]]
+name = "Simon Jenko"
+slug = "jenko"
+category = "Kategorija:Simon Jenko"
+index_page = "Simon Jenko"
+death_year = 1869
+category_pages = 23
+
+[[authors]]
+name = "Anton Aškerc"
+slug = "askerc"
+category = "Kategorija:Anton Aškerc"
+index_page = "Anton Aškerc"
+death_year = 1912
+category_pages = 49
+
+[[authors]]
+name = "Dragotin Kette"
+slug = "kette"
+category = "Kategorija:Dragotin Kette"
+index_page = "Dragotin Kette"
+death_year = 1899
+category_pages = 115
+
+[[authors]]
+name = "Josip Murn"
+slug = "murn"
+category = "Kategorija:Josip Murn"
+index_page = "Josip Murn"
+death_year = 1901
+category_pages = 9
