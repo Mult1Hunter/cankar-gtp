@@ -76,7 +76,15 @@ def _is_media_link(node: mwparserfromhell.nodes.Wikilink) -> bool:
 
 def strip_tables_and_media(wikitext: str) -> str:
     """Remove tables and media wikilinks via node filtering - nesting-safe at any
-    depth, unlike the caption-nesting regex it replaces (corpus-qa/critique #9)."""
+    depth, unlike the caption-nesting regex it replaces (corpus-qa/critique #9).
+
+    Known limitation (corpus-qa audit, full 125k-article run): ~3.8% of articles
+    retain raw `{|...` markup because their tables are malformed/unclosed (no
+    `|}`), which mwparserfromhell cannot parse as table nodes. Accepted for a
+    pretraining layer (residue tokenizes harmlessly); a line-level `{|`/`|-` sweep
+    is the fix if a Phase-2 pass ever needs it, deliberately not a fragile
+    whole-table regex.
+    """
     from mwparserfromhell.nodes import Node
 
     code = mwparserfromhell.parse(wikitext)
