@@ -24,7 +24,9 @@ repos:
       - id: check-yaml
       - id: detect-private-key
       - id: end-of-file-fixer
+        exclude: ^tests/fixtures/.*\.wikitext$ # raw source bytes, must stay verbatim
       - id: trailing-whitespace
+        exclude: ^tests/fixtures/.*\.wikitext$ # raw source bytes, must stay verbatim
 
   # Commit message convention (UPPERCASE types) — see CONTRIBUTING.md.
   # Local script, not conventional-pre-commit: that hook is case-insensitive
