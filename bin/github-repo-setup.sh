@@ -19,6 +19,7 @@ gh repo edit "$REPO" \
   --enable-rebase-merge \
   --enable-squash-merge=false \
   --enable-merge-commit=false \
+  --enable-auto-merge \
   --delete-branch-on-merge \
   --enable-wiki=false \
   --enable-projects=false \
