@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source": "wikivir",
+  "script": "scripts/corpus/crawl_wikivir.py",
+  "git_sha": "ee2afa8",
+  "retrieved_at": "2026-07-22T19:03:14+00:00",
+  "args": {
+    "category": [
+      "Kategorija:Simon Jenko"
+    ],
+    "author": [
+      "Simon Jenko"
+    ],
+    "expand_subpages": false,
+    "min_chars": 400,
+    "author_label": "Simon Jenko"
+  },
+  "n_docs": 17,
+  "n_chars": 320721,
+  "n_words": 56741,
+  "sha256": "eef333636ec33e746cbc40dc475c68805535ed7c47d3bd9de003c3dd0cfb3df3",
+  "expected_band_words": null
+}

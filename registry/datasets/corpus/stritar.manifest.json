@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source": "wikivir",
+  "script": "scripts/corpus/crawl_wikivir.py",
+  "git_sha": "ee2afa8",
+  "retrieved_at": "2026-07-22T19:02:05+00:00",
+  "args": {
+    "category": [
+      "Kategorija:Josip Stritar"
+    ],
+    "author": [
+      "Josip Stritar"
+    ],
+    "expand_subpages": false,
+    "min_chars": 400,
+    "author_label": "Josip Stritar"
+  },
+  "n_docs": 41,
+  "n_chars": 2269331,
+  "n_words": 411220,
+  "sha256": "70f78e6b863fb8b84c88aa4048adb663adf8413b04a6d65875af817f53376c22",
+  "expected_band_words": null
+}

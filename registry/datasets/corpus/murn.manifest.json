@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source": "wikivir",
+  "script": "scripts/corpus/crawl_wikivir.py",
+  "git_sha": "ee2afa8",
+  "retrieved_at": "2026-07-22T19:03:31+00:00",
+  "args": {
+    "category": [
+      "Kategorija:Josip Murn"
+    ],
+    "author": [
+      "Josip Murn"
+    ],
+    "expand_subpages": false,
+    "min_chars": 400,
+    "author_label": "Josip Murn"
+  },
+  "n_docs": 16,
+  "n_chars": 36125,
+  "n_words": 6504,
+  "sha256": "fb01a01b1540a75082302989661583fcd53add4cb86389a08f146d7202b3b8ed",
+  "expected_band_words": null
+}

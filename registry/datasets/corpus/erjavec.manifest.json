@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source": "wikivir",
+  "script": "scripts/corpus/crawl_wikivir.py",
+  "git_sha": "ee2afa8",
+  "retrieved_at": "2026-07-22T19:03:08+00:00",
+  "args": {
+    "category": [
+      "Kategorija:Fran Erjavec"
+    ],
+    "author": [
+      "Fran Erjavec"
+    ],
+    "expand_subpages": false,
+    "min_chars": 400,
+    "author_label": "Fran Erjavec"
+  },
+  "n_docs": 25,
+  "n_chars": 1630197,
+  "n_words": 290088,
+  "sha256": "52e029f431184ff20570c9609a531667422e7a5bc6f20788ac1864aaff68b1cd",
+  "expected_band_words": null
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source": "wikivir",
+  "script": "scripts/corpus/crawl_wikivir.py",
+  "git_sha": "ee2afa8",
+  "retrieved_at": "2026-07-22T19:01:39+00:00",
+  "args": {
+    "category": [
+      "Kategorija:Janez Trdina"
+    ],
+    "author": [
+      "Janez Trdina"
+    ],
+    "expand_subpages": false,
+    "min_chars": 400,
+    "author_label": "Janez Trdina"
+  },
+  "n_docs": 46,
+  "n_chars": 3939744,
+  "n_words": 685102,
+  "sha256": "50e03711f610c7a7ac6eb8c32ef980dbcece65009bdb57150d554167ae163592",
+  "expected_band_words": null
+}

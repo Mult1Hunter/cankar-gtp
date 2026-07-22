@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "source": "dlib",
+  "script": "scripts/corpus/crawl_dlib.py",
+  "git_sha": "4ce9f3b",
+  "retrieved_at": "2026-07-22T18:37:52+00:00",
+  "args": {
+    "reprocess": true,
+    "min_alpha": 0.84,
+    "early_noise_gate": 10
+  },
+  "n_docs": 18,
+  "n_chars": 262020,
+  "n_words": 47942,
+  "sha256": "982d827317c8b58d39f16d1d49704b0115b71e2548dcf58a88c0945fb6416bfb",
+  "expected_band_words": null
+}

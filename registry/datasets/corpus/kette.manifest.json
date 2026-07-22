@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source": "wikivir",
+  "script": "scripts/corpus/crawl_wikivir.py",
+  "git_sha": "ee2afa8",
+  "retrieved_at": "2026-07-22T19:03:26+00:00",
+  "args": {
+    "category": [
+      "Kategorija:Dragotin Kette"
+    ],
+    "author": [
+      "Dragotin Kette"
+    ],
+    "expand_subpages": false,
+    "min_chars": 400,
+    "author_label": "Dragotin Kette"
+  },
+  "n_docs": 84,
+  "n_chars": 238535,
+  "n_words": 42764,
+  "sha256": "92a978c6e7ab31cfedb95442c17d0823d55cf27f46e7eaa185de777e96ad469b",
+  "expected_band_words": null
+}

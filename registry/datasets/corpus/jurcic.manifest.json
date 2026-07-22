@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source": "wikivir",
+  "script": "scripts/corpus/crawl_wikivir.py",
+  "git_sha": "ee2afa8",
+  "retrieved_at": "2026-07-22T19:01:20+00:00",
+  "args": {
+    "category": [
+      "Kategorija:Josip Jurčič"
+    ],
+    "author": [
+      "Josip Jurčič"
+    ],
+    "expand_subpages": false,
+    "min_chars": 400,
+    "author_label": "Josip Jurčič"
+  },
+  "n_docs": 69,
+  "n_chars": 5766026,
+  "n_words": 1033699,
+  "sha256": "2f897d7ded12c40d92fde220c40e3293a6781881464da8520fcfe4119eab2c08",
+  "expected_band_words": null
+}

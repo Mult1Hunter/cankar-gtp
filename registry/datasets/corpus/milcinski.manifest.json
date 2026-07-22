@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source": "wikivir",
+  "script": "scripts/corpus/crawl_wikivir.py",
+  "git_sha": "ee2afa8",
+  "retrieved_at": "2026-07-22T19:02:57+00:00",
+  "args": {
+    "category": [
+      "Kategorija:Fran Milčinski"
+    ],
+    "author": [
+      "Fran Milčinski"
+    ],
+    "expand_subpages": false,
+    "min_chars": 400,
+    "author_label": "Fran Milčinski"
+  },
+  "n_docs": 125,
+  "n_chars": 2900237,
+  "n_words": 517702,
+  "sha256": "f4df3073ece20b2a5ba91f7bb991465a56283f5da833273c81fd668ef0aa33f8",
+  "expected_band_words": null
+}

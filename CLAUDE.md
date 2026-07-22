@@ -46,17 +46,20 @@ before any push.
   unmatched source records go to triage reports, never silently dropped.
 - Validation ladder, provenance rules (MANIFEST.json, prompt hashing): ADR 0003.
 
-## Layout
+## Layout (structure law - ADR 0007, mechanically enforced)
 
-- **Stage subpackages** (ADR 0005): `cankar/core/` = cross-stage contracts,
-  `cankar/corpus/` = Phase-1 pipeline. Each future stage adds one
-  `cankar/<stage>/` + `scripts/<stage>/` + `tests/<stage>/` when its phase
-  starts - the root never grows.
-- `registry/` - works source of truth + coverage reports (ADR 0004),
-  `bin/` - env-driven ops helpers, `docs/decisions/` - ADRs (`adr` skill),
-  `data/` (gitignored) - working data.
-- Target monorepo layout & arrival phases: ADR 0002. Personal notes -> sibling
-  private repo `../cankar-gtp-meta`, never here.
+- **There is no scripts/ directory, ever.** All logic lives in
+  `cankar/<stage>/` modules; each stage owns one `cli.py`; the only entry
+  point is `uv run cankar <stage> <command>`.
+- `cankar/core/` = contracts + `paths.py` (the ONLY place artifact paths are
+  defined - no relative f-string paths). Stages import only `core`
+  (import-linter). `registry/` = committed ledgers: `works/` human-curated,
+  `datasets/` shard manifests, `reports/` generated + drift-checked. `ops/` =
+  operated, never imported. `data/` gitignored working data.
+- The root allowlist and stage tuple live in
+  `tests/structure/test_layout.py` - structure changes edit that file and cite
+  an ADR in the same PR. Every governed dir has a <=30-line README contract.
+- Personal notes -> sibling private repo `../cankar-gtp-meta`, never here.
 
 ## graphify
 
@@ -66,5 +69,5 @@ before any push.
 
 ## Current phase
 
-Phase 1 - corpus building. Next: run `scripts/corpus/crawl_wikivir.py`, verify token counts,
-add Wikipedia dump ingestion. (Canonical status: ROADMAP checkboxes.)
+Phase 1 - corpus building. Next: `uv run cankar corpus ingest --all` done; Wikipedia dump ingestion,
+then merge/dedupe. (Canonical status: ROADMAP checkboxes.)

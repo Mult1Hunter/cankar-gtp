@@ -55,11 +55,9 @@ def utc_now_iso() -> str:
     return datetime.now(UTC).isoformat(timespec="seconds")
 
 
-def manifest_path(shard: Path) -> Path:
-    return shard.with_suffix(".manifest.json")
-
-
-def write_manifest(shard: Path, manifest: ShardManifest) -> Path:
-    out = manifest_path(shard)
+def write_manifest(manifest: ShardManifest, out: Path) -> Path:
+    """Write to the committed ledger path (cankar.core.paths.dataset_manifest) -
+    manifests are provenance and live in git, never only beside gitignored data."""
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(manifest.model_dump(), ensure_ascii=False, indent=2) + "\n")
     return out

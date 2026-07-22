@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "source": "wikivir",
+  "script": "scripts/crawl_wikivir.py",
+  "git_sha": "b6c562f",
+  "retrieved_at": "2026-07-22T17:23:08+00:00",
+  "args": {
+    "category": [
+      "Kategorija:Ivan Cankar"
+    ],
+    "author": [
+      "Ivan Cankar"
+    ],
+    "expand_subpages": false,
+    "min_chars": 400,
+    "author_label": "Ivan Cankar"
+  },
+  "n_docs": 218,
+  "n_chars": 9085894,
+  "n_words": 1649007,
+  "sha256": "1a5cd4e6661ca079448b92b9d17a4e2cf6bdb16966116cd7a51eaa436b32bd26",
+  "expected_band_words": [
+    1500000,
+    3000000
+  ]
+}

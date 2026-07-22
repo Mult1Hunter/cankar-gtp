@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source": "wikivir",
+  "script": "scripts/corpus/crawl_wikivir.py",
+  "git_sha": "ee2afa8",
+  "retrieved_at": "2026-07-22T19:01:29+00:00",
+  "args": {
+    "category": [
+      "Kategorija:Janko Kersnik"
+    ],
+    "author": [
+      "Janko Kersnik"
+    ],
+    "expand_subpages": false,
+    "min_chars": 400,
+    "author_label": "Janko Kersnik"
+  },
+  "n_docs": 47,
+  "n_chars": 2732640,
+  "n_words": 481009,
+  "sha256": "05c0de1b8b4a19f82410dba6482bb8521b2a2fd1ff33608b6352e95d31e48e75",
+  "expected_band_words": null
+}

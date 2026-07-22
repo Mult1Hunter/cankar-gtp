@@ -5,7 +5,7 @@ from pathlib import Path
 
 from cankar.corpus.ocr_clean import decode_stream, line_quality, ocr_clean
 
-FIXTURES = Path(__file__).parent.parent / "fixtures"
+FIXTURES = Path(__file__).parent.parent / "fixtures" / "corpus"
 
 
 def test_decode_cp1250() -> None:

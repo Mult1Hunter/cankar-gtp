@@ -4,6 +4,14 @@
 # category_pages: size at recon time (2026-07) - drift sanity, not a hard band.
 
 [[authors]]
+name = "Ivan Cankar"
+slug = "cankar"
+category = "Kategorija:Ivan Cankar"
+index_page = "Ivan Cankar"
+death_year = 1918
+category_pages = 217
+
+[[authors]]
 name = "Ivan Tavčar"
 slug = "tavcar"
 category = "Kategorija:Ivan Tavčar"
