@@ -10,18 +10,36 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from enum import StrEnum
 from pathlib import Path
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel
 
-SOURCE_STATUSES = {
-    "ingested",  # text is in a corpus shard
-    "candidate",  # exists at the source, text not fetched (e.g. wikivir already covers it)
-    "skipped-quality",  # fetched but failed the OCR quality gate
-    "skipped-manuscript",  # handwriting scan, OCR unusable by policy
-    "skipped-rights",  # not public domain at this source
-    "missing",  # known work, no usable source found yet
-}
+
+class Source(StrEnum):
+    """Where corpus text comes from (ADR 0008: closed sets are enums)."""
+
+    WIKIVIR = "wikivir"
+    DLIB = "dlib"
+
+
+class SourceStatus(StrEnum):
+    """Per-source ingestion state of a work."""
+
+    INGESTED = "ingested"  # text is in a corpus shard
+    CANDIDATE = "candidate"  # exists at the source, text not fetched
+    SKIPPED_QUALITY = "skipped-quality"  # fetched but failed the OCR quality gate
+    SKIPPED_MANUSCRIPT = "skipped-manuscript"  # handwriting scan, OCR unusable by policy
+    SKIPPED_RIGHTS = "skipped-rights"  # not public domain at this source
+    MISSING = "missing"  # known work, no usable source found yet
+
+
+class WorkFlag(StrEnum):
+    """Closed set of work-level flags."""
+
+    PREVOD = "prevod"  # the author's translation of someone else's work
+    DLIB_DISCOVERED = "dlib-discovered"  # found via dLib, absent from Wikivir catalogs
+
 
 _PUNCT_RE = re.compile(r"[^\w\s]", re.UNICODE)
 _WS_RE = re.compile(r"\s+")
@@ -54,18 +72,11 @@ def slugify(title: str) -> str:
 
 
 class SourceRef(BaseModel):
-    source: str  # "wikivir" | "dlib" | future sources
+    source: Source
     id: str  # wikivir page title or dLib URN
-    status: str
+    status: SourceStatus
     year: int | None = None  # publication year of this edition, if known
     note: str = ""
-
-    @field_validator("status")
-    @classmethod
-    def status_known(cls, v: str) -> str:
-        if v not in SOURCE_STATUSES:
-            raise ValueError(f"unknown status {v!r}; allowed: {sorted(SOURCE_STATUSES)}")
-        return v
 
 
 class WorkRecord(BaseModel):
@@ -74,7 +85,7 @@ class WorkRecord(BaseModel):
     author: str
     year: int | None = None  # first known publication year
     genre: str | None = None
-    flags: list[str] = []  # e.g. ["prevod"] for Cankar's translations of others
+    flags: list[WorkFlag] = []
     aliases: list[str] = []  # alternate titles ("gl." cross-references)
     sources: list[SourceRef] = []
     notes: str = ""  # human notes - tooling must never clobber this
@@ -106,7 +117,7 @@ class Registry:
         title: str,
         year: int | None = None,
         genre: str | None = None,
-        flags: list[str] | None = None,
+        flags: list[WorkFlag] | None = None,
     ) -> WorkRecord:
         existing = self.find(title)
         if existing:
@@ -138,7 +149,10 @@ class Registry:
         """Idempotent by (source, id); an upgrade to `ingested` always wins."""
         for existing in work.sources:
             if existing.source == ref.source and existing.id == ref.id:
-                if ref.status == "ingested" or existing.status != "ingested":
+                if (
+                    ref.status is SourceStatus.INGESTED
+                    or existing.status is not SourceStatus.INGESTED
+                ):
                     existing.status = ref.status
                 if ref.year:
                     existing.year = ref.year

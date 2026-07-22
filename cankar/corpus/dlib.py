@@ -26,42 +26,54 @@ no standalone script.
 
 from __future__ import annotations
 
+import logging
 import re
-import sys
-import time
+from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import quote
 
-import requests
-
+from cankar.core.http import PoliteSession
 from cankar.core.manifest import ShardManifest, git_sha, sha256_of, utc_now_iso, write_manifest
 from cankar.core.paths import dataset_manifest
 from cankar.core.schema import CorpusDoc
 from cankar.corpus.ocr_clean import decode_stream, ocr_clean
-from cankar.corpus.registry import Registry, SourceRef
+from cankar.corpus.registry import Registry, Source, SourceRef, SourceStatus
+
+logger = logging.getLogger(__name__)
 
 BASE = "https://www.dlib.si"
-UA = "CankarGTP-corpus-builder/0.1 (+https://nextgen-solutions.xyz; educational project)"
-SLEEP = 0.5  # polite delay, seconds
+EARLY_NOISE_MAX = 10  # ocr_clean early_noise gate; calibrated on the first dLib audit
+
+
+@dataclass
+class DlibStats:
+    """Typed crawl outcome counters (ADR 0008)."""
+
+    ingested: int = 0
+    candidate_covered: int = 0
+    manuscript: int = 0
+    not_pd: int = 0
+    not_slovene: int = 0
+    no_text: int = 0
+    unmatched: int = 0
+    not_author: int = 0
+    low_quality: int = 0
+    duplicate_edition: int = 0
+    triage: list[str] = field(default_factory=list)
+
+
 URN_RE = re.compile(r"URN:NBN:SI:[A-Z]+-[A-Z0-9]+")
 PD_MARKER = "publicdomain"
 YEAR_RE = re.compile(r"\d{4}")
 
 
-def polite_get(session: requests.Session, url: str, **kw) -> requests.Response:
-    resp = session.get(url, timeout=60, **kw)
-    resp.raise_for_status()
-    time.sleep(SLEEP)
-    return resp
-
-
-def as_list(v) -> list:
+def as_list(v: object) -> list:
     if v is None:
         return []
     return v if isinstance(v, list) else [v]
 
 
-def txt(v) -> str | None:
+def txt(v: object) -> str | None:
     """EDM values appear as plain strings or {'#text': ..., '@xml:lang': ...}."""
     if isinstance(v, str):
         return v
@@ -70,7 +82,7 @@ def txt(v) -> str | None:
     return None
 
 
-def enumerate_urns(session: requests.Session, contributor: str) -> list[str]:
+def enumerate_urns(session: PoliteSession, contributor: str) -> list[str]:
     """All URNs from the paged results listing."""
     urns: list[str] = []
     seen: set[str] = set()
@@ -78,7 +90,7 @@ def enumerate_urns(session: requests.Session, contributor: str) -> list[str]:
     while True:
         q = quote(f"'contributor={contributor}'")
         url = f"{BASE}/results/?query={q}&pageSize=100&page={page}"
-        found = URN_RE.findall(polite_get(session, url).text)
+        found = URN_RE.findall(session.get(url).text)
         new = [u for u in dict.fromkeys(found) if u not in seen]
         if not new:
             return urns
@@ -87,7 +99,21 @@ def enumerate_urns(session: requests.Session, contributor: str) -> list[str]:
         page += 1
 
 
-def parse_edm(data: dict) -> dict:
+@dataclass(frozen=True)
+class EdmRecord:
+    """Parsed dLib EDM metadata for one URN (ADR 0008: typed, immutable)."""
+
+    title: str
+    year: int | None
+    types: frozenset[str]
+    langs: frozenset[str]
+    people: frozenset[str]
+    rights: str
+    text_url: str | None
+    is_part_of: str | None
+
+
+def parse_edm(data: dict) -> EdmRecord:
     rdf = data.get("edm:RDF", {})
     cho = rdf.get("edm:ProvidedCHO", {})
     agg = rdf.get("ore:Aggregation", {})
@@ -112,16 +138,16 @@ def parse_edm(data: dict) -> dict:
         (txt(p) for p in as_list(cho.get("dcterms:isPartOf")) if txt(p)),
         None,
     )
-    return {
-        "title": title,
-        "year": int(year_m.group(0)) if year_m else None,
-        "types": types,
-        "langs": langs,
-        "people": people,
-        "rights": rights,
-        "text_url": text_url,
-        "is_part_of": is_part_of,
-    }
+    return EdmRecord(
+        title=title,
+        year=int(year_m.group(0)) if year_m else None,
+        types=frozenset(types),
+        langs=frozenset(langs),
+        people=frozenset(people),
+        rights=rights,
+        text_url=text_url,
+        is_part_of=is_part_of,
+    )
 
 
 def crawl(
@@ -133,35 +159,22 @@ def crawl(
     triage: Path | None = None,
     min_alpha: float = 0.84,
     min_chars: int = 400,
-) -> dict[str, int]:
+) -> DlibStats:
     triage_path = triage or out.parent / f"{out.stem}-triage.md"
 
     reg = Registry.load(registry_path, author)
     surname = query_contributor.split(",")[0].strip().casefold()
 
-    session = requests.Session()
-    session.headers["User-Agent"] = UA
+    session = PoliteSession()
     # session bootstrap: streams 302 to the details page without cookies
     bootstrap_q = quote(f"'contributor={query_contributor}'")
-    polite_get(session, f"{BASE}/results/?query={bootstrap_q}&pageSize=25")
+    session.get(f"{BASE}/results/?query={bootstrap_q}&pageSize=25")
 
     urns = enumerate_urns(session, query_contributor)
     doc_urns = [u for u in urns if u.split(":")[-1].startswith("DOC-")]
-    print(f"{len(urns)} URNs listed, {len(doc_urns)} DOC records", file=sys.stderr)
+    logger.info(f"{len(urns)} URNs listed, {len(doc_urns)} DOC records")
 
-    stats = {
-        "ingested": 0,
-        "candidate_covered": 0,
-        "manuscript": 0,
-        "not_pd": 0,
-        "not_slovene": 0,
-        "no_text": 0,
-        "unmatched": 0,
-        "not_author": 0,
-        "low_quality": 0,
-        "duplicate_edition": 0,
-    }
-    triage: list[str] = []
+    stats = DlibStats()
     ingested_work_ids: set[str] = set()
     n_docs = n_chars = n_words = 0
 
@@ -170,119 +183,127 @@ def crawl(
 
     for i, urn in enumerate(doc_urns, 1):
         if i % 25 == 0:
-            print(f"  metadata {i}/{len(doc_urns)}", file=sys.stderr)
+            logger.info(f"  metadata {i}/{len(doc_urns)}")
         try:
-            meta = parse_edm(polite_get(session, f"{BASE}/{urn}/EDM/JSON").json())
+            meta = parse_edm(session.get(f"{BASE}/{urn}/EDM/JSON").json())
         except Exception as exc:  # noqa: BLE001 - record and continue the crawl
-            triage.append(f"- {urn}: EDM fetch/parse failed ({exc})")
+            stats.triage.append(f"- {urn}: EDM fetch/parse failed ({exc})")
             continue
 
-        if not any(surname in p.casefold() for p in meta["people"]):
-            stats["not_author"] += 1
+        if not any(surname in p.casefold() for p in meta.people):
+            stats.not_author += 1
             continue
-        if "rokopisi" in meta["types"] or "rokopis" in meta["types"]:
-            stats["manuscript"] += 1
-            work = reg.find(meta["title"])
+        if "rokopisi" in meta.types or "rokopis" in meta.types:
+            stats.manuscript += 1
+            work = reg.find(meta.title)
             if work:
                 reg.add_source(
                     work,
                     SourceRef(
-                        source="dlib", id=urn, status="skipped-manuscript", year=meta["year"]
+                        source=Source.DLIB,
+                        id=urn,
+                        status=SourceStatus.SKIPPED_MANUSCRIPT,
+                        year=meta.year,
                     ),
                 )
             continue
-        if meta["langs"] and "sl" not in meta["langs"]:
-            stats["not_slovene"] += 1
+        if meta.langs and "sl" not in meta.langs:
+            stats.not_slovene += 1
             continue
-        if PD_MARKER not in meta["rights"]:
-            stats["not_pd"] += 1
-            work = reg.find(meta["title"])
+        if PD_MARKER not in meta.rights:
+            stats.not_pd += 1
+            work = reg.find(meta.title)
             if work:
                 reg.add_source(
                     work,
-                    SourceRef(source="dlib", id=urn, status="skipped-rights", year=meta["year"]),
+                    SourceRef(
+                        source=Source.DLIB,
+                        id=urn,
+                        status=SourceStatus.SKIPPED_RIGHTS,
+                        year=meta.year,
+                    ),
                 )
             continue
 
-        work = reg.find(meta["title"])
+        work = reg.find(meta.title)
         if work is None:
-            stats["unmatched"] += 1
-            part = f" (in: {meta['is_part_of']})" if meta["is_part_of"] else ""
-            triage.append(
-                f"- {urn}: no registry match for {meta['title']!r} [{meta['year']}]{part}"
+            stats.unmatched += 1
+            part = f" (in: {meta.is_part_of})" if meta.is_part_of else ""
+            stats.triage.append(
+                f"- {urn}: no registry match for {meta.title!r} [{meta.year}]{part}"
             )
             continue
 
-        covered = any(s.source == "wikivir" and s.status == "ingested" for s in work.sources)
+        covered = any(
+            s.source is Source.WIKIVIR and s.status is SourceStatus.INGESTED for s in work.sources
+        )
         if covered:
-            stats["candidate_covered"] += 1
+            stats.candidate_covered += 1
             reg.add_source(
                 work,
                 SourceRef(
-                    source="dlib",
+                    source=Source.DLIB,
                     id=urn,
-                    status="candidate",
-                    year=meta["year"],
+                    status=SourceStatus.CANDIDATE,
+                    year=meta.year,
                     note="wikivir transcription preferred",
                 ),
             )
             continue
         if work.work_id in ingested_work_ids:
-            stats["duplicate_edition"] += 1
+            stats.duplicate_edition += 1
             reg.add_source(
                 work,
                 SourceRef(
-                    source="dlib",
+                    source=Source.DLIB,
                     id=urn,
-                    status="candidate",
-                    year=meta["year"],
+                    status=SourceStatus.CANDIDATE,
+                    year=meta.year,
                     note="another edition already ingested",
                 ),
             )
             continue
-        if not meta["text_url"]:
-            stats["no_text"] += 1
+        if not meta.text_url:
+            stats.no_text += 1
             reg.add_source(
                 work,
                 SourceRef(
-                    source="dlib",
+                    source=Source.DLIB,
                     id=urn,
-                    status="candidate",
-                    year=meta["year"],
+                    status=SourceStatus.CANDIDATE,
+                    year=meta.year,
                     note="no TEXT stream",
                 ),
             )
             continue
 
         # the gap-filler: fetch + clean + gate
-        raw = polite_get(
-            session, meta["text_url"], headers={"Referer": f"{BASE}/details/{urn}"}
-        ).content
+        raw = session.get(meta.text_url, headers={"Referer": f"{BASE}/details/{urn}"}).content
         text, metrics = ocr_clean(decode_stream(raw))
-        if metrics["early_noise"] > 10:
+        if metrics["early_noise"] > EARLY_NOISE_MAX:
             # severely corrupted opening (mangled decorated title page) -
             # corpus-qa finding: these docs are unreadable, exclude wholesale
-            stats["low_quality"] += 1
+            stats.low_quality += 1
             reg.add_source(
                 work,
                 SourceRef(
-                    source="dlib",
+                    source=Source.DLIB,
                     id=urn,
-                    status="skipped-quality",
-                    year=meta["year"],
+                    status=SourceStatus.SKIPPED_QUALITY,
+                    year=meta.year,
                     note=f"severe opening corruption (early_noise={metrics['early_noise']})",
                 ),
             )
             continue
         if metrics["alpha_ratio"] < min_alpha or metrics["n_chars"] < min_chars:
-            stats["low_quality"] += 1
+            stats.low_quality += 1
             reg.add_source(
                 work,
                 SourceRef(
-                    source="dlib",
+                    source=Source.DLIB,
                     id=urn,
-                    status="skipped-quality",
-                    year=meta["year"],
+                    status=SourceStatus.SKIPPED_QUALITY,
+                    year=meta.year,
                     note=f"alpha={metrics['alpha_ratio']} chars={metrics['n_chars']}",
                 ),
             )
@@ -293,13 +314,16 @@ def crawl(
             url=f"{BASE}/details/{urn}",
             text=text,
             n_chars=len(text),
-            source="dlib",
+            source=Source.DLIB,
             author=author,
         )
         out_f.write(doc.model_dump_json() + "\n")
-        reg.add_source(work, SourceRef(source="dlib", id=urn, status="ingested", year=meta["year"]))
+        reg.add_source(
+            work,
+            SourceRef(source=Source.DLIB, id=urn, status=SourceStatus.INGESTED, year=meta.year),
+        )
         ingested_work_ids.add(work.work_id)
-        stats["ingested"] += 1
+        stats.ingested += 1
         n_docs += 1
         n_chars += len(text)
         n_words += len(text.split())
@@ -310,12 +334,12 @@ def crawl(
     triage_path.parent.mkdir(parents=True, exist_ok=True)
     triage_path.write_text(
         "# dLib triage - unmatched/failed records (regenerated by crawl_dlib.py)\n\n"
-        + "\n".join(triage)
+        + "\n".join(stats.triage)
         + "\n"
     )
 
     manifest = ShardManifest(
-        source="dlib",
+        source=Source.DLIB,
         script="cankar corpus crawl-dlib",
         git_sha=git_sha(),
         retrieved_at=utc_now_iso(),
@@ -332,8 +356,8 @@ def crawl(
     )
     write_manifest(manifest, dataset_manifest("corpus", out.stem))
 
-    print(f"\nwrote {out} - {n_docs} docs, {n_words:,} words", file=sys.stderr)
-    for k, v in stats.items():
-        print(f"  {k}: {v}", file=sys.stderr)
-    print(f"  triage report: {triage_path} ({len(triage)} lines)", file=sys.stderr)
+    logger.info(f"\nwrote {out} - {n_docs} docs, {n_words:,} words")
+    for k, v in vars(stats).items():
+        logger.info(f"  {k}: {v}")
+    logger.info(f"  triage report: {triage_path} ({len(stats.triage)} lines)")
     return stats

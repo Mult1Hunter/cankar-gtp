@@ -8,12 +8,15 @@ never clobbered. Former scripts/corpus/build_registry.py (ADR 0007).
 from __future__ import annotations
 
 import json
-import sys
+import logging
 from pathlib import Path
 
+from cankar.core.errors import CatalogPageMissingError
 from cankar.corpus.catalog import parse_catalog
-from cankar.corpus.registry import Registry, SourceRef
+from cankar.corpus.registry import Registry, Source, SourceRef, SourceStatus
 from cankar.corpus.wikivir import fetch_wikitext, make_session
+
+logger = logging.getLogger(__name__)
 
 
 def seed_registry(
@@ -29,7 +32,7 @@ def seed_registry(
     pages = fetch_wikitext(session, catalog_titles)
     missing = set(catalog_titles) - set(pages)
     if missing:
-        raise SystemExit(f"catalog pages not found: {missing}")
+        raise CatalogPageMissingError(f"catalog pages not found: {sorted(missing)}")
 
     birth = death = None
     aliases_pending: list[tuple[str, str]] = []
@@ -58,7 +61,10 @@ def seed_registry(
             else:
                 n_matched += 1
             reg.add_source(
-                work, SourceRef(source=doc["source"], id=doc["title"], status="ingested")
+                work,
+                SourceRef(
+                    source=Source(doc["source"]), id=doc["title"], status=SourceStatus.INGESTED
+                ),
             )
 
     problems = reg.validate(
@@ -66,14 +72,13 @@ def seed_registry(
         max_year=(death + 40) if death else None,
     )
     for p in problems:
-        print(f"  VALIDATE: {p}", file=sys.stderr)
+        logger.info(f"  VALIDATE: {p}")
 
     reg.save(registry_path)
-    print(
+    logger.info(
         f"registry {registry_path}: {n_before} -> {len(reg.works)} works "
         f"({author}, {birth}-{death}); shard matched {n_matched}, added {n_added}; "
-        f"problems {len(problems)}",
-        file=sys.stderr,
+        f"problems {len(problems)}"
     )
     return {
         "works": len(reg.works),

@@ -81,9 +81,9 @@ def _validate(args: argparse.Namespace) -> int:
 def _report(args: argparse.Namespace) -> int:
     """Regenerate ALL reports deterministically (CI drift-checks the output)."""
     for cfg in ingest.load_authors():
-        path = works_registry(cfg["slug"])
+        path = works_registry(cfg.slug)
         if path.exists():
-            write_coverage(path, cfg["name"], coverage_report(cfg["slug"]))
+            write_coverage(path, cfg.name, coverage_report(cfg.slug))
     n = write_collisions(works_registries(), collisions_report())
     print(f"reports regenerated; {n} cross-author collisions listed", file=sys.stderr)
     return 0

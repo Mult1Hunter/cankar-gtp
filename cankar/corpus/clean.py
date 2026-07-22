@@ -28,6 +28,10 @@ def is_index_title(title: str) -> bool:
     return bool(INDEX_TITLE_RE.match(title))
 
 
+# calibrated companions to the thresholds below (see docstring)
+DIGIT_RULE_TITLE_FLOOR = 0.30  # digit evidence only counts when lines are title-shaped
+
+
 def looks_like_index(
     text: str,
     title_ratio_threshold: float = 0.65,
@@ -55,7 +59,7 @@ def looks_like_index(
     ) / len(lines)
     digit = sum(1 for ln in lines if any(ch.isdigit() for ch in ln)) / len(lines)
     return title_like > title_ratio_threshold or (
-        digit > digit_ratio_threshold and title_like > 0.30
+        digit > digit_ratio_threshold and title_like > DIGIT_RULE_TITLE_FLOOR
     )
 
 
