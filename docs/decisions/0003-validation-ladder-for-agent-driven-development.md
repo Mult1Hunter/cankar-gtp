@@ -36,6 +36,7 @@ Every change climbs a validation ladder as far as its risk demands:
 | Graphify (codebase knowledge graph: CLI + skill; hook-guard skipped, revisit Phase 2; no MCP in v0.9.x) | wired at scaffold; earns its keep from Phase 2 |
 | CodeQL (python + actions) | active at repo creation |
 | `corpus-qa` agent (`.claude/agents/`) | Phase 1, before the first crawl |
+| `design-review` agent - senior-engineer pass on every PR diff | every PR (added 2026-07) |
 | train-monitor watchdog (harness loop + notifications) | Phase 3 cloud runs |
 | `prompts/` governance + pair-judge batch script (promptfoo if prompt iterations exceed ~3) | Phase 5 |
 | `style-critic` agent - qualitative commentary only, barred from producing quality claims | Phase 6 |

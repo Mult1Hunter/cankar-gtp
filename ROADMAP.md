@@ -33,6 +33,7 @@ Do not build serving or the Laravel orchestrator before the styler exists.
 - [x] Wikivir/Wikisource crawler via MediaWiki API: Cankar + 14 PD authors, attribution/catalog guards (PR #9, #10)
 - [x] Works registry as source of truth + dLib.si gap-fill with OCR quality gates *(added in-flight - ADR 0004)*
 - [ ] Slovenian Wikipedia dump ingestion (modern vocabulary - mitigates topic gap, per Agent A2)
+      (also: extract a SourceCrawler protocol - rule-of-two deferral, wikivir+dlib share the shape)
 - [x] Clean (mwparserfromhell), NFC-normalize -> JSONL shards with manifests
 - [ ] Dedupe + chunk (merge stage; consumes registry/collisions.md annotations)
 - [ ] Stats report: tokens per source/author. Targets: ~3-5M tokens Cankar, ~200-300M general Slovene
