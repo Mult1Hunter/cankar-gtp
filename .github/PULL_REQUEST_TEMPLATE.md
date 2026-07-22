@@ -4,6 +4,7 @@
 
 ## Validation ladder (ADR 0003 - tick what applies)
 
+- [ ] Design brief posted before implementation (non-trivial code - ADR 0006)
 - [ ] L0 - hooks/CI green
 - [ ] L1 - tests added/updated for changed behavior
 - [ ] L2 - data contracts / `MANIFEST.json` updated and diffed (data PRs)

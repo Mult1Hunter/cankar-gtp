@@ -114,6 +114,25 @@ def test_reports_carry_generated_marker() -> None:
         assert first.startswith(GENERATED_MARKER), f"{report.name} missing GENERATED marker"
 
 
+def test_library_code_has_no_exit_or_print() -> None:
+    """ADR 0008 rules 4+5, mechanized: SystemExit and print() live ONLY in
+    cli.py modules. AST-based - prose mentioning them does not trip this."""
+    import ast
+
+    offenders: list[str] = []
+    for path in (REPO / "cankar").rglob("*.py"):
+        if path.name == "cli.py":
+            continue
+        tree = ast.parse(path.read_text())
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Raise) and isinstance(node.exc, ast.Call):
+                if getattr(node.exc.func, "id", "") == "SystemExit":
+                    offenders.append(f"{path.name}:{node.lineno} raise SystemExit")
+            if isinstance(node, ast.Call) and getattr(node.func, "id", "") == "print":
+                offenders.append(f"{path.name}:{node.lineno} print()")
+    assert not offenders, f"library code must raise domain errors and log: {offenders}"
+
+
 def test_directory_contracts_exist() -> None:
     """Rule 7: every governed directory declares its contract in <=30 lines."""
     governed = [
