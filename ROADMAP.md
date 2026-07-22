@@ -33,7 +33,9 @@ Do not build serving or the Laravel orchestrator before the styler exists.
 - [x] Wikivir/Wikisource crawler via MediaWiki API: Cankar + 14 PD authors, attribution/catalog guards (PR #9, #10)
 - [x] Works registry as source of truth + dLib.si gap-fill with OCR quality gates *(added in-flight - ADR 0004)*
 - [x] Slovenian Wikipedia dump ingestion: 125,670 articles / 65.3M words, streaming
-      (also: extract a SourceCrawler protocol - rule-of-two deferral, wikivir+dlib share the shape)
+      (ShardWriter already extracted the one shared seam - the write side; the three
+      acquisition sides, API/EDM/dump-stream, are genuinely divergent, so no further
+      SourceCrawler protocol - that would be one-shape-fits-none)
 - [x] Clean (mwparserfromhell), NFC-normalize -> JSONL shards with manifests
 - [ ] Dedupe + chunk (merge stage; consumes registry/works/NOTES.md annotations; Wikipedia geo-stub near-dups)
 - [ ] Stats report: tokens per source/author

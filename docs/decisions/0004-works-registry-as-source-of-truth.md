@@ -64,5 +64,4 @@ redirects and stubs.
 
 CLAUDE.md's engineering-system rule is updated to match: authored-source
 documents map to a registry entry; non-authored sources carry dataset-manifest
-provenance with per-reason skip counts.
-  resolve triage and collision flags.
+provenance with per-reason skip counts (the manifest's `skip_counts` field).

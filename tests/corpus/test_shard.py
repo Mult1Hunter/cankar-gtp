@@ -2,6 +2,8 @@
 
 import json
 
+import pytest
+
 from cankar.core.manifest import ShardManifest
 from cankar.core.paths import dataset_manifest
 from cankar.core.schema import CorpusDoc
@@ -55,6 +57,31 @@ def test_manifest_hashes_closed_file(tmp_path, monkeypatch) -> None:
         ShardManifest.model_validate_json(mpath.read_text()).sha256
         == hashlib.sha256(out.read_bytes()).hexdigest()
     )
+
+
+def test_no_manifest_on_exception(tmp_path, monkeypatch) -> None:
+    """A failed/partial run must not leave an authoritative manifest behind
+    (design-review must-fix: __exit__ skips the write when an exception is live)."""
+    mpath = tmp_path / "x.manifest.json"
+    monkeypatch.setattr("cankar.corpus.shard.dataset_manifest", lambda stage, name: mpath)
+    out = tmp_path / "x.jsonl"
+    with pytest.raises(ValueError):
+        with ShardWriter(out, source="wikipedia", script="test", args={}) as w:
+            w.write(make_doc("besedilo"))
+            raise ValueError("crash mid-run")
+    assert not mpath.exists(), "manifest written for a crashed run"
+
+
+def test_skip_counts_recorded_in_manifest(tmp_path, monkeypatch) -> None:
+    mpath = tmp_path / "x.manifest.json"
+    monkeypatch.setattr("cankar.corpus.shard.dataset_manifest", lambda stage, name: mpath)
+    with ShardWriter(tmp_path / "x.jsonl", source="wikipedia", script="t", args={}) as w:
+        w.write(make_doc("besedilo"))
+        w.skip_counts = {"redirect": 5, "stub": 2}
+    assert ShardManifest.model_validate_json(mpath.read_text()).skip_counts == {
+        "redirect": 5,
+        "stub": 2,
+    }
 
 
 def test_dataset_manifest_targets_committed_ledger() -> None:

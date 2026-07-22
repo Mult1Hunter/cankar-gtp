@@ -52,7 +52,12 @@ class WikipediaStats:
     empty_text: int = 0
 
     def as_dict(self) -> dict[str, int]:
-        return {k: v for k, v in vars(self).items()}
+        return dict(vars(self))
+
+    def skip_counts(self) -> dict[str, int]:
+        """Drop reasons only (excludes docs/words) - the committed 'never
+        silently dropped' record threaded into the manifest."""
+        return {k: v for k, v in vars(self).items() if k not in ("docs", "words")}
 
 
 def _local(tag: str) -> str:
@@ -137,6 +142,8 @@ def ingest(dump: Path, out: Path, *, min_chars: int = 400) -> WikipediaStats:
                     author=None,
                 )
             )
+        # recorded into the manifest on clean exit (ADR 0004 amendment)
+        writer.skip_counts = stats.skip_counts()
     stats.docs, stats.words = writer.n_docs, writer.n_words
     logger.info(f"wrote {out}: {stats.docs} docs, {stats.words:,} words")
     for reason, n in stats.as_dict().items():

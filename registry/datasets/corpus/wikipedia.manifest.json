@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "source": "wikipedia",
+  "script": "cankar corpus ingest-wikipedia",
+  "git_sha": "f7b6b20",
+  "retrieved_at": "2026-07-22T21:11:23+00:00",
+  "args": {
+    "dump_filename": "slwiki-latest-pages-articles.xml.bz2",
+    "dump_sha256": "ff18a3a937ae7d04abb09f3c4aa6b420fbdee77e7c69e7ead73e9445fc2e1d4b",
+    "dump_mtime": "2026-07-22",
+    "license": "CC BY-SA 4.0",
+    "min_chars": 400
+  },
+  "n_docs": 125670,
+  "n_chars": 428350559,
+  "n_words": 65272296,
+  "sha256": "eceab71d05dfd10b367ab384e4ad5585810be4dbd279b28890380cb708ad03ab",
+  "expected_band_words": null,
+  "skip_counts": {
+    "non_ns0": 132087,
+    "redirect": 94212,
+    "disambig": 7188,
+    "list_page": 5786,
+    "stub_min_chars": 59514,
+    "empty_text": 22
+  }
+}
