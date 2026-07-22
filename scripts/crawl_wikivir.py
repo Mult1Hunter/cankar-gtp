@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 """Crawl Slovene Wikisource (Wikivir) and build a JSONL text corpus.
 
-Phase 1 of CankarGTP (see ROADMAP.md). Pulls pages via the MediaWiki API —
-no HTML scraping — strips wiki markup, NFC-normalizes, and writes one JSON
+Phase 1 of CankarGTP (see ROADMAP.md). Pulls pages via the MediaWiki API -
+no HTML scraping - strips wiki markup, NFC-normalizes, and writes one JSON
 document per line (schema: cankar.schema.CorpusDoc) plus a provenance
 manifest (cankar.manifest.ShardManifest) beside the shard.
 
 Usage:
-    # By category (repeatable; the primary mode — richest listing):
+    # By category (repeatable; the primary mode - richest listing):
     uv run scripts/crawl_wikivir.py \
         --category "Kategorija:Ivan Cankar" \
         --author-label "Ivan Cankar" \
         --expected-band 1500000,3000000 \
         --out data/corpus/cankar.jsonl
 
-    # By author index page (ns-0 — sl.wikisource has NO Avtor: namespace;
+    # By author index page (ns-0 - sl.wikisource has NO Avtor: namespace;
     # the index is a plain page like "Ivan Cankar"):
     ... --author "Ivan Cankar"
 
@@ -234,7 +234,7 @@ def main() -> None:
         f"  chars:   {n_chars:,}\n"
         f"  words:   {n_words:,}\n"
         f"  ~tokens: {n_chars // 4:,} "
-        f"(rough, chars/4 — real count comes from our tokenizer in Phase 2)",
+        f"(rough, chars/4 - real count comes from our tokenizer in Phase 2)",
         file=sys.stderr,
     )
 

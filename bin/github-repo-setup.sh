@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One-shot GitHub repository configuration (idempotent — safe to re-run).
+# One-shot GitHub repository configuration (idempotent - safe to re-run).
 # Applies everything a fresh public repo needs beyond `gh repo create`:
 # merge strategy, branch ruleset, security features, Actions permissions, metadata.
 #
@@ -14,10 +14,12 @@ HOMEPAGE="${HOMEPAGE:-https://nextgen-solutions.xyz}"
 
 echo "Configuring $REPO ..."
 
-# --- merge strategy: rebase-only + linear history (see commit skill §3) ---------
+# --- merge strategy: squash-only + linear history (see commit skill section 3).
+# Squash, not rebase: GitHub's rebase-merge strips commit signatures; the squash
+# commit is created and signed by GitHub, so main commits show Verified. --------
 gh repo edit "$REPO" \
-  --enable-rebase-merge \
-  --enable-squash-merge=false \
+  --enable-squash-merge \
+  --enable-rebase-merge=false \
   --enable-merge-commit=false \
   --enable-auto-merge \
   --delete-branch-on-merge \
@@ -25,6 +27,11 @@ gh repo edit "$REPO" \
   --enable-projects=false \
   --description "$DESCRIPTION" \
   --homepage "$HOMEPAGE"
+
+# --- squash commit = PR title + PR body (titles must follow TYPE: convention) ---
+gh api -X PATCH "repos/$REPO" \
+  -f squash_merge_commit_title=PR_TITLE \
+  -f squash_merge_commit_message=PR_BODY >/dev/null
 
 # --- discoverability topics (adds are idempotent) -------------------------------
 gh repo edit "$REPO" \
@@ -48,45 +55,15 @@ gh api -X PUT "repos/$REPO/actions/permissions/workflow" \
   -f default_workflow_permissions=read \
   -F can_approve_pull_request_reviews=true
 
-# --- main ruleset: PR-only, rebase merges, required checks, no force-push -------
-# required_approving_review_count is 0: solo maintainer cannot approve own PRs.
+# --- main ruleset (config-as-code: .github/ruleset-main.json): PR-only, squash
+# merges, required checks, no force-push. required_approving_review_count is 0:
+# solo maintainer cannot approve own PRs. ----------------------------------------
+RULESET_FILE="$(cd "$(dirname "$0")/.." && pwd)/.github/ruleset-main.json"
 if gh api "repos/$REPO/rulesets" -q '.[].name' | grep -qx "main-protection"; then
-  echo "ruleset 'main-protection' already exists — skipping"
+  echo "ruleset 'main-protection' already exists - skipping (update it with:"
+  echo "  gh api -X PUT repos/$REPO/rulesets/<id> --input $RULESET_FILE)"
 else
-  gh api -X POST "repos/$REPO/rulesets" --input - <<'JSON'
-{
-  "name": "main-protection",
-  "target": "branch",
-  "enforcement": "active",
-  "conditions": { "ref_name": { "include": ["~DEFAULT_BRANCH"], "exclude": [] } },
-  "rules": [
-    { "type": "deletion" },
-    { "type": "non_fast_forward" },
-    { "type": "required_linear_history" },
-    {
-      "type": "pull_request",
-      "parameters": {
-        "required_approving_review_count": 0,
-        "dismiss_stale_reviews_on_push": false,
-        "require_code_owner_review": false,
-        "require_last_push_approval": false,
-        "required_review_thread_resolution": false,
-        "allowed_merge_methods": ["rebase"]
-      }
-    },
-    {
-      "type": "required_status_checks",
-      "parameters": {
-        "strict_required_status_checks_policy": true,
-        "required_status_checks": [
-          { "context": "checks" },
-          { "context": "gitleaks" }
-        ]
-      }
-    }
-  ]
-}
-JSON
+  gh api -X POST "repos/$REPO/rulesets" --input "$RULESET_FILE" >/dev/null
 fi
 
 echo "Done. Review at: https://github.com/$REPO/settings"

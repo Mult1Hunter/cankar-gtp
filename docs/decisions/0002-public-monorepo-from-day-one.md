@@ -1,19 +1,19 @@
-# ADR 0002 — public monorepo from day one
+# ADR 0002 - public monorepo from day one
 
-**Status:** accepted · 2026-07
+**Status:** accepted, 2026-07
 
 ## Context
 
 The original plan (ROADMAP v3 appendix) kept the repo private until the Phase 2.5
 TinyCankar milestone, then flipped it public. Separately, the project spans several
-toolchains over its lifetime — a Python ML pipeline, a FastAPI serving app, an Astro
-demo site, a Laravel orchestrator — and needed a decided organization before commit #1.
+toolchains over its lifetime - a Python ML pipeline, a FastAPI serving app, an Astro
+demo site, a Laravel orchestrator - and needed a decided organization before commit #1.
 
 ## Decision
 
 **Public from commit #1**, on a personal account (github.com/Mult1Hunter/cankar-gtp),
 as a **single monorepo**. Naming aligned to **cankar-gtp / CankarGTP** everywhere.
-Layout is document-first — directories are created when their phase starts:
+Layout is document-first - directories are created when their phase starts:
 
 | Path | Contents | Arrives |
 |---|---|---|
@@ -31,8 +31,8 @@ committed Claude skills (`commit`, `public-hygiene`, `adr`).
 
 ## Rationale
 
-- The private→public flip was motivation scaffolding; public-from-day-one is a
-  stronger commitment device and deletes a whole risk class — the "paranoid pass
+- The private->public flip was motivation scaffolding; public-from-day-one is a
+  stronger commitment device and deletes a whole risk class - the "paranoid pass
   before the flip" becomes a routine pre-push check (`public-hygiene` skill).
 - Empty skeleton dirs impress nobody; a documented target layout costs nothing.
 - Solo repo: heavyweight monorepo tooling adds maintenance without payoff.
@@ -43,5 +43,5 @@ committed Claude skills (`commit`, `public-hygiene`, `adr`).
   caches survive force-pushes). Secrets discipline starts at the first `git add`.
 - ROADMAP Phase 2.5 "flip repo public" becomes "publish TinyCankar samples"
   (promotion, not exposure).
-- PR-based flow adds ceremony for a solo dev — accepted in exchange for CI gating
+- PR-based flow adds ceremony for a solo dev - accepted in exchange for CI gating
   and reviewable history.

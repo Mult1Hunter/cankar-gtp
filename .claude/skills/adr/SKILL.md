@@ -1,6 +1,6 @@
 ---
 name: adr
-description: Scaffold a new ADR in docs/decisions/ — numbering, template matching ADR 0001, cross-linking. Use when a non-obvious design decision gets made.
+description: Scaffold a new ADR in docs/decisions/ - numbering, template matching ADR 0001, cross-linking. Use when a non-obvious design decision gets made.
 ---
 
 # New ADR
@@ -11,9 +11,9 @@ description: Scaffold a new ADR in docs/decisions/ — numbering, template match
 3. **Template** (match ADR 0001's structure):
 
    ```markdown
-   # ADR NNNN — <title>
+   # ADR NNNN - <title>
 
-   **Status:** accepted · YYYY-MM
+   **Status:** accepted, YYYY-MM
 
    ## Context
 

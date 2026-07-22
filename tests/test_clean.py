@@ -67,7 +67,7 @@ def test_is_redirect(text: str, expected: bool) -> None:
 def test_caret_footnote_lines_removed() -> None:
     """Wikisource caret-notation footnotes (corpus-qa finding, first crawl).
 
-    The removed line leaves a paragraph break — deliberate: never glue together
+    The removed line leaves a paragraph break - deliberate: never glue together
     prose lines that a footnote separated.
     """
     raw = "Prva vrstica.\n^Zgodovina črtica.\nDruga vrstica.\n"

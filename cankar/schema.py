@@ -1,4 +1,4 @@
-"""Data contracts for corpus JSONL shards (validation ladder L2 — ADR 0003)."""
+"""Data contracts for corpus JSONL shards (validation ladder L2 - ADR 0003)."""
 
 from __future__ import annotations
 
