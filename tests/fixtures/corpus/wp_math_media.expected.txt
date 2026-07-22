@@ -1,0 +1,15 @@
+Pitágorov izrèk je izrek v ravninski geometriji, imenovan po Pitagoru, čeprav je bil znan že pred njim:
+
+ Vsota površin kvadratov katet pravokotnega trikotnika je enaka površini kvadrata nad hipotenuzo.
+
+Izrek se lahko zapiše tudi kot:
+
+kjer sta a in b dolžini katet, c pa dolžina hipotenuze. To je verjetno najbolj znan pojem iz celotne geometrije. Priljubljeno se imenuje tudi (»Oslovski most«). Posplošila sta ga Hipokrat in Evdoks. Prvi ga naj bi po Evdemu celo dokazal pred Evdoksom. Za pravokotni trikotnik ga je dokazal Evklid v Elementih. Uporabljali so ga že Egipčani in Kitajci v 6. stoletju pr. n. št.
+
+Iz tega se lahko izpelje, vrednost za c:
+
+Velja tudi nasprotna trditev:
+
+ Za poljubna tri pozitivna števila a, b in c, za katera velja , obstaja trikotnik s stranicami a, b in c. V vsakem takšnem trikotniku je kot med stranicama a in b pravi.
+
+To trditev se dokaže s kosinusnim izrekom, ki je posplošitev Pitagorovega izreka za vse (evklidske) trikotnike, ne samo za pravokotne. Geometrijski dokaz izreka v obeh smereh se lahko vidi iz naslednje slike, kjer se je le preuredilo rumene trikotnike, pa se je dobilo enako preostalo površino kot prej (modre in zelene je skupaj ravno toliko kot rdeče).

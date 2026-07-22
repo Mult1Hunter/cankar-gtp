@@ -1,0 +1,296 @@
+{{ton}}
+{{Infopolje Jezik
+|name=Amharščina
+|nativename={{lang|am|አማርኛ}}, ''{{transl|am|EAE|Amarəñña}}''
+|pronunciation={{IPA|amarɨɲɲa|}}
+|states   = [[Etiopija]]
+|speakers = 24,8 milijona
+|date     = 2007
+|ref      = <ref>[[Nationalencyklopedin]] "Världens 100 största språk 2007" The World's 100 Largest Languages in 2007</ref>
+|familycolor=Afro-Asiatic
+|fam2=[[semitski jeziki|semitski]]
+|fam3=[[južnosemitski jeziki|južnosemitski]]
+|fam4=[[etiopski semitski jeziki|etiopski semitski]]
+|fam5=[[južnoetiopski semitski jeziki|južnoetiopski semitski]]
+|fam6=[[prečni južnoetiopski semitski jeziki|prečni]]
+|fam7=[[Amharski–argobba jeziki|amharski–argobba]]
+|script=[[Abeceda giz|giz]] ([[amharska abeceda]])<br>[[amharska Braillova pisava]]
+|nation={{flag|Etiopija}}
+|agency=''ni uradnega regulatorja''
+|iso1=am
+|iso2=amh
+|iso3=amh
+|glotto=amha1245
+|glottorefname=Amharic
+|lingua=12-ACB-a
+|notice=IPA
+}}
+'''Amhárščina''' <span style="font-size: +1;">(አማርኛ)</span> je [[semitski jeziki|semitski jezik]] [[narod]]a [[Amharci|Amharcev]] in je glavni (vsiljen) [[Jezik (sredstvo sporazumevanja)|jezik]] v [[Etiopija|Etiopiji]] in deloma v [[Eritreja|Eritreji]], ki se je od Etiopije odcepila. Amharščino govori le približno 12 % etiopskega [[prebivalstvo|prebivalstva]]. Amharska [[pisava]] je prirejena [[abugida]] izumrlega jezika [[giz]].
+
+== Amharsko glasoslovje ==
+
+<P>Spodnja tabela uporablja [[SAMPA]] znake kjer je to mogoče, z izjemo ejektivov, ki so označeni z '''’''' (opuščajem/desnim enojnim narekovajem).
+<br />
+{| class="wikitable" border="1" cellpadding="4" cellspacing="0" width="50 %"
+|+ Soglasniki
+|----- bgcolor="#a0e0a0"
+| COLSPAN=2 | &nbsp;  || dvoustničnik
+| zobnik || trdonebnik   || mehkonebnik
+| goltnik
+|-----
+| ROWSPAN=3 | zaporniki  || nezveneči || p || t   || c  || k   || 7
+|-----
+| zveneči || b   || d  || J   || g  || &nbsp;
+|-----
+| ejektiv || p’   || t’  || c’   || k’
+| &nbsp;
+|-----
+| COLSPAN=2 | zliti glasovi  (zlitniki)
+| &nbsp; || ts   || &nbsp;    || &nbsp;   || &nbsp;
+|-----
+| ROWSPAN=2 | priporniki  || nezveneči
+| f || s   || S  || &nbsp;   || h
+|-----
+| zveneči || &nbsp;   || z  || Z   || &nbsp;
+| &nbsp;
+|-----
+| COLSPAN=2 | nosniki  || m    || n   || ñ    || &nbsp;
+| &nbsp;
+|-----
+| COLSPAN=2 | jezičniki  || w    || l || j || &nbsp;   || &nbsp;
+|-----
+| COLSPAN=2 | predjezičniki (flap/trill)
+| &nbsp; || r   || &nbsp;    || &nbsp;   || &nbsp;
+|}
+{| class="wikitable" border="1" cellpadding="4" cellspacing="0" width="50 %"
+|+ Samoglasniki
+|----- bgcolor="#a0e0a0"
+| &nbsp; || sprednji  || srednji || zadnji
+|-----
+| visok || i  || &nbsp; || u
+|-----
+| srednji || e  || @ || o
+|-----
+| spodnji || E  || a || &nbsp;
+|}
+
+== Amharski abugida znaki (»pismenke« ፊደል) ==
+
+Ta tabela ni popolna. Nekateri [[fonem]]i imajo več sestavov možnih znakov. Prikazana sta samo pojasnilna primera za /k/ in /h/ (slednji ima ''štiri'' sestave!). Soglasniki so združeni glede na izgovor (glej zgornjo tabelo fonemov), samoglasniki pa so navedeni po fonološki razvrstitvi. Navedena oblika za vsak sestav je oblike ''soglasnik+/E/'', to je prvi stolpec pismenk. Za pregled pismenk boste potrebovali črke, ki podpirajo amharske pismenke, kot je GF Zemen Unicode (na razpolago na ftp://ftp.ethiopic.org/pub/fonts/TrueType/gfzemenu.ttf{{Slepa povezava|date=oktober 2022 |bot=InternetArchiveBot |fix-attempted=yes }} ).
+
+Evropejci so bili pogosto zbegani ali zaprepadeni ob nenavadni podobnosti mnogih znakov. Kakor veliko semitskih jezikov, tudi amharščina v svoji besedni morfologiji uporablja trisoglasniške korenske osnove in je na ta način njen zapis lažje razumljiv. Tekoč govorec amharščine lahko razreši zapisano besedilo, če opazuje kateri soglasniki so pomembnejši, skupaj s samoglasniškimi različicami kot dodatnimi podrobnostmi. 
+
+{| class="wikitable" border="1" cellpadding="4" cellspacing="0" width="50 %"
+|+ Tabela amharskih pismenk
+|----- bgcolor="#a0e0a0"
+| &nbsp; || E || u || i || a || e || width=50 | @ ali<br />brez || o
+|-----
+| p || ፐ || ቱ || ፒ
+| ፓ || ፔ || ፕ || ፖ
+|-----
+| t || ተ || ቱ || ቲ || ታ
+| ቴ || ት || ቶ
+|-----
+| c || ቸ || ቹ || ቺ || ቻ
+| ቼ || ች || ቾ
+|-----
+| ROWSPAN=2 | k || ከ || ኩ || ኪ || ካ
+| ኬ || ክ || ኮ
+|-----
+| ኸ || ኹ || ኺ || ኻ || ኼ
+| ኽ || ኾ
+|-----
+| b || በ || ቡ || ቢ || ባ
+| ቤ || ብ || ቦ
+|-----
+| d || ደ || ዱ || ዲ || ዳ
+| ዴ || ድ || ዶ
+|-----
+| J || ጀ || ጁ || ጂ || ጃ
+| ጄ || ጅ || ጆ
+|-----
+| g || ገ || ጉ || ጊ || ጋ
+| ጌ || ግ || ጎ
+|-----
+| p’ || ጰ || ጱ || ጲ || ጳ
+| ጴ || ጵ || ጶ
+|-----
+| t’ || ጠ || ጡ || ጢ || ጣ
+| ጤ || ጥ || ጦ
+|-----
+| c’ || ጨ || ጩ || ጪ || ጫ
+| ጬ || ጭ || ጮ
+|-----
+| k’ || ቀ || ቁ || ቂ || ቃ
+| ቄ || ቅ || ቆ
+|-----
+| 7 || አ || ኡ || ኢ || ኣ
+| ኤ || እ || ኦ
+|-----
+| ts || ጸ || ጹ || ጺ || ጻ
+| ጼ || ጽ || ጾ
+|-----
+| f || ፈ || ፉ || ፊ || ፋ
+| ፌ || ፍ || ፎ
+|-----
+| s || ሰ || ሱ || ሲ || ሳ
+| ሴ || ስ || ሶ
+|-----
+| S || ሸ || ሹ || ሺ || ሻ
+| ሼ || ሽ || ሾ
+|-----
+| ROWSPAN=2 | h || ሀ || ሁ || ሂ || ሃ
+| ሄ || ህ || ሆ
+|-----
+| ሐ || ሑ || ሒ || ሓ || ሔ
+| ሕ || ሖ
+|-----
+| z || ዘ || ዙ || ዚ || ዛ
+| ዜ || ዝ || ዞ
+|-----
+| Z || ዠ || ዡ || ዢ || ዣ
+| ዤ || ዥ || ዦ
+|-----
+| m || መ || ሙ || ሚ || ማ
+| ሜ || ም || ሞ
+|-----
+| n || ነ || ኑ || ኒ || ና
+| ኔ || ን || ኖ
+|-----
+| ñ || ኘ || ኙ || ኚ || ኛ
+| ኜ || ኝ || ኞ
+|-----
+| w || ወ || ዉ || ዊ || ዋ
+| ዌ || ው || ዎ
+|-----
+| l || ለ || ሉ || ሊ || ላ
+| ሌ || ል || ሎ
+|-----
+| j || የ || ዩ || ዪ || ያ
+| ዬ || ይ || ዮ
+|-----
+| r || ረ || ሩ || ሪ || ራ
+| ሬ || ር || ሮ
+|}
+
+== Nekaj besed ==
+{|
+|-----
+| valign="top" |
+* abbat            ''oče''
+* [[abeto]]        nekdaj ''[[princ]]''
+* akafa            ''lopata''
+* [[alga vorač]]   ''[[prestolonaslednik]]''
+* ambasa             (iz besede izvira ''[[ambasador]]'')
+* amet             ''[[leto]]''
+* arbe             ''[[petek]]''
+* ase              ''kralj kraljev'' (''[[cesar]]'')
+* atek             ''bojni klic''
+* ater             ''[[grah]]''
+* ati              ''kralj kraljev'' (''cesar'')
+* azo              ''[[krokodil]]''
+* bahr             ''morje''
+* bal              ''mož''
+* bir              ''[[tolar]]''
+* bomba            ''cev''
+* bunabet          ''kavarna''
+* čika             ''blato''
+* dagmavi            ([[regalna oblika]] za ''drugi'')
+* debra            ''gora''
+* [[dedžasmač]]    ''čuvar (poveljnik) vrat'', izvorno enakovreden [[generalporočnik]]u
+* džib             ''[[hijena]]''
+* egziabeher
+* ehud             ''[[nedelja]]''
+* enkulal          ''[[jajce]]''
+* erob (rob)       ''[[sreda]]''
+* gaš              ''glavar''
+* gemb             ''grad''
+* genbot           ''9. mesec''
+* gomen            ''zelje''
+* gvadegna         ''prijatelj''
+* hamle            ''11. mesec''
+* hamus            ''[[četrtek]]''
+* hatse            ''kralj kraljev''
+* hedar            ''3. mesec''
+* [[indžera]]          ''[[kruh]]''
+* Ingleezigna      ''[[angleščina]]''
+* innate           ''mati''
+* [[itege]]        ''[[kraljica]]'', ''cesarjeva žena''
+* jeletit vof      ''[[netopir]]''
+* jemilet avalaš   ''[[porodničar]]''
+* kebrit           ''[[ogenj]]''
+* kadamavi           (regalna oblika za ''prvi'')
+* kedame (kedamit) ''[[sobota]]''
+* ken              ''[[dan]]''
+| valign="top" |
+* maksegno (maksanijo) ''[[torek]]''
+* maskaram         ''1. mesec''
+* mašaf            ''knjiga''
+* meest            ''žena''
+* megabit          ''7. mesec''
+* mijazja          ''8. mesec''
+* nagaša           ''poglavar''
+* nahase           ''12. mesec''
+* nefasije         ''[[telefon]]''
+* [[neguš]]        ''[[kralj]]''
+* [[neguš negasti]] ''kralj kraljev'', ''[[cesar]]''
+* [[nigiste negasti]] ''kraljica kraljev'', vladajoča ''[[cesar]]ica''
+* netela           ''šal''
+* [[ras]]          ''princ''
+* sagon            ''[[noj]]''
+* sament           ''[[teden]]''
+* sane             ''10. mesec''
+* sar              ''[[trava]]''
+* satta masagana
+* sefer            ''vas'', ''naselje''
+* segno (sanijo)   ''[[ponedeljek]]''
+* se't lidž        ''hčerka''
+* šaleka           ''[[major]]''
+* šarmuta          ''[[prostitutka]]''
+* šifta            ''upornik''
+* tafari           ''mir''
+* tala             ''[[pivo]]''
+* tahsas           ''4. mesec''
+* tekemt           ''2. mesec''
+* ter              ''5. mesec''
+* tišana           ''mir''
+* [[vagšum]]       ''gospodar Vaga'', dedni naslov nekdanje dinastije Zagve
+* veba             ''[[malarija]]''
+* vend lidž        ''sin''
+* ver              ''[[mesec]]''
+* vereket          ''[[papir]]''
+* voha             ''[[voda]]''
+* vojzerit         ''gospodična''
+* vojzero          ''gospa''
+* vork             ''[[zlato]]''
+* vuša             ''[[pes]]''
+* zar              ''duh''
+* zindžara         ''pavijan''
+* ...
+|}
+
+== Glej tudi ==
+
+* [[tigrajščina]] (tigrinjščina),
+* [[tigrejščina]],
+* [[oromščina]],
+* [[jamajška angleščina]].
+
+== Sklici ==
+{{sklici|1}}
+
+== Zunanje povezave ==
+{{Wikislovar|amharščina|Amharščina}}
+{{InterWiki|code=am}}
+
+- v [[angleščina|angleščini]]:
+* [http://www.sprachprofi.de.vu/english/amh.htm Seznam prosto dostopnih virov za učence] {{Webarchive|url=https://web.archive.org/web/20040302041528/http://www.sprachprofi.de.vu/english/amh.htm |date=2004-03-02 }}
+* [http://www.ethnologue.com/show_iso639.asp?code=amh Ethnologue] [[ISO 639]] kod
+* [http://www.ethnologue.com/show_language.asp?code=AMH Ethnologue o amharščini]
+{{normativna kontrola}}
+
+[[Kategorija:Amharščina| ]]
+[[Kategorija:Etiopski semitski jeziki]]
+[[Kategorija:Jeziki Eritreje]]
+[[Kategorija:Jeziki Etiopije]]
+[[Kategorija:Južnosemitski jeziki]]
