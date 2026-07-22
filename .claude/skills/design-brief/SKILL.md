@@ -36,6 +36,26 @@ challenge it (fresh eyes, read-only) and address its must-fix points before
 implementing. Solo-file changes inside an established pattern do not need the
 agent - the brief alone suffices.
 
+## Decision triggers (reach for the pattern PROACTIVELY)
+
+| When you see | Reach for |
+|---|---|
+| a closed set of string values | StrEnum (serialization stays plain strings) |
+| a dict with fixed magic keys | dataclass (frozen if value-like) or pydantic model |
+| a SECOND similar implementation | protocol/shared abstraction - or a written deferral |
+| branching on a type/kind string | polymorphism via protocol dispatch |
+| a boolean parameter that switches behavior | two functions, or an enum mode |
+| raw dict access into config/TOML/JSON | a validated pydantic model at the boundary |
+| a magic number in logic | named constant; calibration provenance if it is a threshold (ADR 0006) |
+| I/O + policy + formatting in one function | split by altitude |
+| error signaling via exit/print in a module | domain exception (core/errors.py) + logging |
+| a relative path literal | core/paths.py helper |
+
+Counterweight: patterns must earn their existence - no protocols with one
+implementer, no config for constants. Rule of two, not rule of maybe-someday.
+
+Written deferrals live as ROADMAP items (status home), not in this skill.
+
 ## Exemptions
 
 Config tweaks, doc edits, mechanical renames, changes fully covered by an
