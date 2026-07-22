@@ -66,6 +66,20 @@ def _ingest_wikipedia(args: argparse.Namespace) -> int:
     return 0
 
 
+def _stats(args: argparse.Namespace) -> int:
+    import json
+
+    from cankar.corpus.stats import compute_metrics, write_quality_report
+
+    metrics = []
+    for shard in sorted(args.corpus_dir.glob("*.jsonl")):
+        docs = [json.loads(line) for line in shard.open()]
+        metrics.append(compute_metrics(shard.stem, docs))
+    write_quality_report(metrics, args.out)
+    print(f"wrote {args.out}: {len(metrics)} shards", file=sys.stderr)
+    return 0
+
+
 def _validate(args: argparse.Namespace) -> int:
     problems: list[str] = []
     if args.registry:
@@ -139,6 +153,11 @@ def register(parser: argparse.ArgumentParser) -> None:
     p.add_argument("--out", required=True, type=Path)
     p.add_argument("--min-chars", type=int, default=400)
     p.set_defaults(func=_ingest_wikipedia)
+
+    p = sub.add_parser("stats", help="corpus quality metrics -> committed report snapshot")
+    p.add_argument("--corpus-dir", type=Path, default=Path("data/corpus"))
+    p.add_argument("--out", type=Path, default=Path("registry/reports/corpus-quality.md"))
+    p.set_defaults(func=_stats)
 
     p = sub.add_parser("validate", help="registry validation + cross-author collisions")
     p.add_argument("--registry", type=Path)

@@ -10,6 +10,7 @@ dependencies = [
     "requests>=2.32",
     "mwparserfromhell>=0.6.6",
     "pydantic>=2.7",
+    "datasketch>=2.0.0",
 ]
 
 [project.urls]
@@ -66,5 +67,5 @@ warn_redundant_casts = true
 no_implicit_optional = true
 
 [[tool.mypy.overrides]]
-module = "mwparserfromhell.*"
+module = ["mwparserfromhell.*", "datasketch.*"]
 ignore_missing_imports = true
