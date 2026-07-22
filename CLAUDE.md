@@ -16,8 +16,12 @@ before any push.
 - **Nothing heavy in git.** Datasets, checkpoints, weights -> HF Hub / R2
   (`data/`, `checkpoints/` gitignored).
 - **Secrets** only via `.env` (see `.env.example`).
-- **Commits:** types enforced by the commit-msg hook - use the `commit` skill.
-  Tag milestones (`v0.1-tinycankar`, ...).
+- **Commits:** thematic series, one topic per commit (ADR 0009); types enforced
+  by the commit-msg hook - use the `commit` skill. Multi-commit PRs land as
+  merge commits. Tag milestones (`v0.1-tinycankar`, ...).
+- **Code standards (ADR 0008):** closed sets are StrEnums; results are typed;
+  library code raises domain errors and logs (never SystemExit/print); configs
+  are validated models; mypy+ruff+import-linter gate CI.
 - **Unicode:** always NFC-normalize Slovene text at ingestion (č/š/ž NFD bugs are a
   known failure mode from past migrations).
 

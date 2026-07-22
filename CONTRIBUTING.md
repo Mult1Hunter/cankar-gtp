@@ -46,12 +46,13 @@ covers our writing, not the literature's.
 After the initial commit, `main` only moves via PR. CI must be green:
 lint + format (ruff), config checks, and a full-history secrets scan.
 
-Merges are **squash-only** (enforced by repo settings): each PR lands as exactly
-one commit on `main`, created and signed by GitHub, so every `main` commit shows
-Verified. **The PR title becomes the commit title - it must follow the commit
-convention above.** The PR body becomes the commit body. Keep PRs single-purpose.
-Update a branch by rebasing onto `main`; strict status checks require the branch
-to be current before merge.
+Commits are **thematic**: one topic per commit, conventional format, dependency-
+ordered - they land on `main` unchanged via **merge commits** (multi-commit PRs)
+or **squash** (single-commit PRs). Your branch commits are public history: no
+"wip" - rewrite the series locally first (ADR 0009). PR titles follow the commit
+convention. Update a branch by rebasing onto `main`; strict status checks require
+the branch to be current before merge. Read `main` linearly with
+`git log --first-parent`.
 
 ## Where facts live (canonical homes)
 

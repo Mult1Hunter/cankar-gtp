@@ -36,11 +36,13 @@ After the initial commit, `main` moves only via PR (CI: lint + secrets scan).
 Branch names: `<type>/<slug>`, e.g. `data/wikipedia-ingest` - branch names stay
 lowercase (git/URL convention); only commit types are uppercase.
 
-**Squash-only merges** (repo-enforced): the PR title becomes the `main` commit
-title - write PR titles in `TYPE: summary` format, <=72 chars. The PR body
-becomes the commit body: plain ASCII, no session links, no AI attribution, ever.
-Branch commits are working history only. Update branches by rebasing onto
-`main` (strict status checks require the branch to be current).
+**Thematic commit series (ADR 0009):** one topic per commit, dependency-ordered,
+each coherent on its own - branch commits LAND ON MAIN via merge commits, so no
+"wip" commits; rewrite the series locally before opening the PR. Multi-commit
+PRs merge with `gh pr merge --merge`; single-commit PRs may `--squash`. PR
+titles still follow `TYPE: summary` (they title merge/squash commits). PR bodies:
+plain ASCII, no session links, no AI attribution, ever. Update branches by
+rebasing onto `main` (strict status checks require the branch to be current).
 
 ## 4. Milestone tags
 

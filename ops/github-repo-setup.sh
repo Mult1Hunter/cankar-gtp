@@ -14,13 +14,13 @@ HOMEPAGE="${HOMEPAGE:-https://nextgen-solutions.xyz}"
 
 echo "Configuring $REPO ..."
 
-# --- merge strategy: squash-only + linear history (see commit skill section 3).
-# Squash, not rebase: GitHub's rebase-merge strips commit signatures; the squash
-# commit is created and signed by GitHub, so main commits show Verified. --------
+# --- merge strategy (ADR 0009): thematic branch commits land via MERGE commits
+# (author-signed commits stay Verified); single-commit PRs may squash (GitHub-
+# signed). Rebase merges stay off - they strip signatures. -----------------------
 gh repo edit "$REPO" \
   --enable-squash-merge \
   --enable-rebase-merge=false \
-  --enable-merge-commit=false \
+  --enable-merge-commit \
   --enable-auto-merge \
   --delete-branch-on-merge \
   --enable-wiki=false \
