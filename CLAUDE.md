@@ -35,6 +35,9 @@ before any push.
 ## Engineering system (ADR 0003)
 
 - All work lands via PR - never push `main` directly.
+- Every PR that completes a ROADMAP deliverable ticks its checkbox in the same
+  PR (commit skill section 5; PR template enforces). Checkboxes are the
+  canonical status - an unticked done item is a bug.
 - Non-trivial code starts with a **design brief** (`design-brief` skill); at
   new-subsystem scale an architect agent critiques it first. Heuristics ship
   only after real-data calibration with committed fixtures (ADR 0006).

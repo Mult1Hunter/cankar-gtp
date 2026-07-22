@@ -8,6 +8,7 @@
 - [ ] L1 - tests added/updated for changed behavior
 - [ ] L2 - data contracts / `MANIFEST.json` updated and diffed (data PRs)
 - [ ] L3 - eval harness numbers attached (any `TRAIN:` PR claiming quality)
+- [ ] **ROADMAP.md checkboxes ticked for every deliverable this PR completes (mandatory)**
 - [ ] `public-hygiene` pass run before push
 
 ## Phase
