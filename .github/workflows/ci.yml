@@ -20,6 +20,7 @@ jobs:
           enable-cache: true
       - run: uv sync --locked
       - run: uv run pytest -q
+      - run: uv run mypy
       - run: uv run lint-imports
       # generated reports must regenerate byte-identically (ADR 0007 rule 5)
       - run: uv run cankar corpus report --all && git diff --exit-code registry/reports/
