@@ -19,6 +19,7 @@ jobs:
         with:
           enable-cache: true
       - run: uv sync --locked
+      - run: uv run pytest -q
       - run: uv run pre-commit run --all-files --show-diff-on-failure
         env:
           SKIP: gitleaks # the dedicated job below scans full history instead

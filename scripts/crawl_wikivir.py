@@ -3,45 +3,46 @@
 
 Phase 1 of CankarGTP (see ROADMAP.md). Pulls pages via the MediaWiki API —
 no HTML scraping — strips wiki markup, NFC-normalizes, and writes one JSON
-document per line.
+document per line (schema: cankar.schema.CorpusDoc) plus a provenance
+manifest (cankar.manifest.ShardManifest) beside the shard.
 
 Usage:
-    # By category (repeatable):
+    # By category (repeatable; the primary mode — richest listing):
     uv run scripts/crawl_wikivir.py \
         --category "Kategorija:Ivan Cankar" \
+        --author-label "Ivan Cankar" \
+        --expected-band 1500000,3000000 \
         --out data/corpus/cankar.jsonl
 
-    # By author page (collects ns-0 links from an Avtor: page):
-    uv run scripts/crawl_wikivir.py \
-        --author "Avtor:Ivan Cankar" \
-        --out data/corpus/cankar.jsonl
+    # By author index page (ns-0 — sl.wikisource has NO Avtor: namespace;
+    # the index is a plain page like "Ivan Cankar"):
+    ... --author "Ivan Cankar"
 
-    # Expand subpages too (long works split as "Naslov/I", "Naslov/II", ...):
+    # Expand subpages too (long works split as "Naslov/I", ...):
     ... --expand-subpages
 
-NOTE: category/author page names differ per author — verify the exact name in
-Wikivir's web UI first. If both modes are given, results are merged and deduped.
+If both modes are given, results are merged and deduped. Verify exact page
+names in the Wikivir web UI first; category vs author-page counts differ
+(e.g. Cankar: 217 in category vs 128 on the index page, 2026-07).
 """
 
 from __future__ import annotations
 
 import argparse
-import json
-import re
 import sys
 import time
-import unicodedata
 from pathlib import Path
 
-import mwparserfromhell
 import requests
+
+from cankar.clean import clean_wikitext, is_index_title, is_redirect
+from cankar.manifest import ShardManifest, git_sha, sha256_of, utc_now_iso, write_manifest
+from cankar.schema import CorpusDoc
 
 API = "https://sl.wikisource.org/w/api.php"
 UA = "CankarGTP-corpus-builder/0.1 (+https://nextgen-solutions.xyz; educational project)"
 SLEEP = 0.5  # polite delay between API calls, seconds
 BATCH = 50  # max titles per content request (API limit for non-bots)
-
-REDIRECT_RE = re.compile(r"^\s*#(redirect|preusmeritev)", re.IGNORECASE)
 
 
 def api_get(session: requests.Session, params: dict) -> dict:
@@ -76,7 +77,7 @@ def titles_from_category(session: requests.Session, category: str) -> list[str]:
 
 
 def titles_from_author_page(session: requests.Session, author_page: str) -> list[str]:
-    """ns-0 links from an Avtor: page (the author's work list)."""
+    """ns-0 links from an author index page (the author's work list)."""
     data = api_get(
         session,
         {"action": "parse", "page": author_page, "prop": "links"},
@@ -128,24 +129,30 @@ def fetch_wikitext(session: requests.Session, titles: list[str]) -> dict[str, st
     return result
 
 
-def clean(wikitext: str) -> str:
-    """Wiki markup -> plain text. NFC-normalized (č/š/ž NFD bugs are real)."""
-    code = mwparserfromhell.parse(wikitext)
-    text = code.strip_code(normalize=True, collapse=True)
-    text = unicodedata.normalize("NFC", text)
-    # collapse 3+ newlines, strip trailing spaces per line
-    text = re.sub(r"[ \t]+\n", "\n", text)
-    text = re.sub(r"\n{3,}", "\n\n", text)
-    return text.strip()
+def parse_band(spec: str | None) -> tuple[int, int] | None:
+    if not spec:
+        return None
+    lo, hi = (int(x) for x in spec.split(","))
+    return (lo, hi)
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--category", action="append", default=[], help="Kategorija:... (repeatable)")
-    ap.add_argument("--author", action="append", default=[], help="Avtor:... page (repeatable)")
+    ap.add_argument(
+        "--author",
+        action="append",
+        default=[],
+        help="author index page, e.g. 'Ivan Cankar' (repeatable; ns-0, no Avtor: prefix)",
+    )
     ap.add_argument("--out", required=True, type=Path, help="output JSONL path")
     ap.add_argument("--expand-subpages", action="store_true", help="also fetch Title/... subpages")
     ap.add_argument("--min-chars", type=int, default=400, help="skip docs shorter than this")
+    ap.add_argument("--source", default="wikivir", help="source tag for docs + manifest")
+    ap.add_argument("--author-label", default=None, help="author attribution for all docs")
+    ap.add_argument(
+        "--expected-band", default=None, help="MIN,MAX expected total words (manifest sanity band)"
+    )
     args = ap.parse_args()
 
     if not args.category and not args.author:
@@ -162,8 +169,14 @@ def main() -> None:
         print(f"listing links on {auth} ...", file=sys.stderr)
         titles += titles_from_author_page(session, auth)
 
-    titles = sorted(set(titles))
-    print(f"{len(titles)} unique titles", file=sys.stderr)
+    # author index pages and Seznam/list pages are catalogs, not literature
+    # (corpus-qa finding, first crawl: the "Ivan Cankar" index page crawled itself)
+    excluded = set(args.author) | {t for t in set(titles) if is_index_title(t)}
+    titles = sorted(set(titles) - excluded)
+    print(
+        f"{len(titles)} unique titles ({len(excluded)} index/list pages excluded)",
+        file=sys.stderr,
+    )
 
     if args.expand_subpages:
         titles = sorted(set(expand_subpages(session, titles)))
@@ -175,26 +188,48 @@ def main() -> None:
     n_docs = n_chars = n_words = n_skipped = 0
     with args.out.open("w", encoding="utf-8") as f:
         for title, wikitext in sorted(pages.items()):
-            if REDIRECT_RE.match(wikitext):
+            if is_redirect(wikitext):
                 n_skipped += 1
                 continue
-            text = clean(wikitext)
+            text = clean_wikitext(wikitext)
             if len(text) < args.min_chars:
                 n_skipped += 1
                 continue
-            doc = {
-                "title": title,
-                "url": f"https://sl.wikisource.org/wiki/{title.replace(' ', '_')}",
-                "text": text,
-                "n_chars": len(text),
-            }
-            f.write(json.dumps(doc, ensure_ascii=False) + "\n")
+            doc = CorpusDoc(
+                title=title,
+                url=f"https://sl.wikisource.org/wiki/{title.replace(' ', '_')}",
+                text=text,
+                n_chars=len(text),
+                source=args.source,
+                author=args.author_label,
+            )
+            f.write(doc.model_dump_json() + "\n")
             n_docs += 1
             n_chars += len(text)
             n_words += len(text.split())
 
+    manifest = ShardManifest(
+        source=args.source,
+        script="scripts/crawl_wikivir.py",
+        git_sha=git_sha(),
+        retrieved_at=utc_now_iso(),
+        args={
+            "category": args.category,
+            "author": args.author,
+            "expand_subpages": args.expand_subpages,
+            "min_chars": args.min_chars,
+            "author_label": args.author_label,
+        },
+        n_docs=n_docs,
+        n_chars=n_chars,
+        n_words=n_words,
+        sha256=sha256_of(args.out),
+        expected_band_words=parse_band(args.expected_band),
+    )
+    mpath = write_manifest(args.out, manifest)
+
     print(
-        f"\nwrote {args.out}\n"
+        f"\nwrote {args.out} (+ {mpath.name})\n"
         f"  docs:    {n_docs} (skipped {n_skipped}: redirects/too short)\n"
         f"  chars:   {n_chars:,}\n"
         f"  words:   {n_words:,}\n"
