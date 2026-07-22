@@ -1,0 +1,54 @@
+---
+name: commit
+description: Commit workflow for this repo — staged-content safety checks, enforced message format, milestone tagging, branch discipline. Use whenever committing changes.
+---
+
+# Commit workflow
+
+This repo is **public** — every commit is publicly visible once pushed. Slow down.
+
+## 1. Review what's staged
+
+- `git status` + `git diff --staged`. Stage files deliberately; never `git add -A`
+  without reading the resulting list.
+- **Hard blocks** — unstage immediately if present:
+  - anything under `data/` or `checkpoints/`, or matching
+    `*.pt *.bin *.safetensors *.gguf *.onnx`
+  - `.env` or any credential-bearing file (only `.env.example` belongs in git)
+  - personal notes / session scratch (those live in `../cankar-gtp-meta`)
+
+  (This list deliberately mirrors `.gitignore` — defense-in-depth against
+  force-adds. When one changes, sync the other.)
+
+## 2. Message format (mechanically enforced by the commit-msg hook)
+
+`TYPE: imperative summary` — types **always UPPERCASE**:
+`FEAT` `FIX` `DATA` `TRAIN` `DOCS` `CHORE` (optional lowercase scope: `FEAT(corpus):`).
+
+- Summary ≤72 chars, imperative mood ("add", not "added").
+- Body only when the diff doesn't explain itself; reference ADRs
+  (`docs/decisions/NNNN`) for design choices.
+- **Never use `--no-verify`.** If a hook fails, fix the cause, not the messenger.
+
+## 3. Branch discipline
+
+After the initial commit, `main` moves only via PR (CI: lint + secrets scan).
+Branch names: `<type>/<slug>`, e.g. `data/wikipedia-ingest` — branch names stay
+lowercase (git/URL convention); only commit types are uppercase.
+
+**Rebase-only merges** (repo-enforced): PR commits land on `main` verbatim —
+keep each one atomic and message-clean, they ARE the history. Update branches by
+rebasing onto `main`, never by merging `main` in. Rebase before merge (strict
+status checks require the branch to be current).
+
+## 4. Milestone tags
+
+At phase completion (see ROADMAP.md) tag the merge commit: `v0.1-tinycankar`,
+`v0.2-base`, ... Tags anchor blog posts. Push tags only after the
+`public-hygiene` skill passes.
+
+## 5. Phase transitions
+
+ROADMAP checkboxes are the canonical phase status. A commit that completes a phase
+must also update both status mirrors in the same commit: the CLAUDE.md
+"Current phase" section and the README status line.

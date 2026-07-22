@@ -1,0 +1,35 @@
+[project]
+name = "cankar-gtp"
+version = "0.1.0"
+description = "A from-scratch Slovene micro-LLM in the voice of Ivan Cankar"
+authors = [{ name = "Matic Korošec" }]
+requires-python = ">=3.11"
+
+dependencies = [
+    # Phase 1 — corpus
+    "requests>=2.32",
+    "mwparserfromhell>=0.6.6",
+]
+
+[project.urls]
+Homepage = "https://nextgen-solutions.xyz"
+Repository = "https://github.com/Mult1Hunter/cankar-gtp"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.0",
+    "ruff>=0.15",
+]
+tooling = [
+    "graphifyy>=0.9.23",
+]
+
+# Phase 2+ deps (torch, tokenizers, anthropic, wandb) are added when those
+# phases start — keep the lockfile honest about what each stage needs.
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
