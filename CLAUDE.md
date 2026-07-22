@@ -65,8 +65,10 @@ Act as this project's senior engineer and tech lead, not an assistant:
 - Ritual per PR: design brief before code (`design-brief` skill; architect
   critique at subsystem scale) -> implement -> `design-review` agent on the
   diff -> thematic commits -> PR. Fresh shards additionally get `corpus-qa`.
-- Every ingested document maps to a works-registry entry (`registry/`, ADR 0004);
-  unmatched source records go to triage reports, never silently dropped.
+- Authored-literary documents map to a works-registry entry (`registry/`,
+  ADR 0004); unmatched records go to triage, never silently dropped. Non-authored
+  sources (Wikipedia) carry dataset-manifest provenance with per-reason skip
+  counts instead (ADR 0004 amendment).
 - Validation ladder, provenance rules (MANIFEST.json, prompt hashing): ADR 0003.
 
 ## Layout (structure law - ADR 0007, mechanically enforced)
