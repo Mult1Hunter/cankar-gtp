@@ -76,3 +76,22 @@ def dlib_reconcile_report() -> Path:
 
 def authors_config() -> Path:
     return repo_root() / "configs" / "corpus" / "authors.toml"
+
+
+def tokenizer_base_dir() -> Path:
+    return repo_root() / "data" / "tokenizer"
+
+
+def tokenizer_dir(name: str) -> Path:
+    """One trained candidate: tokenizer.pkl + token_bytes.pt (both required -
+    nanochat's base_train asserts on token_bytes.pt at startup)."""
+    return tokenizer_base_dir() / name
+
+
+def tokenizer_eval_report() -> Path:
+    """Snapshot report (computed from gitignored data/) - see reports README."""
+    return repo_root() / "registry" / "reports" / "tokenizer-eval.md"
+
+
+def tokenizer_probes_config() -> Path:
+    return repo_root() / "configs" / "tokenizer" / "probes.toml"

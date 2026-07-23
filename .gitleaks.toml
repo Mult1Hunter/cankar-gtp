@@ -1,0 +1,14 @@
+# Repo gitleaks config: default rules plus one narrow allowance.
+#
+# Committed provenance manifests (ADR 0003) carry sha256 content hashes in
+# fields like "tokenizer_pkl_sha256" - 64-char hex under a key containing
+# "token", which trips the generic-api-key rule. The allowance is line-shaped
+# and field-anchored: only values of *sha256-named JSON fields are allowed,
+# so a real credential anywhere else in a manifest still flags.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "sha256 provenance fields in committed manifests/reports"
+regexTarget = "line"
+regexes = ['''"[a-z0-9_]*sha256": "[a-f0-9]{64}"''']

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "name": "v4096",
+  "vocab_size": 4096,
+  "n_mergeable_ranks": 4087,
+  "special_tokens": [
+    "<|bos|>",
+    "<|user_start|>",
+    "<|user_end|>",
+    "<|assistant_start|>",
+    "<|assistant_end|>",
+    "<|python_start|>",
+    "<|python_end|>",
+    "<|output_start|>",
+    "<|output_end|>"
+  ],
+  "split_pattern_sha256": "4513fed735f5b87ddc4efa87947e0e95130573cf663df9b458ab65e7abe017c4",
+  "corpus_sha256": "cdfea262ce5898e5b35001afb2fb8899ccb531ea1c6962c39a7f1ed917e418a2",
+  "n_docs": 126355,
+  "n_chars": 468074509,
+  "doc_cap": null,
+  "rustbpe_version": "0.1.0",
+  "tiktoken_version": "0.13.0",
+  "torch_version": "2.13.0",
+  "nanochat_commit": "92d63d4e8bb4df75c3b71618f31ddde2378b2bcd",
+  "git_sha": "f0f27cc",
+  "trained_at": "2026-07-23T13:20:54+00:00",
+  "tokenizer_pkl_sha256": "c630bb53ae6538219dad6452840940d1a19dff973ceb90755fdbf1be8c374fa4",
+  "token_bytes_pt_sha256": "713f4a7396f0f842220de5c940460d7a16f249b74490c6296438874310268cb7",
+  "determinism_verified": true
+}

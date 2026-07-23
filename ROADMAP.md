@@ -93,8 +93,15 @@ Do not build serving or the Laravel orchestrator before the styler exists.
 
 ## Phase 2 - Tokenizer (1 session)
 
-- [ ] Slovene BPE via nanochat's tokenizer stage, vocab ~8-16k, trained on own corpus
-- [ ] Inspect segmentation of Slovene morphology + Cankar's archaic orthography -> README material
+- [x] Slovene BPE via nanochat's tokenizer stage (vendored seam - ADR 0011):
+      candidates {4096, 8192, 16384} trained deterministically on the full
+      merge; **v8192 selected** (26.35M total at depth-6 reference, fertility
+      1.77 tok/word on Cankar, Cankar/Wikipedia ratio 0.886 -> weighted-mix
+      trigger NOT fired). Numbers: registry/reports/tokenizer-eval.md
+- [x] Inspect segmentation of Slovene morphology + Cankar's archaic orthography
+      -> README material: probe tables in tokenizer-eval.md (case paradigms
+      consolidate at 8k: misli|jo, ža|lost; archaic solnce stays so|l|nce at
+      every size - the model sees morpheme-ish units, not memorized words)
 - [ ] Chunk merged corpus (moved from Phase 1 - chunk size is a tokenizer/context decision)
 - [ ] Stats report: tokens per source/author (moved from Phase 1 - needs this
       tokenizer; words-per-source shipped in corpus-quality.md)

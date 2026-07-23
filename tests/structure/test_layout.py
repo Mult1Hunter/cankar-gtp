@@ -17,6 +17,7 @@ ROOT_ALLOWLIST = {
     ".env.example",
     ".github",
     ".gitignore",
+    ".gitleaks.toml",  # secrets-scan config: manifest sha256 allowance (ADR 0003)
     ".pre-commit-config.yaml",
     "CLAUDE.md",
     "CONTRIBUTING.md",
@@ -36,7 +37,7 @@ ROOT_ALLOWLIST = {
 }
 
 # Rule 4: a stage exists everywhere or nowhere. New stage = edit this tuple.
-STAGES = ("corpus",)
+STAGES = ("corpus", "tokenizer")  # tokenizer: Phase 2 (ADR 0011)
 NON_STAGE_PACKAGES = {"core"}  # + "model" at Phase 3 (ADR 0007)
 
 BANNED_BASENAMES = {"utils.py", "helpers.py", "common.py", "misc.py"}
