@@ -106,7 +106,8 @@ class EdmRecord:
     year: int | None
     types: frozenset[str]
     langs: frozenset[str]
-    people: frozenset[str]
+    people: frozenset[str]  # creators + contributors merged (back-compat)
+    creators: frozenset[str]  # dc:creator only - the authorship claim
     rights: str
     text_url: str | None
     is_part_of: str | None
@@ -124,6 +125,7 @@ def parse_edm(data: dict) -> EdmRecord:
     people = {
         (txt(p) or "") for key in ("dc:contributor", "dc:creator") for p in as_list(cho.get(key))
     }
+    creators = {(txt(p) or "") for p in as_list(cho.get("dc:creator"))}
     rights = (as_list(agg.get("edm:rights"))[0] or {}).get("@rdf:resource", "") if agg else ""
     text_url = next(
         (
@@ -143,6 +145,7 @@ def parse_edm(data: dict) -> EdmRecord:
         types=frozenset(types),
         langs=frozenset(langs),
         people=frozenset(people),
+        creators=frozenset(creators),
         rights=rights,
         text_url=text_url,
         is_part_of=is_part_of,

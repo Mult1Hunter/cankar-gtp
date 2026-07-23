@@ -22,6 +22,7 @@ CLI: `cankar corpus reconcile-dlib` (cankar.corpus.cli).
 from __future__ import annotations
 
 import logging
+import re
 from dataclasses import dataclass, field
 from enum import StrEnum
 from pathlib import Path
@@ -87,11 +88,43 @@ def match_work(reg: Registry, title: str) -> WorkRecord | None:
     return work
 
 
+# title-embedded attribution: "Napisal A. Askerc" etc. names the true author
+_ATTRIB_RE = re.compile(r"(napisal|spisal|zložil)", re.IGNORECASE)
+# memorial/tribute titles are ABOUT the person, not by them
+_MEMORIAL_RE = re.compile(r"^spominu\b|\bv spomin\b", re.IGNORECASE)
+
+
+def is_by_author(meta: EdmRecord, surname: str) -> bool:
+    """Layered authorship check, calibrated on real contamination the corpus-qa
+    audit caught in the first gap-fill pull (all three committed as fixtures):
+
+    1. dc:creator is the authorship claim - when present, it decides. (Caught:
+       Gregorcic's collected poems where Cankar is only dc:contributor.)
+    2. dLib often omits dc:creator on journal records, so fall back to the
+       merged people set - but reject titles carrying an attribution phrase
+       without the author's surname after it (caught: 'Lirske in epske
+       poezije; Napisal A. Askerc') and memorial-pattern titles (caught:
+       'Spominu Ivana Cankarja' - a tribute ABOUT the author by others).
+    Residual risk (accepted, documented): a work by someone else where dLib
+    lists only the author as contributor AND the title carries no attribution.
+    """
+    if meta.creators:
+        return any(surname in c.casefold() for c in meta.creators)
+    if not any(surname in p.casefold() for p in meta.people):
+        return False
+    m = _ATTRIB_RE.search(meta.title)
+    if m and surname not in meta.title[m.start() :].casefold():
+        return False
+    if _MEMORIAL_RE.search(meta.title):
+        return False
+    return True
+
+
 def classify(
     meta: EdmRecord, urn: str, reg: Registry, surname: str
 ) -> tuple[Bucket, WorkRecord | None]:
     """Pure bucketing of one record - the testable core of the audit."""
-    if not any(surname in p.casefold() for p in meta.people):
+    if not is_by_author(meta, surname):
         return Bucket.NOT_AUTHOR, None
     if "rokopisi" in meta.types or "rokopis" in meta.types:
         return Bucket.MANUSCRIPT, None
