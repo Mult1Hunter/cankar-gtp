@@ -302,13 +302,30 @@ def merge(*, corpus_dir: Path, out: Path, resolution_path: Path, report_out: Pat
     return stats
 
 
+class ContainmentVerdict(StrEnum):
+    DROP = "drop"  # >0.95 - fully inside a volume, drop it (text stays in the volume)
+    PARTIAL = "partial"  # 0.80-0.95 - has unique content, keep both, report
+    NONE = "none"  # not meaningfully contained
+
+
+def classify_containment(score: float) -> ContainmentVerdict:
+    """Threshold decision, isolated from IO so real measured scores pin it
+    (ADR 0006). Calibrated 2026-07 on the boundary works: Zapuščeni 0.956 DROP
+    vs Aleš in peklenšček 0.945 PARTIAL - 0.95 separates them."""
+    if score > CONTAINMENT_DROP_THRESHOLD:
+        return ContainmentVerdict.DROP
+    if score > CONTAINMENT_THRESHOLD:
+        return ContainmentVerdict.PARTIAL
+    return ContainmentVerdict.NONE
+
+
 def _measure_containment(
     lit_shingles: dict[str, LitDoc], stats: MergeStats
 ) -> list[tuple[str, int]]:
     """Find kept literary docs contained in a larger same-author doc - the
     collected-volume subpart class MinHash misses (M4). A container (>= MIN
-    shingles) is never dropped; a smaller doc >0.95 inside one IS dropped
-    (lossless - its text is in the volume); 0.80-0.95 is reported only.
+    shingles) is never dropped; a smaller doc >0.95 inside its BEST-matching
+    volume is dropped (its text survives in the volume); 0.80-0.95 is reported.
     Returns the locs to drop."""
     by_author: dict[str, list[LitDoc]] = defaultdict(list)
     for lit in lit_shingles.values():
@@ -319,19 +336,22 @@ def _measure_containment(
         for d in docs:
             if len(d.shingles) >= CONTAINER_MIN_SHINGLES:
                 continue  # a volume is never dropped as "contained"
+            # best container, not first over threshold - a work can sit in two volumes
+            best_score, best = 0.0, ""
             for c in containers:
                 if c.title == d.title or len(c.shingles) <= len(d.shingles):
                     continue
                 score = containment(d.shingles, c.shingles)
-                if score > CONTAINMENT_DROP_THRESHOLD:
-                    stats.containment_dropped.append(f"- {d.title!r} dropped (in {c.title!r})")
-                    to_drop.append(d.loc)
-                    break
-                if score > CONTAINMENT_THRESHOLD:
-                    stats.containment_partial.append(
-                        f"- {d.title!r} ~{score:.0%} in {c.title!r} (kept both)"
-                    )
-                    break
+                if score > best_score:
+                    best_score, best = score, c.title
+            verdict = classify_containment(best_score)
+            if verdict is ContainmentVerdict.DROP:
+                stats.containment_dropped.append(f"- {d.title!r} dropped (in {best!r})")
+                to_drop.append(d.loc)
+            elif verdict is ContainmentVerdict.PARTIAL:
+                stats.containment_partial.append(
+                    f"- {d.title!r} ~{best_score:.0%} in {best!r} (kept both)"
+                )
     return to_drop
 
 
@@ -357,7 +377,10 @@ def write_merge_report(stats: MergeStats, out: Path) -> None:
             "Registry-identity mismatches (same work_id, DIFFERENT text - kept both)",
             stats.registry_mismatch,
         ),
-        ("Containment drops (>0.95 inside a kept volume - lossless)", stats.containment_dropped),
+        (
+            "Containment drops (>0.95 inside a kept volume - <=5% residual)",
+            stats.containment_dropped,
+        ),
         ("Containment partial (0.80-0.95 - kept both)", stats.containment_partial),
     ):
         lines += ["", f"## {heading}", ""]

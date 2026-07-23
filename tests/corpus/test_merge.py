@@ -254,15 +254,15 @@ def test_containment_drops_fully_contained_keeps_volume(
             for i in indices
         )
 
-    poem = sl(range(20))  # a small work
+    poem = sl(range(20))  # a small work, fully inside the volume
     volume = sl(range(600))  # >= MIN_SHINGLES, contains the poem's sentences
-    partial = sl(list(range(10)) + list(range(1000, 1010)))  # ~50% overlaps the poem
+    partial = sl(list(range(17)) + [2000, 2001, 2002])  # ~0.85 in volume - partial band, kept
     _write(
         corpus / "kette.jsonl",
         [
             _doc("Poezije 1907", volume, "wikivir", "Dragotin Kette"),
-            _doc("Jesen", poem, "wikivir", "Dragotin Kette"),  # fully inside -> dropped
-            _doc("Delno", partial, "wikivir", "Dragotin Kette"),  # ~50% -> kept
+            _doc("Jesen", poem, "wikivir", "Dragotin Kette"),  # >0.95 inside -> dropped
+            _doc("Delno", partial, "wikivir", "Dragotin Kette"),  # 0.80-0.95 -> kept + reported
         ],
     )
     res = tmp_path / "res.toml"
@@ -280,6 +280,25 @@ def test_containment_drops_fully_contained_keeps_volume(
     assert titles == ["Delno", "Poezije 1907"]  # Jesen dropped, volume + partial kept
     assert stats.skip_counts["containment"] == 1
     assert any("Jesen" in line for line in stats.containment_dropped)
+    assert any("Delno" in line for line in stats.containment_partial)  # partial band covered
+
+
+def test_classify_containment_on_real_scores() -> None:
+    """The 0.95 drop boundary pinned on REAL measured (work, best-container)
+    scores from the corpus (ADR 0006 - a destructive threshold needs real-data
+    calibration, not just synthetic). 0.956 drops, 0.945 is kept - the boundary
+    sits between real works, not in a synthetic gap."""
+    from cankar.corpus.merge import ContainmentVerdict as V
+    from cankar.corpus.merge import classify_containment as clf
+
+    # (measured score, work, best container) - 2026-07 corpus
+    assert clf(0.991) is V.DROP  # 'Pevčev grob' in 'Balade in romance'
+    assert clf(0.970) is V.DROP  # 'Zimska romanca' in 'Poezije, 1907'
+    assert clf(0.956) is V.DROP  # 'Zapuščeni' in 'Poezije, 1907' - just above
+    assert clf(0.945) is V.PARTIAL  # 'Aleš in peklenšček' in 'Aleš iz Razora' - just below
+    assert clf(0.899) is V.PARTIAL  # 'Črne noči' in 'Poezije, 1907'
+    assert clf(0.819) is V.PARTIAL  # 'Drobna druščina' in 'Drobiž'
+    assert clf(0.40) is V.NONE
 
 
 def test_distinct_works_both_survive(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
