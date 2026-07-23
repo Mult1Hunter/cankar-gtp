@@ -17,6 +17,7 @@ ROOT_ALLOWLIST = {
     ".env.example",
     ".github",
     ".gitignore",
+    ".gitleaks.toml",  # secrets-scan config: manifest sha256 allowance (ADR 0003)
     ".pre-commit-config.yaml",
     "CLAUDE.md",
     "CONTRIBUTING.md",
