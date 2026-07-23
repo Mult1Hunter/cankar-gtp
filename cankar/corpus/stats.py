@@ -15,7 +15,6 @@ the metrics themselves are proven to flag garbage.
 
 from __future__ import annotations
 
-import hashlib
 import re
 from collections.abc import Iterable
 from dataclasses import dataclass, field
@@ -23,6 +22,7 @@ from pathlib import Path
 from statistics import median
 
 from cankar.core.reports import generated_marker, write_report
+from cankar.corpus.shard import content_hash
 
 # Slovene letters + ASCII, digits, whitespace, and ordinary literary punctuation.
 # Characters outside this set are the OCR-garbage / foreign-script signal.
@@ -119,7 +119,7 @@ def compute_metrics(name: str, docs: Iterable[dict]) -> ShardMetrics:
         m.n_chars += len(text)
         word_counts.append(len(words))
 
-        h = hashlib.sha256(text.encode()).hexdigest()
+        h = content_hash(text)
         if h in hashes:
             n_dup += 1
         hashes.add(h)

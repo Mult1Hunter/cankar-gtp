@@ -54,6 +54,21 @@ def near_duplicates_report() -> Path:
     return repo_root() / "registry" / "reports" / "near-duplicates.md"
 
 
+def merged_shard() -> Path:
+    """The merged corpus - outside data/corpus/ so the stats glob never double-counts."""
+    return repo_root() / "data" / "merged" / "corpus.jsonl"
+
+
+def merge_report() -> Path:
+    """Snapshot report (computed from gitignored data/) - see reports README."""
+    return repo_root() / "registry" / "reports" / "merge.md"
+
+
+def collision_resolution() -> Path:
+    """Human-curated cross-author collision decisions the merge consumes."""
+    return repo_root() / "registry" / "works" / "collision_resolution.toml"
+
+
 def dlib_reconcile_report() -> Path:
     """Snapshot report (live dLib state at run time) - see reports README."""
     return repo_root() / "registry" / "reports" / "dlib-reconcile.md"

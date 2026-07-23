@@ -44,3 +44,37 @@ def test_geo_stub_boilerplate_clustered() -> None:
     result, drop = find_near_duplicates(stubs)
     assert result.n_duplicate_docs == 3  # 3 of 4 collapse into the first's cluster
     assert result.n_clusters == 1
+
+
+def test_containment_catches_subpart_that_minhash_misses() -> None:
+    """A chapter inside its collected volume: high containment, low Jaccard -
+    the class MinHash structurally misses (design-review M4)."""
+    from cankar.corpus.dedup import NearDupIndex, containment, shingles
+
+    chapter = " ".join(f"beseda{i}" for i in range(40))
+    volume = chapter + " " + " ".join(f"drugo{i}" for i in range(400))
+    assert containment(shingles(chapter), shingles(volume)) > 0.8  # chapter is inside
+    assert containment(shingles(volume), shingles(chapter)) < 0.2  # volume is not
+    # and MinHash at 0.75 does NOT flag them (Jaccard is tiny) - proving the gap
+    idx = NearDupIndex()
+    assert idx.add_or_match("000", volume) is None
+    assert idx.add_or_match("001", chapter) is None  # not caught as near-dup
+
+
+def test_minhash_is_deterministic() -> None:
+    """Seeded permutations -> identical drops across runs (design-review S3)."""
+    from cankar.corpus.dedup import minhash
+
+    a = minhash("na klancu je stala hiša majhna in siva s streho vdrto v sredini")
+    b = minhash("na klancu je stala hiša majhna in siva s streho vdrto v sredini")
+    assert a.jaccard(b) == 1.0
+
+
+def test_near_dup_index_returns_earliest_root() -> None:
+    from cankar.corpus.dedup import NearDupIndex
+
+    idx = NearDupIndex()
+    base = " ".join(f"beseda{i}" for i in range(60))
+    assert idx.add_or_match("000", base) is None
+    assert idx.add_or_match("001", "povsem drugačno besedilo o nečem drugem tukaj") is None
+    assert idx.add_or_match("002", base.replace("beseda3 ", "beseda3x ")) == "000"

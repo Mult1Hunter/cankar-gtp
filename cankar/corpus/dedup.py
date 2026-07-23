@@ -19,72 +19,101 @@ from datasketch import MinHash, MinHashLSH
 from cankar.core.reports import generated_marker, write_report
 
 NUM_PERM = 128
-# 0.75 Jaccard follows FineWeb. Calibration rule (ADR 0006): before any caller
-# DROPS docs with this threshold (the merge stage), commit real labeled pairs
-# as fixtures - one true literary near-dup, one geo-stub pair, and one hard
-# negative (two distinct Cankar works in shared register that must NOT
-# collapse). Report-only use is fine on synthetic tests.
+SEED = 1  # pin MinHash permutations for reproducible drops (design-review S3)
+# 0.75 Jaccard follows FineWeb. Calibration rule (ADR 0006): the merge stage
+# DROPS docs at this threshold, so real labeled pairs are committed as fixtures -
+# a literary near-dup, a geo-stub pair, and hard negatives (distinct works in
+# shared register, and a Wikipedia article ABOUT an author, that must NOT
+# collapse). See tests/corpus/test_dedup.py and the merge fixtures.
 THRESHOLD = 0.75
 SHINGLE = 5  # word n-gram size
+CONTAINMENT_THRESHOLD = 0.80  # a's shingles this-fraction inside b -> a is contained
 
 _WORD_RE = re.compile(r"\w+", re.UNICODE)
 
 
-def _shingles(text: str, k: int = SHINGLE) -> set[bytes]:
+def shingles(text: str, k: int = SHINGLE) -> set[bytes]:
+    """Word k-gram set - the unit both MinHash and containment operate on."""
     words = _WORD_RE.findall(text.casefold())
     if len(words) < k:
         return {" ".join(words).encode()} if words else set()
     return {" ".join(words[i : i + k]).encode() for i in range(len(words) - k + 1)}
 
 
-def _minhash(text: str) -> MinHash:
-    m = MinHash(num_perm=NUM_PERM)
-    m.update_batch(list(_shingles(text)))
+def minhash(text: str) -> MinHash:
+    m = MinHash(num_perm=NUM_PERM, seed=SEED)
+    m.update_batch(list(shingles(text)))
     return m
+
+
+def containment(sub: set[bytes], whole: set[bytes]) -> float:
+    """Asymmetric overlap: fraction of `sub`'s shingles present in `whole`.
+    High = sub is CONTAINED in whole (a chapter inside its collected volume) -
+    the duplication class Jaccard/MinHash structurally miss, because a small
+    part's shingles are a tiny fraction of the whole's union (design-review M4)."""
+    if not sub:
+        return 0.0
+    return len(sub & whole) / len(sub)
+
+
+class NearDupIndex:
+    """Incremental MinHash-LSH index: add docs in keep-preference order; each
+    add either inserts (novel) or reports the root key it duplicates. The one
+    near-dup primitive both the report command and the merge stage use."""
+
+    def __init__(self, threshold: float = THRESHOLD):
+        self._lsh = MinHashLSH(threshold=threshold, num_perm=NUM_PERM)
+
+    def add_or_match(self, key: str, text: str) -> str | None:
+        """Insert `key` if novel and return None; else return the earliest
+        already-inserted key it near-duplicates (keep-first semantics).
+
+        Keys MUST sort lexicographically by insertion order (zero-padded
+        counters, or a fixed-width preference prefix) so `min` picks the root
+        the caller would keep."""
+        mh = minhash(text)
+        matches = self._lsh.query(mh)
+        if matches:
+            return min(matches)
+        self._lsh.insert(key, mh)
+        return None
+
+    def insert(self, key: str, text: str) -> None:
+        """Force-insert regardless of matches - for keeping a doc the caller has
+        decided is NOT a duplicate (e.g. a collision-table 'distinct' pair that
+        MinHash flagged as a false positive)."""
+        self._lsh.insert(key, minhash(text))
 
 
 @dataclass
 class DedupResult:
     n_docs: int
     n_duplicate_docs: int  # docs that are a near-dup of an earlier-kept doc
-    # distinct first-match roots - an APPROXIMATION of cluster count, not
-    # connected components (a doc matching two kept docs credits one root)
-    n_clusters: int
+    n_clusters: int  # distinct roots that absorbed >=1 duplicate
     duplicate_rate: float
 
 
 def find_near_duplicates(
     docs: Iterable[dict], threshold: float = THRESHOLD
 ) -> tuple[DedupResult, list[int]]:
-    """Greedy near-dup pass: docs in insertion order; each doc that matches an
-    already-kept doc is marked duplicate. Returns the result summary and the
-    indices to DROP (keeping the first of each near-dup group).
-
-    Contract for destructive callers: keep-preference IS the input ordering -
-    sort docs by source preference (PD literary > dLib OCR > wikipedia) BEFORE
-    the pass, or the incidental iteration order becomes the keep rule."""
-    lsh = MinHashLSH(threshold=threshold, num_perm=NUM_PERM)
+    """Greedy near-dup pass for the report command. Keep-preference IS the input
+    ordering (the merge sorts by source preference before calling equivalents)."""
+    index = NearDupIndex(threshold)
     drop: list[int] = []
     kept = 0
-    clusters = 0
-    seen_cluster: set[str] = set()
+    roots: set[str] = set()
     for i, d in enumerate(docs):
-        mh = _minhash(d["text"])
-        matches = lsh.query(mh)
-        if matches:
+        root = index.add_or_match(f"{i:012d}", d["text"])
+        if root is not None:
             drop.append(i)
-            root = min(matches, key=int)  # earliest kept doc (keys are stringified ints)
-            if root not in seen_cluster:
-                clusters += 1
-                seen_cluster.add(root)
+            roots.add(root)
         else:
-            lsh.insert(str(i), mh)
             kept += 1
     n = kept + len(drop)
     result = DedupResult(
         n_docs=n,
         n_duplicate_docs=len(drop),
-        n_clusters=clusters,
+        n_clusters=len(roots),
         duplicate_rate=round(len(drop) / n, 5) if n else 0.0,
     )
     return result, drop

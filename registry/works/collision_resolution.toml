@@ -1,0 +1,92 @@
+# Cross-author collision resolutions - machine-readable decisions the merge
+# stage consumes so near-dup dropping can NEVER silently flip attribution
+# (design-review M2). Transcribes the human judgments in NOTES.md; the source
+# list is registry/reports/collisions.md.
+#
+# Keyed by exact shard title. resolution:
+#   "same_work" - one text appearing in two authors' shards; keep ONE copy and
+#                 attribute it as `attribution` (may be joint). Without this
+#                 override the merge keeps-first by preference and reports the
+#                 pairing as unverified - so attribution is never silent, but
+#                 these are the cases where the correct answer differs from
+#                 keep-first.
+#   "distinct"  - different works that merely share a title; keep ALL copies,
+#                 and protect them from an accidental near-dup merge.
+
+# --- same work in two shards: attribution decided by hand ---
+
+[[collision]]
+title = "Rokovnjači"
+resolution = "same_work"
+attribution = "Josip Jurčič, Janko Kersnik"
+note = "Jurčič began it, Kersnik finished it after his death (NOTES.md)"
+
+[[collision]]
+title = "Rokovnjači (Ljubljanski zvon)"
+resolution = "same_work"
+attribution = "Josip Jurčič, Janko Kersnik"
+note = "serial printing of the joint Rokovnjači"
+
+[[collision]]
+title = "Tugomer"
+resolution = "same_work"
+attribution = "Josip Jurčič, Fran Levstik"
+note = "Levstik's rewrite of Jurčič's tragedy - joint (NOTES.md: same tragedy)"
+
+[[collision]]
+title = "Pismo Josipa Murna Ivanu Cankarju, marec 1898"
+resolution = "same_work"
+attribution = "Josip Murn"
+note = "the letter is BY Murn; it sits in both correspondents' shards"
+
+[[collision]]
+title = "Levstikovo pismo Jurčiču iz leta 1868"
+resolution = "same_work"
+attribution = "Fran Levstik"
+note = "letter BY Levstik to Jurčič"
+
+[[collision]]
+title = "Berite Novice"
+resolution = "same_work"
+attribution = "Josip Jurčič"
+note = "editorial notice; keep-first, attribution pending closer verification"
+
+[[collision]]
+title = "Josip Stritar (Ivan Tavčar)"
+resolution = "same_work"
+attribution = "Ivan Tavčar"
+note = "Tavčar's essay ABOUT Stritar (is_by_other_author case)"
+
+# --- distinct works that merely share a title: keep all, protect from merge ---
+
+[[collision]]
+title = "Slovo"
+resolution = "distinct"
+
+[[collision]]
+title = "Doma"
+resolution = "distinct"
+
+[[collision]]
+title = "Dva brata"
+resolution = "distinct"
+
+[[collision]]
+title = "Lepa Vida"
+resolution = "distinct"
+
+[[collision]]
+title = "Ljubezen"
+resolution = "distinct"
+
+[[collision]]
+title = "Moje življenje"
+resolution = "distinct"
+
+[[collision]]
+title = "Slavec"
+resolution = "distinct"
+
+[[collision]]
+title = "Črtice"
+resolution = "distinct"

@@ -14,19 +14,23 @@ from collections.abc import Iterator
 from pathlib import Path
 
 from cankar.core.paths import (
+    collision_resolution,
     collisions_report,
     corpus_dir,
     corpus_shard,
     coverage_report,
     dlib_reconcile_report,
+    merge_report,
+    merged_shard,
     near_duplicates_report,
     quality_report,
     works_registries,
     works_registry,
 )
-from cankar.corpus import dlib, ingest, reconcile, seed, wikipedia, wikivir
+from cankar.corpus import dlib, ingest, merge, reconcile, seed, wikipedia, wikivir
 from cankar.corpus.coverage import cross_author_collisions, write_collisions, write_coverage
 from cankar.corpus.dedup import find_near_duplicates, write_dedup_report
+from cankar.corpus.merge import is_general_shard
 from cankar.corpus.registry import Registry
 from cankar.corpus.shard import read_shard
 from cankar.corpus.stats import compute_metrics, write_quality_report
@@ -80,12 +84,22 @@ def _dedup(args: argparse.Namespace) -> int:
 
     def group(bucket: str) -> Iterator[dict]:  # lazy per-group stream - no 65M-word list
         for shard in shards:
-            if (shard.stem == "wikipedia") == (bucket == "wikipedia"):
+            if is_general_shard(shard.stem) == (bucket == "wikipedia"):
                 yield from read_shard(shard)
 
     results = {name: find_near_duplicates(group(name))[0] for name in ("wikipedia", "literary")}
     write_dedup_report(results, args.out)
     print(f"wrote {args.out}", file=sys.stderr)
+    return 0
+
+
+def _merge(args: argparse.Namespace) -> int:
+    merge.merge(
+        corpus_dir=args.corpus_dir,
+        out=args.out,
+        resolution_path=args.resolution,
+        report_out=args.report,
+    )
     return 0
 
 
@@ -184,6 +198,13 @@ def register(parser: argparse.ArgumentParser) -> None:
     p.add_argument("--corpus-dir", type=Path, default=corpus_dir())
     p.add_argument("--out", type=Path, default=near_duplicates_report())
     p.set_defaults(func=_dedup)
+
+    p = sub.add_parser("merge", help="fold shards into one gated, deduplicated corpus")
+    p.add_argument("--corpus-dir", type=Path, default=corpus_dir())
+    p.add_argument("--out", type=Path, default=merged_shard())
+    p.add_argument("--resolution", type=Path, default=collision_resolution())
+    p.add_argument("--report", type=Path, default=merge_report())
+    p.set_defaults(func=_merge)
 
     p = sub.add_parser("validate", help="registry validation + cross-author collisions")
     p.add_argument("--registry", type=Path)

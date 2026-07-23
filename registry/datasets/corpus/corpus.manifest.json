@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "source": "merged",
+  "script": "cankar corpus merge",
+  "git_sha": "cf991d3",
+  "retrieved_at": "2026-07-23T10:39:22+00:00",
+  "args": {
+    "shards": [
+      "askerc",
+      "cankar",
+      "erjavec",
+      "govekar",
+      "jenko",
+      "jurcic",
+      "kersnik",
+      "kette",
+      "kveder",
+      "levstik",
+      "milcinski",
+      "murn",
+      "stritar",
+      "tavcar",
+      "trdina",
+      "dlib-cankar",
+      "dlib-cankar-gapfill",
+      "wikipedia"
+    ],
+    "resolution": "collision_resolution.toml"
+  },
+  "n_docs": 126403,
+  "n_chars": 468132355,
+  "n_words": 72343934,
+  "sha256": "b0a2e6fd48ab132242d0ef2379553ab4e80c31438b18405a603372232ec9f007",
+  "expected_band_words": null,
+  "skip_counts": {
+    "gate_not_slovene": 6,
+    "near_dup": 296,
+    "gate_bibliography": 4,
+    "registry_identity": 7,
+    "gate_index_list": 1,
+    "exact_dup": 6
+  }
+}

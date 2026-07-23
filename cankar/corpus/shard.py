@@ -7,6 +7,7 @@ only the shard IO is shared here.
 
 from __future__ import annotations
 
+import hashlib
 import json
 from collections.abc import Iterator
 from pathlib import Path
@@ -24,6 +25,12 @@ def read_shard(path: Path) -> Iterator[dict]:
         for line in fh:
             if line.strip():
                 yield json.loads(line)
+
+
+def content_hash(text: str) -> str:
+    """Stable content hash for exact-dup detection - one definition shared by
+    the stats harness and the merge stage (rule of two)."""
+    return hashlib.sha256(text.encode()).hexdigest()
 
 
 class ShardWriter:
