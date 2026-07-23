@@ -52,6 +52,12 @@ CONTAINER_MIN_SHINGLES = 3000
 # (Domov OCR-vs-clean 0.89, a story inside its collection 0.92) sit far above distinct
 # same-id collections (the two Črtice, 0.00). 0.5 is the empty band between them.
 REGISTRY_CONFIRM_CONTAINMENT = 0.5
+# a small doc this-fraction inside a larger same-author doc is DROPPED, keeping the
+# larger (the volume carries 2-12x more content than its parts - dropping the volume
+# would lose text). 0.95, not the 0.80 report floor, so the drop is ~lossless: a
+# partially-contained work (0.80-0.95, a different transcription/ending) is kept and
+# only reported. User decision 2026-07: keep collected volumes, drop contained works.
+CONTAINMENT_DROP_THRESHOLD = 0.95
 
 
 def is_general_shard(slug: str) -> bool:
@@ -70,6 +76,7 @@ class RootRecord:
 
 
 class LitDoc(NamedTuple):
+    loc: tuple[str, int]
     author: str
     title: str
     shingles: set[bytes]
@@ -149,7 +156,8 @@ class MergeStats:
     registry_mismatch: list[str] = field(
         default_factory=list
     )  # same work_id, different text - kept
-    containment: list[str] = field(default_factory=list)  # report lines
+    containment_dropped: list[str] = field(default_factory=list)  # >0.95, kept the volume
+    containment_partial: list[str] = field(default_factory=list)  # 0.80-0.95, kept both
     reattributed: list[str] = field(default_factory=list)  # report lines
     conflicts: list[str] = field(default_factory=list)  # attribution overrides that disagreed
 
@@ -254,9 +262,11 @@ def merge(*, corpus_dir: Path, out: Path, resolution_path: Path, report_out: Pat
                 work_root[wk] = key
             key_meta[key] = RootRecord(loc=loc, author=author, title=title)
             if sh is not None:
-                lit_shingles[key] = LitDoc(author or "?", title, sh)
+                lit_shingles[key] = LitDoc(loc, author or "?", title, sh)
 
-    _measure_containment(lit_shingles, stats)
+    for cloc in _measure_containment(lit_shingles, stats):
+        drop[cloc] = "containment"
+        stats.skip_counts["containment"] += 1
 
     # --- pass 2: write in preference order, applying re-attribution ---
     args: dict[str, object] = {
@@ -292,23 +302,37 @@ def merge(*, corpus_dir: Path, out: Path, resolution_path: Path, report_out: Pat
     return stats
 
 
-def _measure_containment(lit_shingles: dict[str, LitDoc], stats: MergeStats) -> None:
-    """Report (do not drop) kept literary docs contained in a larger same-author
-    doc - the collected-volume subpart class MinHash misses (M4)."""
+def _measure_containment(
+    lit_shingles: dict[str, LitDoc], stats: MergeStats
+) -> list[tuple[str, int]]:
+    """Find kept literary docs contained in a larger same-author doc - the
+    collected-volume subpart class MinHash misses (M4). A container (>= MIN
+    shingles) is never dropped; a smaller doc >0.95 inside one IS dropped
+    (lossless - its text is in the volume); 0.80-0.95 is reported only.
+    Returns the locs to drop."""
     by_author: dict[str, list[LitDoc]] = defaultdict(list)
     for lit in lit_shingles.values():
         by_author[lit.author].append(lit)
+    to_drop: list[tuple[str, int]] = []
     for docs in by_author.values():
         containers = [d for d in docs if len(d.shingles) >= CONTAINER_MIN_SHINGLES]
         for d in docs:
+            if len(d.shingles) >= CONTAINER_MIN_SHINGLES:
+                continue  # a volume is never dropped as "contained"
             for c in containers:
-                if (
-                    c.title != d.title
-                    and len(c.shingles) > len(d.shingles)
-                    and containment(d.shingles, c.shingles) > CONTAINMENT_THRESHOLD
-                ):
-                    stats.containment.append(f"- {d.title!r} contained in {c.title!r}")
+                if c.title == d.title or len(c.shingles) <= len(d.shingles):
+                    continue
+                score = containment(d.shingles, c.shingles)
+                if score > CONTAINMENT_DROP_THRESHOLD:
+                    stats.containment_dropped.append(f"- {d.title!r} dropped (in {c.title!r})")
+                    to_drop.append(d.loc)
                     break
+                if score > CONTAINMENT_THRESHOLD:
+                    stats.containment_partial.append(
+                        f"- {d.title!r} ~{score:.0%} in {c.title!r} (kept both)"
+                    )
+                    break
+    return to_drop
 
 
 def write_merge_report(stats: MergeStats, out: Path) -> None:
@@ -333,7 +357,8 @@ def write_merge_report(stats: MergeStats, out: Path) -> None:
             "Registry-identity mismatches (same work_id, DIFFERENT text - kept both)",
             stats.registry_mismatch,
         ),
-        ("Containment (reported, not dropped)", stats.containment),
+        ("Containment drops (>0.95 inside a kept volume - lossless)", stats.containment_dropped),
+        ("Containment partial (0.80-0.95 - kept both)", stats.containment_partial),
     ):
         lines += ["", f"## {heading}", ""]
         lines += rows or ["- none"]

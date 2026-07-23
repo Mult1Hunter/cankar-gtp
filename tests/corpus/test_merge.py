@@ -238,6 +238,50 @@ def test_registry_identity_requires_content_confirmation(
     assert any("content differs" in line for line in stats.registry_mismatch)
 
 
+def test_containment_drops_fully_contained_keeps_volume(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A poem fully inside a collected volume is dropped (its text survives in
+    the volume - lossless); the volume and a partially-overlapping work stay."""
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+
+    def sl(indices: range | list[int]) -> str:
+        # function-word-rich so the quality gate keeps it; unique per-index tokens
+        # give distinct shingles for the containment math
+        return " ".join(
+            f"in je bilo tako da se je v hiši numer{i} zgodilo nekaj kar mesto{i} ni nihče videl"
+            for i in indices
+        )
+
+    poem = sl(range(20))  # a small work
+    volume = sl(range(600))  # >= MIN_SHINGLES, contains the poem's sentences
+    partial = sl(list(range(10)) + list(range(1000, 1010)))  # ~50% overlaps the poem
+    _write(
+        corpus / "kette.jsonl",
+        [
+            _doc("Poezije 1907", volume, "wikivir", "Dragotin Kette"),
+            _doc("Jesen", poem, "wikivir", "Dragotin Kette"),  # fully inside -> dropped
+            _doc("Delno", partial, "wikivir", "Dragotin Kette"),  # ~50% -> kept
+        ],
+    )
+    res = tmp_path / "res.toml"
+    res.write_text("")
+    monkeypatch.setattr(merge, "_author_registries", dict)
+    monkeypatch.setattr(
+        "cankar.corpus.shard.dataset_manifest",
+        lambda stage, name: tmp_path / f"{name}.manifest.json",
+    )
+    out = tmp_path / "m.jsonl"
+    stats = merge.merge(
+        corpus_dir=corpus, out=out, resolution_path=res, report_out=tmp_path / "m.md"
+    )
+    titles = sorted(json.loads(ln)["title"] for ln in out.read_text().splitlines() if ln.strip())
+    assert titles == ["Delno", "Poezije 1907"]  # Jesen dropped, volume + partial kept
+    assert stats.skip_counts["containment"] == 1
+    assert any("Jesen" in line for line in stats.containment_dropped)
+
+
 def test_distinct_works_both_survive(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Two DIFFERENT works sharing a title that MinHash flags as near-dup must
     BOTH survive when the collision table marks them distinct (M2 protect path;
