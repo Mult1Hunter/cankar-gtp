@@ -53,8 +53,12 @@ Do not build serving or the Laravel orchestrator before the styler exists.
       tier (Wikivir > dLib > gapfill > Wikipedia); cross-author attribution
       via committed collision_resolution.toml (never silent). Built to the
       architect critique (M1-M4); real-pair fixtures pin every signal.
-      -> 126,400 docs / 72.29M words (dropped: 11 gate, 10 registry-identity,
-      6 exact, 296 near-dup). Committed merge report + manifest.
+      -> 126,403 docs / 72.34M words (dropped: 11 gate, 7 registry-identity,
+      6 exact, 296 near-dup). Registry-identity is content-confirmed (max
+      bidirectional containment >= 0.5): a bare work_id match was collapsing
+      distinct-year collections ('Črtice 1914' vs '1907-09', 0.00 overlap) -
+      caught by enumerating the drops, ~54k words recovered, mismatches
+      surfaced for registry cleanup. Committed merge report + manifest.
       - [ ] FOLLOW-UP: containment drops. The merge REPORTS (not drops) 100+
             works duplicated inside collected volumes (Kette poems in
             'Poezije 1907', Aškerc ballads in 'Balade in romance', Cankar
