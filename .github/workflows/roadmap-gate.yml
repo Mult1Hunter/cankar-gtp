@@ -1,0 +1,33 @@
+name: Roadmap gate
+
+# Separate workflow, not a ci.yml job: it must also run on `edited` (ticking
+# the attestation checkbox in the PR body has to re-run the gate; default
+# pull_request types omit body edits) without re-running the test suite.
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: roadmap-gate-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  roadmap-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # merge-base diff against the PR base
+      - name: check ROADMAP checkbox discipline (ADR 0010)
+        env:
+          # env var, never inline ${{ }} in run: - the body is attacker-
+          # controlled text on a public repo (script injection).
+          PR_BODY: ${{ github.event.pull_request.body }}
+        # pull_request checkout is the refs/pull/N/merge commit, so HEAD^1 is
+        # the base tip at fetch time - deterministic, unlike the payload's
+        # base.sha snapshot (documented staleness gotcha: a lagging snapshot
+        # blames other PRs' ROADMAP changes on this one).
+        run: ops/check-roadmap-pr.sh 'HEAD^1'

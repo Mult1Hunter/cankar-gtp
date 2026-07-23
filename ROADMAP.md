@@ -27,6 +27,9 @@ Do not build serving or the Laravel orchestrator before the styler exists.
 - [ ] Watch Karpathy "Let's build GPT" (nanoGPT stays *reading material*, nanochat is the codebase)
 - [ ] RunPod account + **spending limit set** + one 15-min throwaway pod to validate workflow
 - [x] Repo init (public from commit #1), .gitignore, .env.example, gitleaks pre-commit hook + CI
+- [x] Roadmap gate: required CI check on every PR - body attestation, newly
+      ticked deliverables surfaced in the job summary, flip-down protection
+      *(added in-flight - ADR 0010)*
 
 ## Phase 1 - Corpus (1-2 sessions)
 
