@@ -1,0 +1,56 @@
+Mnóžica je v matematiki skupina abstraktnih ali stvarnih (konkretnih) reči. Te reči se imenujejo elementi in se jih med seboj loči (razlikuje – tj. dva elementa med sabo ne moreta biti enaka). Medsebojne odnose (relacije), strukture in medsebojne preslikave množic preučuje teorija množic.
+
+Glavni pojem teorije množic je pripadnost. Element  lahko pripada množici  () ali pa tudi ne ().
+
+Množica, ki ji ne pripada noben element, se imenuje prazna množica, označimo jo s . Vse druge množice vsebujejo vsaj po en element. Množica je končna, če vsebuje končno število elementov; če ima neskončno elementov, je neskončna. Množica vseh elementov, o katerih je smiselno govoriti, se imenuje univerzalna množica. Množico z enim samim elementom imenujemo singleton, medtem ko množico z natanko dvema elementoma imenujemo par.
+
+Elementi množice so običjano števila lahko pa so tudi ostale reči, denimo množice. Zgled množic, ki ima za svoje elemente množice sta:  in . Pri tem velja  in .
+
+ Zapis množice
+
+Množico se lahko zapiše na različne načine:
+ Zapis z naštevanjem pomeni, da se našteje vse elemente, na primer: . Isto množico  lahko zapišemo tudi kot  ali , saj vrstni red naštetih elementov ni pomemben, prav tako pa množica ni občutljiva na to, če katerega od njenih elementov zapišemo večkrat.
+ Zapis z značilnostjo pomeni, da se zapiše značilnost, ki jo imajo elementi množice, na primer:
+ .
+ V množici  so vsa števila, ki pripadajo množici naravnih števil in so manjša ali enaka 5. V izrazu znak  predstavlja logični izjavni veznik konjunkcija.
+ Zapis s formulo pomeni, da se navede formulo, po kateri se izračuna elemente množice, na primer:
+ .
+
+Množico se lahko poda tudi slikovno – najbolj znan slikovni prikaz množice je Vennov diagram.
+
+ Računanje z množicami
+
+Obstaja več računskih operacij z množicami.
+
+Unija množic  in  je množica sestavljena iz elementov, ki pripadajo množici ' ali množici ':
+ .
+
+Presek množic  in  je množica sestavljena iz elementov, ki pripadajo množici  in množici :
+ .
+
+Razlika množic  in  je množica sestavljena iz elementov, ki pripadajo množici  in ne pripadajo množici :
+ .
+
+Komplement množice  je množica sestavljena iz elementov, ki ne pripadajo množici  in pripadajo univerzalni množici :
+ .
+
+Simetrična razlika množic  in  je množica sestavljena iz elementov, ki pripadajo natanko eni od množic  oziroma :
+ .
+
+Kartezični produkt množic  in  je množica sestavljena iz urejenih parov, ki imajo za prvo komponento element množice , za drugo komponento pa element množice .
+
+ Enakost in vsebovanost
+Množici  in  sta enaki natanko tedaj, ko imata iste elemente. Formalno zapišemo:  natanko tedaj, ko . Na primer množici  in  sta enaki.
+
+Za množici  in  pravimo, da je  podmnožica množice , , če za vsak element množice  velja, da pripada tudi . Formalno zapišemo:  natanko tedaj, ko . Pravimo, da množica  vsebuje množico . Odnos "biti podmnožica" pa imenujemo tudi relacija inkluzije. Če množica  ni podmnožica množice , uporabimo zapis .
+
+ Potenčna množica
+Vse podmnožice množice  sestavljajo potenčno množico, ki jo označimo kot . Za množico  je potenčna množica enaka: . Formalno zapišemo: , kjer je  podmnožica množice . Velja, da ima množica  z  elementi natanko  podmnožic. Smiselno je pokazati zgled potenčne množice prazne množice, , njena potenčna množica naj bi imela natanko  elementov, kar je tudi res: .
+
+ Neskončne množice
+
+Glavni problem, ki je sploh sprožil nastanek teorije množic, je vprašanje neskončno velikih množic. Ali so vse neskončno velike množice med seboj enakovredne? Georg Ferdinand Cantor je na vprašanje odgovoril nikalno. Pri tem je uporabil pojem ekvipolentnost, ki opisuje, kdaj imata dve množici enako število elementov oziroma enako moč. Pri končnih množicah je opazil, da imata množici enako število elementov, če in samo če med njima obstaja bijektivna preslikava. To je potem posplošil na neskončne množice in definiral, da sta poljubni množici ekvipolentni, če med njima obstaja bijektivna preslikava.
+
+Najmanjša neskončna množica je množica naravnih števil . Izkaže se, da je ekvipolentna množici celih števil  in tudi množici racionalnih števil . Elemente teh množic se lahko uredi po vrstnem redu in se jih oštevilči z naravnimi števili - te množice so števno neskončne.
+
+Zanimivo je, da množica realnih števil  ni ekvipolentna zgoraj naštetim množicam. Cantor je v svojem znamenitem diagonalnem dokazu dokazal, da ima množica  bistveno več elementov - ima moč kontinuuma. Moč kontinuuma ima tudi množica kompleksnih števil , pa tudi množica točk v ravnini ali množica točk v prostoru.

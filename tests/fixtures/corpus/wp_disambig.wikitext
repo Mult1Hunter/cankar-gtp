@@ -1,0 +1,14 @@
+'''Identitéta''' ali '''istovétnost''' ima lahko več pomenov:
+
+*[[identiteta (filozofija)|identiteta]], opredeljevanje nečesa za pomembno
+*[[osebna identiteta]], določanje človeka kot osebe
+*[[etnična identiteta]], temeljna skupinska identiteta kulture oziroma družbe
+*identiteta v [[matematika|matematiki]] je lahko:
+**[[identična funkcija]] (kratko ''identiteta''),  [[funkcija (matematika)|funkcija]], ki poljuben ''x'' preslika spet v ''x''
+**[[identična enačba]] (kratko ''identiteta''), [[enačba]], v kateri sta leva in desna stran enaki za vsak ''x'' (za vsako vrednost neznanke)
+**[[identična matrika]] (kratko ''identiteta''), kvadratna [[matrika]], ki ima po diagonali enice, drugod pa ničle
+**[[nevtralni element]]
+
+{{Razločitev}}
+
+[[Kategorija:Identiteta| ]]

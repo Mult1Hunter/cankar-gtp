@@ -1,0 +1,70 @@
+'''Mnóžica''' je v [[matematika|matematiki]] [[skupina]] abstraktnih ali stvarnih (konkretnih) reči. Te reči se imenujejo [[Element (matematika)|elementi]] in se jih med seboj loči (razlikuje – tj. dva elementa med sabo ne moreta biti enaka). Medsebojne odnose ([[relacija|relacije]]), strukture in medsebojne preslikave množic preučuje [[teorija množic]].
+
+Glavni pojem teorije množic je ''pripadnost''. Element <math>x</math> lahko pripada množici <math>M</math> (<math>x\in M\, </math>) ali pa tudi ne (<math>x\not\in M\, </math>).
+
+Množica, ki ji ne pripada noben element, se imenuje [[prazna množica]], označimo jo s <math> \emptyset</math>. Vse druge množice vsebujejo vsaj po en element. Množica je [[Končna množica|končna]], če vsebuje končno število elementov; če ima [[Neskončnost|neskončno]] elementov, je neskončna. Množica vseh elementov, o katerih je smiselno govoriti, se imenuje [[univerzalna množica]]. Množico z enim samim elementom imenujemo ''singleton'', medtem ko množico z natanko dvema elementoma imenujemo ''par''. 
+
+Elementi množice so običjano [[Število|števila]] lahko pa so tudi ostale reči, denimo množice. Zgled množic, ki ima za svoje elemente množice sta: <math>\{\{1,2\}, \{3\}\}</math> in <math>\{\{1,2,3\}\}</math>. Pri tem velja <math>\{1,2\} \in \{\{1,2\}, \{3\}\}</math> in <math>\{1,2\} \not\in \{\{1,2,3\}\}</math>. 
+
+== Zapis množice ==
+
+Množico se lahko zapiše na različne načine:
+* Zapis z naštevanjem pomeni, da se našteje vse elemente, na primer: <math>A = \{1, 2, 3, 4, 5\}</math>. Isto množico <math>A</math> lahko zapišemo tudi kot <math>\{4, 3, 5, 2,1 \}</math> ali <math>\{4,3,3,5,2,1,4 \}</math>, saj vrstni red naštetih elementov ni pomemben, prav tako pa množica ni občutljiva na to, če katerega od njenih elementov zapišemo večkrat.
+* Zapis z značilnostjo pomeni, da se zapiše značilnost, ki jo imajo elementi množice, na primer:
+: <math> A=\{x\;|\; x\in\mathbb{N}\land x\leqslant 5\} = \{1,2,3,4,5\}</math>.
+:* V množici <math>A</math> so vsa števila, ki pripadajo množici [[Naravno število|naravnih števil]] in so manjša ali enaka 5. V izrazu znak <math>\and</math> predstavlja logični izjavni veznik [[Konjunkcija (logika)|konjunkcija]].
+* Zapis s formulo pomeni, da se navede formulo, po kateri se izračuna elemente množice, na primer:
+: <math> B=\{n^2\;|\; n\in\mathbb{N}\} = \{1,4,9,16,25,\ldots\}</math>.
+
+Množico se lahko poda tudi slikovno – najbolj znan slikovni prikaz množice je [[Vennov diagram]].
+
+== Računanje z množicami ==
+
+Obstaja več računskih operacij z množicami.
+
+[[Unija množic]] <math> A</math> in <math>B</math> je množica sestavljena iz elementov, ki pripadajo množici ''<math>A</math>'' ali množici ''<math>B</math>'':
+: <math>A \cup B = \{x \mid x \in A \lor x \in B\}</math>.
+
+[[Presek množic]] <math>A</math> in <math>B</math> je množica sestavljena iz elementov, ki pripadajo množici <math>A</math> in množici <math>A</math>:
+: <math>A \cap B = \{x \mid x \in A \land x \in B\}</math>.
+
+[[Razlika množic]] <math>A</math> in <math>B</math> je množica sestavljena iz elementov, ki pripadajo množici <math>A</math> in ne pripadajo množici <math>B</math>:
+: <math>A \setminus B = \{x \mid x \in A \land x \notin B\}</math>.
+
+[[Komplement množice]] <math>A</math> je množica sestavljena iz elementov, ki ne pripadajo množici <math>A</math> in pripadajo univerzalni množici <math>S</math>:
+: <math>A^c = \{x \mid x \not \in A \land x \in S \}</math>.
+
+[[Simetrična razlika množic]] <math>A</math> in <math>B</math> je množica sestavljena iz elementov, ki pripadajo natanko eni od množic <math>A</math> oziroma <math>B</math>:
+: <math>A + B = \{x \mid x \in A \veebar x \in B\}</math>.
+
+[[Kartezični produkt]] množic <math> A</math> in <math>B</math> je množica sestavljena iz [[urejeni par|urejenih parov]], ki imajo za prvo komponento element množice <math>A</math>, za drugo komponento pa element množice <math>B</math>.
+
+== Enakost in vsebovanost ==
+Množici <math> A</math> in <math>B</math> sta enaki natanko tedaj, ko imata iste elemente. Formalno zapišemo: <math> A = B</math> natanko tedaj, ko <math> \forall x (x \in A  \Leftrightarrow x \in B)</math>. Na primer množici <math>\{1,2,3 \}</math> in <math>\{3,2,1 \}</math> sta enaki.
+
+[[File:Venn A subset B.svg|thumb|160x160px|A je podmnožica B]]
+
+Za množici <math> A</math> in <math> B</math> pravimo, da je <math> A</math> [[podmnožica]] množice <math>B</math>, <math> A \subseteq B</math>, če za vsak element množice <math> A</math> velja, da pripada tudi <math>B</math>. Formalno zapišemo: <math> A \subseteq B</math> natanko tedaj, ko <math> \forall x (x \in A  \Rightarrow x \in B)</math>. Pravimo, da množica <math>B</math> vsebuje množico <math> A</math>. Odnos "biti podmnožica" pa imenujemo tudi relacija ''inkluzije''. Če množica <math> A</math> ni podmnožica množice <math> B</math>, uporabimo zapis <math> A \not \subseteq B</math>.
+
+=== Potenčna množica ===
+Vse podmnožice množice <math> A</math> sestavljajo [[potenčna množica|potenčno množico]], ki jo označimo kot <math>\mathcal{P}A</math>. Za množico <math>A = \{1,2,3 \}</math> je potenčna množica enaka: <math>\mathcal{P}A = \{\emptyset, \{1\}, \{2\}, \{3\}, \{1, 2\}, \{1, 3\}, \{2, 3\}, \{1, 2, 3\}\}</math>. Formalno zapišemo: <math>\mathcal{P}A = \{X \mid X \subseteq A\}</math>, kjer je <math>X</math> podmnožica množice <math>A</math>. Velja, da ima množica <math> A</math> z <math>n</math> elementi natanko <math>2^n</math> podmnožic. Smiselno je pokazati zgled potenčne množice prazne množice, <math>\mathcal{P}\emptyset</math>, njena potenčna množica naj bi imela natanko <math>2^0 = 1</math> elementov, kar je tudi res: <math>\mathcal{P}\emptyset = \{\emptyset\}</math>.<ref>{{Navedi knjigo|title=Diskretne strukture|last=Fijavž|first=Gašper|year=2015|isbn=9789616209854}}</ref>
+ 
+== Neskončne množice ==
+
+Glavni problem, ki je sploh sprožil nastanek teorije množic, je vprašanje neskončno velikih množic. Ali so vse neskončno velike množice med seboj enakovredne? [[Georg Ferdinand Cantor]] je na vprašanje odgovoril nikalno. Pri tem je uporabil pojem [[ekvipolentnost]], ki opisuje, kdaj imata dve množici enako število elementov oziroma enako [[kardinalnost|moč]]. Pri [[končna množica|končnih množicah]] je opazil, da imata množici enako število elementov, [[če in samo če]] med njima obstaja [[bijektivna preslikava]]. To je potem posplošil na neskončne množice in definiral, da sta poljubni množici ekvipolentni, če med njima obstaja bijektivna preslikava.
+
+Najmanjša neskončna množica je množica [[naravna števila|naravnih števil]] <math>\mathbb{N}\, </math>. Izkaže se, da je ekvipolentna množici [[cela števila|celih števil]] <math>\mathbb{Z}\, </math> in tudi množici [[racionalna števila|racionalnih števil]] <math>\mathbb{Q}\, </math>. Elemente teh množic se lahko uredi po vrstnem redu in se jih oštevilči z naravnimi števili - te množice so [[števna neskončnost|števno neskončne]].
+
+Zanimivo je, da množica [[realno število|realnih števil]] <math>\mathbb{R}\, </math> ni ekvipolentna zgoraj naštetim množicam. Cantor je v svojem znamenitem [[Cantorjev diagonalni dokaz|diagonalnem dokazu]] dokazal, da ima množica <math>\mathbb{R}\, </math> bistveno več elementov - ima moč [[kontinuum (teorija množic)|kontinuuma]]. Moč kontinuuma ima tudi množica [[kompleksna števila|kompleksnih števil]] <math>\mathbb{C}\, </math>, pa tudi množica [[točka (geometrija)|točk]] v [[ravnina|ravnini]] ali množica točk v [[prostor]]u.
+
+== Glej tudi ==
+
+* [[večkratna množica]]
+* [[seznam]]
+
+== Sklici ==
+{{sklici}}
+
+[[Kategorija:Matematika]]
+[[Kategorija:Teorija množic| ]]
+{{normativna kontrola}}

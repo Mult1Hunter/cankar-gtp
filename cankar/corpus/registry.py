@@ -21,6 +21,7 @@ class Source(StrEnum):
 
     WIKIVIR = "wikivir"
     DLIB = "dlib"
+    WIKIPEDIA = "wikipedia"
 
 
 class SourceStatus(StrEnum):

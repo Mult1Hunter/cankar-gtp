@@ -28,6 +28,9 @@ class ShardManifest(BaseModel):
     n_words: int
     sha256: str  # content hash of the shard file
     expected_band_words: tuple[int, int] | None = None  # sanity band (corpus-qa)
+    # per-reason drop counts for sources that filter by count, not per-item triage
+    # (ADR 0004 amendment: this IS the committed "never silently dropped" record)
+    skip_counts: dict[str, int] | None = None
 
 
 def git_sha() -> str:

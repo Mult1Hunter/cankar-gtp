@@ -16,8 +16,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from cankar.core.http import PoliteSession
-from cankar.core.manifest import ShardManifest, git_sha, sha256_of, utc_now_iso, write_manifest
-from cankar.core.paths import dataset_manifest
 from cankar.core.schema import CorpusDoc
 from cankar.corpus.clean import (
     clean_wikitext,
@@ -26,6 +24,7 @@ from cankar.corpus.clean import (
     is_redirect,
     looks_like_index,
 )
+from cankar.corpus.shard import ShardWriter
 
 logger = logging.getLogger(__name__)
 
@@ -166,9 +165,21 @@ def crawl(
     logger.info(f"fetching {len(titles)} pages ...")
     pages = fetch_wikitext(session, titles)
 
-    out.parent.mkdir(parents=True, exist_ok=True)
     stats = CrawlStats()
-    with out.open("w", encoding="utf-8") as f:
+    writer = ShardWriter(
+        out,
+        source=source,
+        script="cankar corpus crawl-wikivir",
+        args={
+            "category": categories,
+            "author": author_pages,
+            "expand_subpages": expand,
+            "min_chars": min_chars,
+            "author_label": author_label,
+        },
+        expected_band=parse_band(expected_band),
+    )
+    with writer:
         for title, wikitext in sorted(pages.items()):
             if is_redirect(wikitext):
                 stats.skipped += 1
@@ -186,43 +197,20 @@ def crawl(
                 logger.info(f"  index-content guard: {title!r} looks like a bibliography - skipped")
                 stats.index_docs += 1
                 continue
-            doc = CorpusDoc(
-                title=title,
-                url=f"https://sl.wikisource.org/wiki/{title.replace(' ', '_')}",
-                text=text,
-                n_chars=len(text),
-                source=source,
-                author=author_label,
+            writer.write(
+                CorpusDoc(
+                    title=title,
+                    url=f"https://sl.wikisource.org/wiki/{title.replace(' ', '_')}",
+                    text=text,
+                    n_chars=len(text),
+                    source=source,
+                    author=author_label,
+                )
             )
-            f.write(doc.model_dump_json() + "\n")
-            stats.docs += 1
-            stats.chars += len(text)
-            stats.words += len(text.split())
-
-    manifest = ShardManifest(
-        source=source,
-        script="cankar corpus crawl-wikivir",
-        git_sha=git_sha(),
-        retrieved_at=utc_now_iso(),
-        args={
-            "category": categories,
-            "author": author_pages,
-            "expand_subpages": expand,
-            "min_chars": min_chars,
-            "author_label": author_label,
-        },
-        n_docs=stats.docs,
-        n_chars=stats.chars,
-        n_words=stats.words,
-        sha256=sha256_of(out),
-        expected_band_words=parse_band(expected_band),
-    )
-    mpath = write_manifest(manifest, dataset_manifest("corpus", out.stem))
-
+    stats.docs, stats.chars, stats.words = writer.n_docs, writer.n_chars, writer.n_words
     logger.info(
-        f"\nwrote {out} (manifest: {mpath})\n"
-        f"  docs:    {stats.docs} (skipped {stats.skipped}: redirects/too short; "
-        f"{stats.misattributed} misattributed, {stats.index_docs} index-content)\n"
-        f"  words:   {stats.words:,}"
+        f"wrote {out}: {stats.docs} docs, {stats.words:,} words "
+        f"(skipped {stats.skipped} redirect/short, {stats.misattributed} misattributed, "
+        f"{stats.index_docs} index-content)"
     )
     return stats

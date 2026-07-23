@@ -33,11 +33,10 @@ from pathlib import Path
 from urllib.parse import quote
 
 from cankar.core.http import PoliteSession
-from cankar.core.manifest import ShardManifest, git_sha, sha256_of, utc_now_iso, write_manifest
-from cankar.core.paths import dataset_manifest
 from cankar.core.schema import CorpusDoc
 from cankar.corpus.ocr_clean import decode_stream, ocr_clean
 from cankar.corpus.registry import Registry, Source, SourceRef, SourceStatus
+from cankar.corpus.shard import ShardWriter
 
 logger = logging.getLogger(__name__)
 
@@ -176,159 +175,158 @@ def crawl(
 
     stats = DlibStats()
     ingested_work_ids: set[str] = set()
-    n_docs = n_chars = n_words = 0
 
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out_f = out.open("w", encoding="utf-8")
+    writer = ShardWriter(
+        out,
+        source=Source.DLIB,
+        script="cankar corpus crawl-dlib",
+        args={"query_contributor": query_contributor, "author": author, "min_alpha": min_alpha},
+    )
+    with writer:
+        for i, urn in enumerate(doc_urns, 1):
+            if i % 25 == 0:
+                logger.info(f"  metadata {i}/{len(doc_urns)}")
+            try:
+                meta = parse_edm(session.get(f"{BASE}/{urn}/EDM/JSON").json())
+            except Exception as exc:  # noqa: BLE001 - record and continue the crawl
+                stats.triage.append(f"- {urn}: EDM fetch/parse failed ({exc})")
+                continue
 
-    for i, urn in enumerate(doc_urns, 1):
-        if i % 25 == 0:
-            logger.info(f"  metadata {i}/{len(doc_urns)}")
-        try:
-            meta = parse_edm(session.get(f"{BASE}/{urn}/EDM/JSON").json())
-        except Exception as exc:  # noqa: BLE001 - record and continue the crawl
-            stats.triage.append(f"- {urn}: EDM fetch/parse failed ({exc})")
-            continue
+            if not any(surname in p.casefold() for p in meta.people):
+                stats.not_author += 1
+                continue
+            if "rokopisi" in meta.types or "rokopis" in meta.types:
+                stats.manuscript += 1
+                work = reg.find(meta.title)
+                if work:
+                    reg.add_source(
+                        work,
+                        SourceRef(
+                            source=Source.DLIB,
+                            id=urn,
+                            status=SourceStatus.SKIPPED_MANUSCRIPT,
+                            year=meta.year,
+                        ),
+                    )
+                continue
+            if meta.langs and "sl" not in meta.langs:
+                stats.not_slovene += 1
+                continue
+            if PD_MARKER not in meta.rights:
+                stats.not_pd += 1
+                work = reg.find(meta.title)
+                if work:
+                    reg.add_source(
+                        work,
+                        SourceRef(
+                            source=Source.DLIB,
+                            id=urn,
+                            status=SourceStatus.SKIPPED_RIGHTS,
+                            year=meta.year,
+                        ),
+                    )
+                continue
 
-        if not any(surname in p.casefold() for p in meta.people):
-            stats.not_author += 1
-            continue
-        if "rokopisi" in meta.types or "rokopis" in meta.types:
-            stats.manuscript += 1
             work = reg.find(meta.title)
-            if work:
+            if work is None:
+                stats.unmatched += 1
+                part = f" (in: {meta.is_part_of})" if meta.is_part_of else ""
+                stats.triage.append(
+                    f"- {urn}: no registry match for {meta.title!r} [{meta.year}]{part}"
+                )
+                continue
+
+            covered = any(
+                s.source is Source.WIKIVIR and s.status is SourceStatus.INGESTED
+                for s in work.sources
+            )
+            if covered:
+                stats.candidate_covered += 1
                 reg.add_source(
                     work,
                     SourceRef(
                         source=Source.DLIB,
                         id=urn,
-                        status=SourceStatus.SKIPPED_MANUSCRIPT,
+                        status=SourceStatus.CANDIDATE,
                         year=meta.year,
+                        note="wikivir transcription preferred",
                     ),
                 )
-            continue
-        if meta.langs and "sl" not in meta.langs:
-            stats.not_slovene += 1
-            continue
-        if PD_MARKER not in meta.rights:
-            stats.not_pd += 1
-            work = reg.find(meta.title)
-            if work:
+                continue
+            if work.work_id in ingested_work_ids:
+                stats.duplicate_edition += 1
                 reg.add_source(
                     work,
                     SourceRef(
                         source=Source.DLIB,
                         id=urn,
-                        status=SourceStatus.SKIPPED_RIGHTS,
+                        status=SourceStatus.CANDIDATE,
                         year=meta.year,
+                        note="another edition already ingested",
                     ),
                 )
-            continue
+                continue
+            if not meta.text_url:
+                stats.no_text += 1
+                reg.add_source(
+                    work,
+                    SourceRef(
+                        source=Source.DLIB,
+                        id=urn,
+                        status=SourceStatus.CANDIDATE,
+                        year=meta.year,
+                        note="no TEXT stream",
+                    ),
+                )
+                continue
 
-        work = reg.find(meta.title)
-        if work is None:
-            stats.unmatched += 1
-            part = f" (in: {meta.is_part_of})" if meta.is_part_of else ""
-            stats.triage.append(
-                f"- {urn}: no registry match for {meta.title!r} [{meta.year}]{part}"
+            # the gap-filler: fetch + clean + gate
+            raw = session.get(meta.text_url, headers={"Referer": f"{BASE}/details/{urn}"}).content
+            text, metrics = ocr_clean(decode_stream(raw))
+            if metrics["early_noise"] > EARLY_NOISE_MAX:
+                # severely corrupted opening (mangled decorated title page) -
+                # corpus-qa finding: these docs are unreadable, exclude wholesale
+                stats.low_quality += 1
+                reg.add_source(
+                    work,
+                    SourceRef(
+                        source=Source.DLIB,
+                        id=urn,
+                        status=SourceStatus.SKIPPED_QUALITY,
+                        year=meta.year,
+                        note=f"severe opening corruption (early_noise={metrics['early_noise']})",
+                    ),
+                )
+                continue
+            if metrics["alpha_ratio"] < min_alpha or metrics["n_chars"] < min_chars:
+                stats.low_quality += 1
+                reg.add_source(
+                    work,
+                    SourceRef(
+                        source=Source.DLIB,
+                        id=urn,
+                        status=SourceStatus.SKIPPED_QUALITY,
+                        year=meta.year,
+                        note=f"alpha={metrics['alpha_ratio']} chars={metrics['n_chars']}",
+                    ),
+                )
+                continue
+
+            doc = CorpusDoc(
+                title=work.title,
+                url=f"{BASE}/details/{urn}",
+                text=text,
+                n_chars=len(text),
+                source=Source.DLIB,
+                author=author,
             )
-            continue
-
-        covered = any(
-            s.source is Source.WIKIVIR and s.status is SourceStatus.INGESTED for s in work.sources
-        )
-        if covered:
-            stats.candidate_covered += 1
+            writer.write(doc)
             reg.add_source(
                 work,
-                SourceRef(
-                    source=Source.DLIB,
-                    id=urn,
-                    status=SourceStatus.CANDIDATE,
-                    year=meta.year,
-                    note="wikivir transcription preferred",
-                ),
+                SourceRef(source=Source.DLIB, id=urn, status=SourceStatus.INGESTED, year=meta.year),
             )
-            continue
-        if work.work_id in ingested_work_ids:
-            stats.duplicate_edition += 1
-            reg.add_source(
-                work,
-                SourceRef(
-                    source=Source.DLIB,
-                    id=urn,
-                    status=SourceStatus.CANDIDATE,
-                    year=meta.year,
-                    note="another edition already ingested",
-                ),
-            )
-            continue
-        if not meta.text_url:
-            stats.no_text += 1
-            reg.add_source(
-                work,
-                SourceRef(
-                    source=Source.DLIB,
-                    id=urn,
-                    status=SourceStatus.CANDIDATE,
-                    year=meta.year,
-                    note="no TEXT stream",
-                ),
-            )
-            continue
-
-        # the gap-filler: fetch + clean + gate
-        raw = session.get(meta.text_url, headers={"Referer": f"{BASE}/details/{urn}"}).content
-        text, metrics = ocr_clean(decode_stream(raw))
-        if metrics["early_noise"] > EARLY_NOISE_MAX:
-            # severely corrupted opening (mangled decorated title page) -
-            # corpus-qa finding: these docs are unreadable, exclude wholesale
-            stats.low_quality += 1
-            reg.add_source(
-                work,
-                SourceRef(
-                    source=Source.DLIB,
-                    id=urn,
-                    status=SourceStatus.SKIPPED_QUALITY,
-                    year=meta.year,
-                    note=f"severe opening corruption (early_noise={metrics['early_noise']})",
-                ),
-            )
-            continue
-        if metrics["alpha_ratio"] < min_alpha or metrics["n_chars"] < min_chars:
-            stats.low_quality += 1
-            reg.add_source(
-                work,
-                SourceRef(
-                    source=Source.DLIB,
-                    id=urn,
-                    status=SourceStatus.SKIPPED_QUALITY,
-                    year=meta.year,
-                    note=f"alpha={metrics['alpha_ratio']} chars={metrics['n_chars']}",
-                ),
-            )
-            continue
-
-        doc = CorpusDoc(
-            title=work.title,
-            url=f"{BASE}/details/{urn}",
-            text=text,
-            n_chars=len(text),
-            source=Source.DLIB,
-            author=author,
-        )
-        out_f.write(doc.model_dump_json() + "\n")
-        reg.add_source(
-            work,
-            SourceRef(source=Source.DLIB, id=urn, status=SourceStatus.INGESTED, year=meta.year),
-        )
-        ingested_work_ids.add(work.work_id)
-        stats.ingested += 1
-        n_docs += 1
-        n_chars += len(text)
-        n_words += len(text.split())
-
-    out_f.close()
+            ingested_work_ids.add(work.work_id)
+            stats.ingested += 1
     reg.save(registry_path)
 
     triage_path.parent.mkdir(parents=True, exist_ok=True)
@@ -338,25 +336,7 @@ def crawl(
         + "\n"
     )
 
-    manifest = ShardManifest(
-        source=Source.DLIB,
-        script="cankar corpus crawl-dlib",
-        git_sha=git_sha(),
-        retrieved_at=utc_now_iso(),
-        args={
-            "query_contributor": query_contributor,
-            "author": author,
-            "min_alpha": min_alpha,
-        },
-        n_docs=n_docs,
-        n_chars=n_chars,
-        n_words=n_words,
-        sha256=sha256_of(out),
-        expected_band_words=None,
-    )
-    write_manifest(manifest, dataset_manifest("corpus", out.stem))
-
-    logger.info(f"\nwrote {out} - {n_docs} docs, {n_words:,} words")
+    logger.info(f"wrote {out}: {writer.n_docs} docs, {writer.n_words:,} words")
     for k, v in vars(stats).items():
         logger.info(f"  {k}: {v}")
     logger.info(f"  triage report: {triage_path} ({len(stats.triage)} lines)")

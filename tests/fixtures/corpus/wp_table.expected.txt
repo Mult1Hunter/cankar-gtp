@@ -1,0 +1,13 @@
+Amhárščina (አማርኛ) je semitski jezik naroda Amharcev in je glavni (vsiljen) jezik v Etiopiji in deloma v Eritreji, ki se je od Etiopije odcepila. Amharščino govori le približno 12 % etiopskega prebivalstva. Amharska pisava je prirejena abugida izumrlega jezika giz.
+
+ Amharsko glasoslovje
+
+<P>Spodnja tabela uporablja SAMPA znake kjer je to mogoče, z izjemo ejektivov, ki so označeni z ’ (opuščajem/desnim enojnim narekovajem).
+
+ Amharski abugida znaki (»pismenke« ፊደል)
+
+Ta tabela ni popolna. Nekateri fonemi imajo več sestavov možnih znakov. Prikazana sta samo pojasnilna primera za /k/ in /h/ (slednji ima štiri sestave!). Soglasniki so združeni glede na izgovor (glej zgornjo tabelo fonemov), samoglasniki pa so navedeni po fonološki razvrstitvi. Navedena oblika za vsak sestav je oblike soglasnik+/E/, to je prvi stolpec pismenk. Za pregled pismenk boste potrebovali črke, ki podpirajo amharske pismenke, kot je GF Zemen Unicode (na razpolago na ftp://ftp.ethiopic.org/pub/fonts/TrueType/gfzemenu.ttf ).
+
+Evropejci so bili pogosto zbegani ali zaprepadeni ob nenavadni podobnosti mnogih znakov. Kakor veliko semitskih jezikov, tudi amharščina v svoji besedni morfologiji uporablja trisoglasniške korenske osnove in je na ta način njen zapis lažje razumljiv. Tekoč govorec amharščine lahko razreši zapisano besedilo, če opazuje kateri soglasniki so pomembnejši, skupaj s samoglasniškimi različicami kot dodatnimi podrobnostmi.
+
+ Nekaj besed

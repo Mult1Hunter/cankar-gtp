@@ -1,6 +1,6 @@
 # ADR 0004 - works registry as source of truth for corpus provenance
 
-**Status:** accepted, 2026-07
+**Status:** accepted, 2026-07 (amended 2026-07 for non-authored sources - see Amendment)
 
 ## Context
 
@@ -46,3 +46,22 @@ work: canonical title, year, genre, aliases, and per-source status
   bookkeeping - small constant overhead per crawler.
 - The registry is hand-editable (`notes` never clobbered by tooling); humans
   resolve triage and collision flags.
+
+## Amendment (2026-07) - registry scope is authored literary works
+
+The Wikipedia ingestion stage forced the boundary the original invariant left
+implicit. "Every ingested document maps to a works-registry entry" is scoped to
+**authored literary works** (the Cankar + PD-author corpus). General-reference
+sources without per-work authorship - Wikipedia's ~190k articles - do NOT enter
+a per-author works registry; forcing them in would be meaningless.
+
+For such sources the sanctioned provenance path is the committed **dataset
+manifest** (`registry/datasets/`, ADR 0007): input dump filename, date, sha256,
+license, plus output counts. The "never silently dropped" guarantee still binds,
+honored by **skip counts** (every filtered class tallied and recorded in the
+manifest) rather than infeasible per-item triage over hundreds of thousands of
+redirects and stubs.
+
+CLAUDE.md's engineering-system rule is updated to match: authored-source
+documents map to a registry entry; non-authored sources carry dataset-manifest
+provenance with per-reason skip counts (the manifest's `skip_counts` field).
