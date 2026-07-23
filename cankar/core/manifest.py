@@ -34,6 +34,9 @@ class ShardManifest(BaseModel):
 
 
 def git_sha() -> str:
+    """Short HEAD sha, '-dirty'-suffixed when the tree has uncommitted changes -
+    a clean sha in a manifest must mean 'regenerate and diff' is followable
+    (ADR 0003; design-review 2026-07)."""
     try:
         out = subprocess.run(
             ["git", "rev-parse", "--short", "HEAD"],
@@ -41,7 +44,17 @@ def git_sha() -> str:
             text=True,
             check=True,
         )
-        return out.stdout.strip()
+        sha = out.stdout.strip()
+        # untracked-files=no: git-describe --dirty semantics. Untracked files
+        # cannot corrupt regeneration of tracked state - and artifacts awaiting
+        # their first commit must not dirty their own provenance stamp.
+        status = subprocess.run(
+            ["git", "status", "--porcelain", "--untracked-files=no"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return sha if not status.stdout.strip() else f"{sha}-dirty"
     except (subprocess.CalledProcessError, FileNotFoundError):
         return "unknown"
 
@@ -58,7 +71,7 @@ def utc_now_iso() -> str:
     return datetime.now(UTC).isoformat(timespec="seconds")
 
 
-def write_manifest(manifest: ShardManifest, out: Path) -> Path:
+def write_manifest(manifest: BaseModel, out: Path) -> Path:
     """Write to the committed ledger path (cankar.core.paths.dataset_manifest) -
     manifests are provenance and live in git, never only beside gitignored data."""
     out.parent.mkdir(parents=True, exist_ok=True)

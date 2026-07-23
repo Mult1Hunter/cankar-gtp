@@ -1,0 +1,61 @@
+# Morphology probe list for the tokenizer-eval report (Phase 2).
+# Real Slovene forms per class; segmentations of these are regression
+# material - a vocab change that fractures case paradigms or archaic
+# orthography shows up here before it shows up in training loss.
+
+[probes]
+# noun case paradigms - does one lexeme share stems across cases?
+case_paradigm = [
+    "misel",
+    "misli",
+    "mislijo",
+    "človek",
+    "človeka",
+    "ljudje",
+    "ljudi",
+    "srce",
+    "srca",
+    "srcem",
+]
+
+# verbal aspect pairs - perfective/imperfective stem sharing
+aspect_pairs = [
+    "stopiti",
+    "stopati",
+    "prihajati",
+    "priti",
+]
+
+# Cankar-era archaic orthography and lexis (solnce = sonce, vsled = zaradi)
+archaic = [
+    "solnce",
+    "vsled",
+    "kedaj",
+    "otožnost",
+    "hrepenenje",
+    "črtica",
+]
+
+# diacritics - c/s/z-caron handling straight through BPE bytes
+diacritics = [
+    "čaščenje",
+    "šumenje",
+    "žalost",
+    "čičerika",
+]
+
+# verse elision apostrophes (route through the punctuation branch, not the
+# English contraction branch - critique A-3)
+elision = [
+    "al'",
+    "tak'",
+    "moj'ga",
+]
+
+# modern control words (Wikipedia register)
+modern = [
+    "računalnik",
+    "demokracija",
+    "Ljubljana",
+    "stoletje",
+]

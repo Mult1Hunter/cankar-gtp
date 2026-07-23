@@ -13,6 +13,8 @@ dependencies = [
     "datasketch>=2.0.0",
     # Phase 2+ - tokenizer/training
     "torch>=2.13.0",
+    "rustbpe==0.1.0",
+    "tiktoken>=0.11.0",
 ]
 
 [project.urls]
@@ -57,11 +59,13 @@ root_package = "cankar"
 [[tool.importlinter.contracts]]
 name = "core is the bottom layer; stages sit above it and stay independent"
 type = "layers"
-layers = ["cankar.corpus", "cankar.core"]
+layers = ["cankar.corpus | cankar.tokenizer", "cankar.core"]
 
 [tool.mypy]
 files = ["cankar"]
-python_version = "3.11"
+# 3.12, not the 3.11 requires-python floor: numpy 2.x stubs (pulled in via
+# torch, Phase 2) use PEP 695 `type` statements that 3.11 mypy cannot parse.
+python_version = "3.12"
 plugins = ["pydantic.mypy"]
 disallow_untyped_defs = true
 warn_unused_ignores = true
@@ -69,5 +73,5 @@ warn_redundant_casts = true
 no_implicit_optional = true
 
 [[tool.mypy.overrides]]
-module = ["mwparserfromhell.*", "datasketch.*"]
+module = ["mwparserfromhell.*", "datasketch.*", "rustbpe.*"]
 ignore_missing_imports = true

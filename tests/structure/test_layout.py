@@ -36,7 +36,7 @@ ROOT_ALLOWLIST = {
 }
 
 # Rule 4: a stage exists everywhere or nowhere. New stage = edit this tuple.
-STAGES = ("corpus",)
+STAGES = ("corpus", "tokenizer")  # tokenizer: Phase 2 (ADR 0011)
 NON_STAGE_PACKAGES = {"core"}  # + "model" at Phase 3 (ADR 0007)
 
 BANNED_BASENAMES = {"utils.py", "helpers.py", "common.py", "misc.py"}
