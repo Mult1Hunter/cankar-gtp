@@ -22,10 +22,16 @@ Do not build serving or the Laravel orchestrator before the styler exists.
 ## Phase 0 - Environment (half a day)
 
 - [x] uv project init
-- [ ] PyTorch + CUDA 12.x; verify `torch.cuda.is_available()` (deps arrive with Phase 2/3 per pyproject policy)
-- [ ] Clone nanochat; read the speedrun script end-to-end
-- [ ] Watch Karpathy "Let's build GPT" (nanoGPT stays *reading material*, nanochat is the codebase)
-- [ ] RunPod account + **spending limit set** + one 15-min throwaway pod to validate workflow
+- [x] PyTorch + CUDA; `torch.cuda.is_available()` verified - torch 2.13.0+cu130
+      on the RTX 4070 Ti Super, driver 580 (roadmap said CUDA 12.x; current
+      wheels ship 13.0)
+- [x] Clone nanochat (sibling checkout); speedrun read end-to-end. Adaptation
+      seams mapped: tok_train takes a plain text iterator (narrow - Phase 2),
+      pretrain reads FineWeb-parquet via nanochat.dataset (the real B1 work -
+      Phase 3); runs/miniseries.sh + runcpu.sh are TinyCankar material
+- [x] Watch Karpathy "Let's build GPT" (nanoGPT stays *reading material*, nanochat is the codebase)
+- [x] RunPod account + **spending limit set**; the 15-min throwaway pod folds
+      into Phase 2.5's $1 cloud rehearsal (same workflow validation, one spend)
 - [x] Repo init (public from commit #1), .gitignore, .env.example, gitleaks pre-commit hook + CI
 - [x] Roadmap gate: required CI check on every PR - body attestation, newly
       ticked deliverables surfaced in the job summary, flip-down protection

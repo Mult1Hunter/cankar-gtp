@@ -97,7 +97,7 @@ Act as this project's senior engineer and tech lead, not an assistant:
 
 ## Current phase
 
-Phase 2 - tokenizer. Phase 1 corpus complete: 126,355 docs / 72.33M words merged
-(chunking + token stats moved into Phase 2 - tokenizer decisions). Next: PyTorch/CUDA
-deps + nanochat clone (Phase 0 leftovers), then Slovene BPE.
-(Canonical status: ROADMAP checkboxes.)
+Phase 2 - tokenizer. Phase 0 env wrapped (torch cu130 verified, nanochat read,
+RunPod capped); Phase 1 corpus complete: 126,355 docs / 72.33M words merged.
+Next: Slovene BPE - nanochat's rustbpe stage fed by our JSONL via its
+text-iterator seam. (Canonical status: ROADMAP checkboxes.)
