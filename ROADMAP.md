@@ -47,9 +47,21 @@ Do not build serving or the Laravel orchestrator before the styler exists.
       so genuinely new: 23 works / 60k words, author corpus 1.70M -> ~1.76M
       post-merge; registry is ledger-not-gate (ADR 0004 amendment 2);
       committed audit report in registry/reports/
-- [ ] Dedupe + chunk (merge stage; consumes registry/works/NOTES.md annotations
-      + near-duplicates.md clusters; keep-preference = source ordering, see
-      dedup.py contract; real-pair calibration fixtures required before drops)
+- [x] Merge stage (`cankar corpus merge`): quality-gated, deduplicated,
+      deterministic merged corpus. Four dedup signals (exact hash, registry
+      work-identity, MinHash near-dup, containment); keep-preference by shard
+      tier (Wikivir > dLib > gapfill > Wikipedia); cross-author attribution
+      via committed collision_resolution.toml (never silent). Built to the
+      architect critique (M1-M4); real-pair fixtures pin every signal.
+      -> 126,400 docs / 72.29M words (dropped: 11 gate, 10 registry-identity,
+      6 exact, 296 near-dup). Committed merge report + manifest.
+      - [ ] FOLLOW-UP: containment drops. The merge REPORTS (not drops) 100+
+            works duplicated inside collected volumes (Kette poems in
+            'Poezije 1907', Aškerc ballads in 'Balade in romance', Cankar
+            vignettes in 'Vinjete'). Dropping needs a keep-policy decision
+            (individual work vs collected volume) - deferred per M4, evidence
+            committed in registry/reports/merge.md.
+- [ ] Chunk (moves to Phase 2 - chunk size is a tokenizer/context decision)
 - [ ] Stats report: tokens per source/author (words-per-source shipped in
       corpus-quality.md; token counts need the Phase 2 tokenizer)
 - ⚠️ **Yield correction (measured 2026-07, incl. dLib gap-fill):** Cankar ~1.76M
