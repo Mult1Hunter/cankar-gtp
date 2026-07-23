@@ -1,20 +1,24 @@
 """dLib coverage reconciliation - which PD records with usable text are NOT in
 the corpus?
 
-Inverts crawl()'s record-driven flow into a coverage audit. The original crawl
-was registry-gated: a dLib record whose title failed to match a registry entry
-went to a gitignored triage file and was effectively lost (an external review
-called this out as registry-as-hard-gate; it cost us recoverable works whose
-dLib titles are journal-issue titles). Reconcile fixes the class:
+Supersedes the retired registry-gated `crawl-dlib` flow (ADR 0004 amendment 2:
+the gate was the bug class - a record whose title failed registry matching died
+in a gitignored triage file, losing recoverable works whose dLib titles are
+journal-issue titles). Principles:
 
-- every PD record with a TEXT stream is classified into an explicit bucket
-  (enumerated below - ADR 0006);
+- every DOC record lands in exactly one enumerated bucket (ADR 0006), and every
+  bucket that matched a registry work leaves a SourceRef - the ledger records
+  what dLib has even when nothing is pulled;
 - unmatched-but-PD records are upserted into the committed registry as
-  DLIB_DISCOVERED candidates (ledger, not gate) instead of dying in triage;
-- the audit is a committed report, reproducible via
-  `cankar corpus reconcile-dlib`;
-- `--pull` ingests the PD_UNPULLED bucket through the same clean_and_gate
-  sequence the crawl uses, into its own gap-fill shard + manifest.
+  DLIB_DISCOVERED candidates instead of dying in triage;
+- title matching tries the full title, then each `[:;|]`-separated segment in
+  order, exact-on-normalized (no fuzzy matching). Head-first order is
+  calibrated on the discovery-loop-back incident: 27 verbatim-title upserts
+  ('Hlapci| drama v petih aktih', 'Crtice; Majska noc', ...) created parallel
+  identities whose heads name the canonical work, and the pull re-ingested 19
+  already-covered editions before the design review caught it;
+- `--pull` ingests the PD_UNPULLED bucket through the shared clean_and_gate
+  sequence, one edition per work, into its own shard + manifest.
 
 CLI: `cankar corpus reconcile-dlib` (cankar.corpus.cli).
 """
@@ -26,16 +30,20 @@ import re
 from dataclasses import dataclass, field
 from enum import StrEnum
 from pathlib import Path
+from urllib.parse import quote
 
 from cankar.core.http import PoliteSession
 from cankar.core.reports import generated_marker, write_report
 from cankar.core.schema import CorpusDoc
 from cankar.corpus.dlib import (
     BASE,
+    DEFAULT_MIN_ALPHA,
+    DEFAULT_MIN_CHARS,
     PD_MARKER,
     EdmRecord,
     clean_and_gate,
     enumerate_urns,
+    is_by_author,
     parse_edm,
 )
 from cankar.corpus.registry import (
@@ -50,11 +58,13 @@ from cankar.corpus.shard import ShardWriter
 
 logger = logging.getLogger(__name__)
 
+_SEP_RE = re.compile(r"\s*[:;|]\s*")  # dLib title separators (subtitle, attribution, series)
+
 
 class Bucket(StrEnum):
     """Every dLib DOC record lands in exactly one class (enumerated: ADR 0006)."""
 
-    NOT_AUTHOR = "not_author"  # surname absent from contributors/creators
+    NOT_AUTHOR = "not_author"  # authorship check failed (creators/attribution/memorial)
     MANUSCRIPT = "manuscript"  # handwriting scan, OCR unusable by policy
     NOT_SLOVENE = "not_slovene"
     IN_COPYRIGHT = "in_copyright"  # no PD rights marker on this edition
@@ -76,58 +86,33 @@ class ReconcileStats:
     )  # urn, title, part_of
     pulled: int = 0
     pull_gate_failed: int = 0
+    pull_duplicate_edition: int = 0
 
 
 def match_work(reg: Registry, title: str) -> WorkRecord | None:
-    """Crawl matching plus one relaxation: dLib subtitles use ' : ' - retry with
-    the subtitle stripped. Every strategy is exact-on-normalized (no fuzzy
-    containment - name-collision safety per the registry verification rule)."""
+    """Full title first, then each separator segment head-first - every strategy
+    exact-on-normalized (no fuzzy containment; name-collision safety). Head-first
+    is the calibrated order: in all 27 real loop-back cases the head named the
+    canonical work ('Na klancu; Spisal Ivan Cankar', 'Hlapci| drama ...')."""
     work = reg.find(title)
-    if work is None and " : " in title:
-        work = reg.find(title.split(" : ")[0])
-    return work
-
-
-# title-embedded attribution: "Napisal A. Askerc" etc. names the true author
-_ATTRIB_RE = re.compile(r"(napisal|spisal|zložil)", re.IGNORECASE)
-# memorial/tribute titles are ABOUT the person, not by them
-_MEMORIAL_RE = re.compile(r"^spominu\b|\bv spomin\b", re.IGNORECASE)
-
-
-def is_by_author(meta: EdmRecord, surname: str) -> bool:
-    """Layered authorship check, calibrated on real contamination the corpus-qa
-    audit caught in the first gap-fill pull (all three committed as fixtures):
-
-    1. dc:creator is the authorship claim - when present, it decides. (Caught:
-       Gregorcic's collected poems where Cankar is only dc:contributor.)
-    2. dLib often omits dc:creator on journal records, so fall back to the
-       merged people set - but reject titles carrying an attribution phrase
-       without the author's surname after it (caught: 'Lirske in epske
-       poezije; Napisal A. Askerc') and memorial-pattern titles (caught:
-       'Spominu Ivana Cankarja' - a tribute ABOUT the author by others).
-    Residual risk (accepted, documented): a work by someone else where dLib
-    lists only the author as contributor AND the title carries no attribution.
-    """
-    if meta.creators:
-        return any(surname in c.casefold() for c in meta.creators)
-    if not any(surname in p.casefold() for p in meta.people):
-        return False
-    m = _ATTRIB_RE.search(meta.title)
-    if m and surname not in meta.title[m.start() :].casefold():
-        return False
-    if _MEMORIAL_RE.search(meta.title):
-        return False
-    return True
+    if work is not None:
+        return work
+    for seg in _SEP_RE.split(title):
+        if seg:
+            work = reg.find(seg)
+            if work is not None:
+                return work
+    return None
 
 
 def classify(
-    meta: EdmRecord, urn: str, reg: Registry, surname: str
+    meta: EdmRecord, urn: str, reg: Registry, query_contributor: str
 ) -> tuple[Bucket, WorkRecord | None]:
     """Pure bucketing of one record - the testable core of the audit."""
-    if not is_by_author(meta, surname):
+    if not is_by_author(meta, query_contributor):
         return Bucket.NOT_AUTHOR, None
     if "rokopisi" in meta.types or "rokopis" in meta.types:
-        return Bucket.MANUSCRIPT, None
+        return Bucket.MANUSCRIPT, match_work(reg, meta.title)
     if meta.langs and "sl" not in meta.langs:
         return Bucket.NOT_SLOVENE, None
     if PD_MARKER not in meta.rights:
@@ -148,6 +133,15 @@ def classify(
     return Bucket.PD_UNPULLED, work
 
 
+# buckets that leave a ledger SourceRef when a registry work matched
+_LEDGER_STATUS: dict[Bucket, tuple[SourceStatus, str]] = {
+    Bucket.MANUSCRIPT: (SourceStatus.SKIPPED_MANUSCRIPT, ""),
+    Bucket.IN_COPYRIGHT: (SourceStatus.SKIPPED_RIGHTS, ""),
+    Bucket.PD_NO_TEXT: (SourceStatus.CANDIDATE, "no TEXT stream"),
+    Bucket.PD_COVERED: (SourceStatus.CANDIDATE, "covered by ingested source"),
+}
+
+
 def reconcile(
     *,
     query_contributor: str,
@@ -155,17 +149,17 @@ def reconcile(
     registry_path: Path,
     report_out: Path,
     pull_out: Path | None = None,
-    min_alpha: float = 0.84,
-    min_chars: int = 400,
+    min_alpha: float = DEFAULT_MIN_ALPHA,
+    min_chars: int = DEFAULT_MIN_CHARS,
 ) -> ReconcileStats:
     """Audit dLib coverage; with pull_out set, ingest the PD_UNPULLED bucket."""
     reg = Registry.load(registry_path, author)
-    surname = query_contributor.split(",")[0].strip().casefold()
     stats = ReconcileStats()
 
     session = PoliteSession()
-    bootstrap = f"{BASE}/results/?query=%27contributor%3D{query_contributor.replace(' ', '%20')}%27"
-    session.get(bootstrap)  # session cookie for TEXT streams
+    # session bootstrap: TEXT streams 302 without cookies
+    bootstrap_query = quote(f"'contributor={query_contributor}'")
+    session.get(f"{BASE}/results/?query={bootstrap_query}&pageSize=25")
 
     urns = enumerate_urns(session, query_contributor)
     doc_urns = [u for u in urns if u.split(":")[-1].startswith("DOC-")]
@@ -180,9 +174,15 @@ def reconcile(
         except Exception as exc:  # noqa: BLE001 - record and continue the audit
             logger.warning(f"{urn}: EDM fetch/parse failed ({exc})")
             continue
-        bucket, work = classify(meta, urn, reg, surname)
+        bucket, work = classify(meta, urn, reg, query_contributor)
         stats.counts[bucket] += 1
-        if bucket is Bucket.PD_UNPULLED and work is not None:
+        if bucket in _LEDGER_STATUS and work is not None:
+            status, note = _LEDGER_STATUS[bucket]
+            reg.add_source(
+                work,
+                SourceRef(source=Source.DLIB, id=urn, status=status, year=meta.year, note=note),
+            )
+        elif bucket is Bucket.PD_UNPULLED and work is not None:
             stats.unpulled.append((urn, meta.title, meta.year))
             to_pull.append((urn, meta, work))
         elif bucket is Bucket.PD_UNMATCHED:
@@ -203,6 +203,7 @@ def reconcile(
             )
 
     if pull_out is not None and to_pull:
+        pulled_work_ids: set[str] = set()
         writer = ShardWriter(
             pull_out,
             source=Source.DLIB,
@@ -216,6 +217,19 @@ def reconcile(
         )
         with writer:
             for urn, meta, work in to_pull:
+                if work.work_id in pulled_work_ids:
+                    stats.pull_duplicate_edition += 1
+                    reg.add_source(
+                        work,
+                        SourceRef(
+                            source=Source.DLIB,
+                            id=urn,
+                            status=SourceStatus.CANDIDATE,
+                            year=meta.year,
+                            note="another edition already pulled",
+                        ),
+                    )
+                    continue
                 assert meta.text_url is not None  # PD_UNPULLED guarantees it
                 raw = session.get(
                     meta.text_url, headers={"Referer": f"{BASE}/details/{urn}"}
@@ -250,13 +264,17 @@ def reconcile(
                         source=Source.DLIB, id=urn, status=SourceStatus.INGESTED, year=meta.year
                     ),
                 )
+                pulled_work_ids.add(work.work_id)
                 stats.pulled += 1
 
     reg.save(registry_path)
     write_reconcile_report(stats, report_out)
     for bucket, n in stats.counts.items():
         logger.info(f"  {bucket}: {n}")
-    logger.info(f"  pulled: {stats.pulled}, gate-failed: {stats.pull_gate_failed}")
+    logger.info(
+        f"  pulled: {stats.pulled}, gate-failed: {stats.pull_gate_failed}, "
+        f"duplicate-edition: {stats.pull_duplicate_edition}"
+    )
     return stats
 
 

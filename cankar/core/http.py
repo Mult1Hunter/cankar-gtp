@@ -17,6 +17,7 @@ UA = "CankarGTP-corpus-builder/0.1 (+https://nextgen-solutions.xyz; educational 
 DEFAULT_SLEEP = 0.5  # polite delay between requests, seconds
 DEFAULT_TIMEOUT = 60
 DEFAULT_RETRIES = 3  # transient-failure retries with exponential backoff
+MAX_BACKOFF = 60.0  # cap for server-supplied Retry-After, seconds
 RETRYABLE = frozenset({429, 500, 502, 503, 504})
 
 
@@ -50,7 +51,10 @@ class PoliteSession:
                 time.sleep(backoff)
                 continue
             if resp.status_code in RETRYABLE and attempt < self.retries:
-                backoff = float(resp.headers.get("Retry-After", 2.0**attempt))
+                try:  # Retry-After may be an HTTP-date or garbage; cap the sleep
+                    backoff = min(float(resp.headers.get("Retry-After", "")), MAX_BACKOFF)
+                except ValueError:
+                    backoff = 2.0**attempt
                 logger.warning(f"HTTP {resp.status_code}, retry {attempt + 1} in {backoff}s: {url}")
                 time.sleep(backoff)
                 continue

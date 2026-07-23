@@ -47,19 +47,6 @@ def _crawl_wikivir(args: argparse.Namespace) -> int:
     return 0
 
 
-def _crawl_dlib(args: argparse.Namespace) -> int:
-    dlib.crawl(
-        query_contributor=args.query_contributor,
-        author=args.author,
-        registry_path=args.registry,
-        out=args.out,
-        triage=args.triage,
-        min_alpha=args.min_alpha,
-        min_chars=args.min_chars,
-    )
-    return 0
-
-
 def _reconcile_dlib(args: argparse.Namespace) -> int:
     reconcile.reconcile(
         query_contributor=args.query_contributor,
@@ -155,16 +142,6 @@ def register(parser: argparse.ArgumentParser) -> None:
     p.add_argument("--not-by", action="append", default=[])
     p.set_defaults(func=_crawl_wikivir)
 
-    p = sub.add_parser("crawl-dlib", help="fill registry gaps from dLib.si (PD-marked only)")
-    p.add_argument("--query-contributor", required=True)
-    p.add_argument("--author", required=True)
-    p.add_argument("--registry", required=True, type=Path)
-    p.add_argument("--out", required=True, type=Path)
-    p.add_argument("--triage", type=Path, default=None)
-    p.add_argument("--min-alpha", type=float, default=0.84)
-    p.add_argument("--min-chars", type=int, default=400)
-    p.set_defaults(func=_crawl_dlib)
-
     p = sub.add_parser(
         "reconcile-dlib", help="audit dLib coverage; --pull-shard ingests the recoverable gap"
     )
@@ -173,8 +150,8 @@ def register(parser: argparse.ArgumentParser) -> None:
     p.add_argument("--registry", required=True, type=Path)
     p.add_argument("--report", type=Path, default=dlib_reconcile_report())
     p.add_argument("--pull-shard", default=None, help="shard slug, e.g. dlib-cankar-gapfill")
-    p.add_argument("--min-alpha", type=float, default=0.84)
-    p.add_argument("--min-chars", type=int, default=400)
+    p.add_argument("--min-alpha", type=float, default=dlib.DEFAULT_MIN_ALPHA)
+    p.add_argument("--min-chars", type=int, default=dlib.DEFAULT_MIN_CHARS)
     p.set_defaults(func=_reconcile_dlib)
 
     p = sub.add_parser("seed", help="seed/refresh a works registry from catalog pages")

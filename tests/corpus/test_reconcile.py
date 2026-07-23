@@ -59,7 +59,7 @@ def test_real_contamination_rejected() -> None:
         people=frozenset({"Cankar, Ivan", "Šlebinger, Janko"}),
     )
     for meta in (gregorcic, askerc, memorial):
-        bucket, _ = classify(meta, "URN:NBN:SI:DOC-X", reg, "cankar")
+        bucket, _ = classify(meta, "URN:NBN:SI:DOC-X", reg, "Cankar, Ivan")
         assert bucket is Bucket.NOT_AUTHOR, f"{meta.title!r} must be rejected"
 
 
@@ -68,7 +68,7 @@ def test_journal_record_without_creator_still_accepted() -> None:
     fallback must keep accepting them (no attribution phrase, no memorial)."""
     reg = make_registry()
     meta = rec(creators=frozenset(), people=frozenset({"Cankar, Ivan"}))
-    bucket, _ = classify(meta, "URN:NBN:SI:DOC-X", reg, "cankar")
+    bucket, _ = classify(meta, "URN:NBN:SI:DOC-X", reg, "Cankar, Ivan")
     assert bucket is Bucket.PD_UNPULLED
 
 
@@ -80,7 +80,7 @@ def test_own_attribution_not_rejected() -> None:
         creators=frozenset(),
         people=frozenset({"Cankar, Ivan"}),
     )
-    bucket, _ = classify(meta, "URN:NBN:SI:DOC-X", reg, "cankar")
+    bucket, _ = classify(meta, "URN:NBN:SI:DOC-X", reg, "Cankar, Ivan")
     assert bucket is Bucket.PD_UNPULLED
 
 
@@ -99,7 +99,7 @@ def test_every_bucket_reachable() -> None:
         (rec(), Bucket.PD_UNPULLED),
     ]
     for meta, expected in cases:
-        bucket, _ = classify(meta, "URN:NBN:SI:DOC-X", reg, "cankar")
+        bucket, _ = classify(meta, "URN:NBN:SI:DOC-X", reg, "Cankar, Ivan")
         assert bucket is expected, f"{meta.title}/{meta.rights} -> {bucket}, wanted {expected}"
 
 
@@ -107,13 +107,13 @@ def test_ingested_urn_recognized() -> None:
     reg = make_registry(
         source=Source.DLIB, id="URN:NBN:SI:DOC-X", status=SourceStatus.INGESTED, year=1907
     )
-    bucket, _ = classify(rec(), "URN:NBN:SI:DOC-X", reg, "cankar")
+    bucket, _ = classify(rec(), "URN:NBN:SI:DOC-X", reg, "Cankar, Ivan")
     assert bucket is Bucket.PD_INGESTED
 
 
 def test_work_covered_by_wikivir_not_repulled() -> None:
     reg = make_registry(source=Source.WIKIVIR, id="Hlapec Jernej", status=SourceStatus.INGESTED)
-    bucket, _ = classify(rec(), "URN:NBN:SI:DOC-Y", reg, "cankar")
+    bucket, _ = classify(rec(), "URN:NBN:SI:DOC-Y", reg, "Cankar, Ivan")
     assert bucket is Bucket.PD_COVERED  # transcription beats a second OCR pull
 
 
@@ -136,3 +136,35 @@ def test_report_lists_gap_and_discovery(tmp_path) -> None:
     assert text.startswith("<!-- GENERATED")
     assert "'Jure' [1914]" in text
     assert "(in: Slovan)" in text
+
+
+def test_segment_matching_real_loopback_cases() -> None:
+    """The discovery-loop-back incident: verbatim dLib titles with pipe or
+    semicolon separators must resolve to the canonical work, head-first
+    (real cases from the 27-entry parallel-identity cleanup, 2026-07)."""
+    reg = Registry("Ivan Cankar")
+    hlapci = reg.upsert("Hlapci")
+    reg.add_source(
+        hlapci, SourceRef(source=Source.WIKIVIR, id="Hlapci", status=SourceStatus.INGESTED)
+    )
+    assert match_work(reg, "Hlapci| drama v petih aktih") is hlapci
+    assert match_work(reg, "Na klancu; Spisal Ivan Cankar") is None  # no such work here
+    na_klancu = reg.upsert("Na klancu")
+    assert match_work(reg, "Na klancu; Spisal Ivan Cankar") is na_klancu
+    # covered canonical -> the record buckets PD_COVERED, not PD_UNPULLED
+    meta = rec(title="Hlapci| drama v petih aktih")
+    bucket, work = classify(meta, "URN:NBN:SI:DOC-Z", reg, "Cankar, Ivan")
+    assert bucket is Bucket.PD_COVERED and work is hlapci
+
+
+def test_izidor_cankar_not_accepted_as_creator() -> None:
+    """Surname-only creator matching would accept Izidor Cankar (editor of
+    Ivan's collected works) - the creators branch requires the full name."""
+    reg = make_registry()
+    meta = rec(creators=frozenset({"Cankar, Izidor"}), people=frozenset({"Cankar, Izidor"}))
+    bucket, _ = classify(meta, "URN:NBN:SI:DOC-X", reg, "Cankar, Ivan")
+    assert bucket is Bucket.NOT_AUTHOR
+    # date-qualified full name still accepted
+    meta2 = rec(creators=frozenset({"Cankar, Ivan (1876-1918)"}))
+    bucket2, _ = classify(meta2, "URN:NBN:SI:DOC-X", reg, "Cankar, Ivan")
+    assert bucket2 is Bucket.PD_UNPULLED
