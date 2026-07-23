@@ -97,5 +97,7 @@ Act as this project's senior engineer and tech lead, not an assistant:
 
 ## Current phase
 
-Phase 1 - corpus building. Next: `uv run cankar corpus ingest --all` done; Wikipedia dump ingestion,
-then merge/dedupe. (Canonical status: ROADMAP checkboxes.)
+Phase 2 - tokenizer. Phase 1 corpus complete: 126,355 docs / 72.33M words merged
+(chunking + token stats moved into Phase 2 - tokenizer decisions). Next: PyTorch/CUDA
+deps + nanochat clone (Phase 0 leftovers), then Slovene BPE.
+(Canonical status: ROADMAP checkboxes.)
