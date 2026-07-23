@@ -27,6 +27,9 @@ Do not build serving or the Laravel orchestrator before the styler exists.
 - [ ] Watch Karpathy "Let's build GPT" (nanoGPT stays *reading material*, nanochat is the codebase)
 - [ ] RunPod account + **spending limit set** + one 15-min throwaway pod to validate workflow
 - [x] Repo init (public from commit #1), .gitignore, .env.example, gitleaks pre-commit hook + CI
+- [x] Roadmap gate: required CI check on every PR - body attestation, newly
+      ticked deliverables surfaced in the job summary, flip-down protection
+      *(added in-flight - ADR 0010)*
 
 ## Phase 1 - Corpus (1-2 sessions)
 
@@ -66,9 +69,6 @@ Do not build serving or the Laravel orchestrator before the styler exists.
             volumes never dropped. 0.95 boundary pinned on real works (Zapuščeni
             0.956 drop vs Aleš 0.945 keep). Aškerc ballads in 'Balade in
             romance', Kette poems in 'Poezije 1907', etc.
-- [ ] Chunk (moves to Phase 2 - chunk size is a tokenizer/context decision)
-- [ ] Stats report: tokens per source/author (words-per-source shipped in
-      corpus-quality.md; token counts need the Phase 2 tokenizer)
 - ⚠️ **Yield correction (measured 2026-07, incl. dLib gap-fill):** Cankar ~1.76M
       words post-merge (1.65M Wikivir + 0.11M dLib after variant drops);
       14 PD authors 6.0M; Wikipedia 65.3M -> corpus ~73.0M words ≈
@@ -89,6 +89,9 @@ Do not build serving or the Laravel orchestrator before the styler exists.
 
 - [ ] Slovene BPE via nanochat's tokenizer stage, vocab ~8-16k, trained on own corpus
 - [ ] Inspect segmentation of Slovene morphology + Cankar's archaic orthography -> README material
+- [ ] Chunk merged corpus (moved from Phase 1 - chunk size is a tokenizer/context decision)
+- [ ] Stats report: tokens per source/author (moved from Phase 1 - needs this
+      tokenizer; words-per-source shipped in corpus-quality.md)
 
 ## Phase 2.25 - Evaluation harness (1 session) *(added per Agent A4)*
 
