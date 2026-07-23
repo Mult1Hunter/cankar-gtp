@@ -10,17 +10,24 @@ from __future__ import annotations
 
 import argparse
 import sys
+from collections.abc import Iterator
 from pathlib import Path
 
 from cankar.core.paths import (
     collisions_report,
+    corpus_dir,
     coverage_report,
+    near_duplicates_report,
+    quality_report,
     works_registries,
     works_registry,
 )
 from cankar.corpus import dlib, ingest, seed, wikipedia, wikivir
 from cankar.corpus.coverage import cross_author_collisions, write_collisions, write_coverage
+from cankar.corpus.dedup import find_near_duplicates, write_dedup_report
 from cankar.corpus.registry import Registry
+from cankar.corpus.shard import read_shard
+from cankar.corpus.stats import compute_metrics, write_quality_report
 
 
 def _crawl_wikivir(args: argparse.Namespace) -> int:
@@ -63,6 +70,30 @@ def _ingest(args: argparse.Namespace) -> int:
 
 def _ingest_wikipedia(args: argparse.Namespace) -> int:
     wikipedia.ingest(args.dump, args.out, min_chars=args.min_chars)
+    return 0
+
+
+def _dedup(args: argparse.Namespace) -> int:
+    shards = sorted(args.corpus_dir.glob("*.jsonl"))
+
+    def group(bucket: str) -> Iterator[dict]:  # lazy per-group stream - no 65M-word list
+        for shard in shards:
+            if (shard.stem == "wikipedia") == (bucket == "wikipedia"):
+                yield from read_shard(shard)
+
+    results = {name: find_near_duplicates(group(name))[0] for name in ("wikipedia", "literary")}
+    write_dedup_report(results, args.out)
+    print(f"wrote {args.out}", file=sys.stderr)
+    return 0
+
+
+def _stats(args: argparse.Namespace) -> int:
+    metrics = [
+        compute_metrics(shard.stem, read_shard(shard))
+        for shard in sorted(args.corpus_dir.glob("*.jsonl"))
+    ]
+    write_quality_report(metrics, args.out)
+    print(f"wrote {args.out}: {len(metrics)} shards", file=sys.stderr)
     return 0
 
 
@@ -139,6 +170,16 @@ def register(parser: argparse.ArgumentParser) -> None:
     p.add_argument("--out", required=True, type=Path)
     p.add_argument("--min-chars", type=int, default=400)
     p.set_defaults(func=_ingest_wikipedia)
+
+    p = sub.add_parser("stats", help="corpus quality metrics -> committed report snapshot")
+    p.add_argument("--corpus-dir", type=Path, default=corpus_dir())
+    p.add_argument("--out", type=Path, default=quality_report())
+    p.set_defaults(func=_stats)
+
+    p = sub.add_parser("dedup", help="near-duplicate report (MinHash) -> committed snapshot")
+    p.add_argument("--corpus-dir", type=Path, default=corpus_dir())
+    p.add_argument("--out", type=Path, default=near_duplicates_report())
+    p.set_defaults(func=_dedup)
 
     p = sub.add_parser("validate", help="registry validation + cross-author collisions")
     p.add_argument("--registry", type=Path)

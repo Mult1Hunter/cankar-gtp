@@ -7,13 +7,13 @@ never clobbered. Former scripts/corpus/build_registry.py (ADR 0007).
 
 from __future__ import annotations
 
-import json
 import logging
 from pathlib import Path
 
 from cankar.core.errors import CatalogPageMissingError
 from cankar.corpus.catalog import parse_catalog
 from cankar.corpus.registry import Registry, Source, SourceRef, SourceStatus
+from cankar.corpus.shard import read_shard
 from cankar.corpus.wikivir import fetch_wikitext, make_session
 
 logger = logging.getLogger(__name__)
@@ -52,8 +52,7 @@ def seed_registry(
 
     n_matched = n_added = 0
     if shard and shard.exists():
-        for line in shard.read_text().splitlines():
-            doc = json.loads(line)
+        for doc in read_shard(shard):
             work = reg.find(doc["title"])
             if work is None:
                 work = reg.upsert(doc["title"])

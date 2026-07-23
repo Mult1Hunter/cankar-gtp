@@ -1,17 +1,29 @@
-"""ShardWriter - the shared write side of every corpus source (ADR 0008 rule of
-two: wikivir + dlib + wikipedia all turn CorpusDocs into a JSONL shard, tally
-counts, and emit a committed manifest). Acquisition differs per source (API
-pagination vs dump streaming), so only the write side is shared here.
+"""Shard IO - the shared write and read sides of every corpus source (ADR 0008
+rule of two: wikivir + dlib + wikipedia all turn CorpusDocs into a JSONL shard,
+tally counts, and emit a committed manifest; stats/dedup/seed all read shards
+back). Acquisition differs per source (API pagination vs dump streaming), so
+only the shard IO is shared here.
 """
 
 from __future__ import annotations
 
+import json
+from collections.abc import Iterator
 from pathlib import Path
 from typing import TextIO
 
 from cankar.core.manifest import ShardManifest, git_sha, sha256_of, utc_now_iso, write_manifest
 from cankar.core.paths import dataset_manifest
 from cankar.core.schema import CorpusDoc
+
+
+def read_shard(path: Path) -> Iterator[dict]:
+    """Stream a shard's docs without materializing it (the wikipedia shard is
+    65M words - a list would defeat the single-pass consumers)."""
+    with path.open(encoding="utf-8") as fh:
+        for line in fh:
+            if line.strip():
+                yield json.loads(line)
 
 
 class ShardWriter:

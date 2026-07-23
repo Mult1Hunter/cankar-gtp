@@ -32,12 +32,26 @@ def dataset_manifest(stage: str, name: str) -> Path:
     return repo_root() / "registry" / "datasets" / stage / f"{name}.manifest.json"
 
 
+def corpus_dir() -> Path:
+    return repo_root() / "data" / "corpus"
+
+
 def coverage_report(slug: str) -> Path:
     return repo_root() / "registry" / "reports" / f"coverage-{slug}.md"
 
 
 def collisions_report() -> Path:
     return repo_root() / "registry" / "reports" / "collisions.md"
+
+
+def quality_report() -> Path:
+    """Snapshot report (computed from gitignored data/) - see reports README."""
+    return repo_root() / "registry" / "reports" / "corpus-quality.md"
+
+
+def near_duplicates_report() -> Path:
+    """Snapshot report (computed from gitignored data/) - see reports README."""
+    return repo_root() / "registry" / "reports" / "near-duplicates.md"
 
 
 def authors_config() -> Path:
