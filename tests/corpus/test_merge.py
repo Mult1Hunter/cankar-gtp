@@ -202,6 +202,42 @@ def test_expected_kept_set(merged) -> None:
     assert titles == ["Domov", "Pismo Murna", "Rokovnjači", "Ivan Cankar"]
 
 
+def test_registry_identity_requires_content_confirmation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Two different-year collections normalize to one work_id but share NO text
+    (the real 'Črtice (Cankar 1914)' vs '1907-09' case). They must NOT be
+    collapsed - registry identity confirms by containment before dropping."""
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    reg = Registry("Ivan Cankar")
+    w = reg.upsert("Črtice")  # both titles resolve here via disambiguator stripping
+    reg.add_alias(w, "Črtice (Cankar 1914)")
+    reg.add_alias(w, "Črtice (Cankar 1907-09)")
+    _write(
+        corpus / "cankar.jsonl",
+        [
+            _doc("Črtice (Cankar 1907-09)", DOMOV, "wikivir", "Ivan Cankar"),
+            _doc("Črtice (Cankar 1914)", ROKOVNJACI, "wikivir", "Ivan Cankar"),  # disjoint text
+        ],
+    )
+    res = tmp_path / "res.toml"
+    res.write_text("")
+    monkeypatch.setattr(merge, "_author_registries", lambda: {"Ivan Cankar": reg})
+    monkeypatch.setattr(
+        "cankar.corpus.shard.dataset_manifest",
+        lambda stage, name: tmp_path / f"{name}.manifest.json",
+    )
+    out = tmp_path / "m.jsonl"
+    stats = merge.merge(
+        corpus_dir=corpus, out=out, resolution_path=res, report_out=tmp_path / "m.md"
+    )
+    titles = sorted(json.loads(ln)["title"] for ln in out.read_text().splitlines() if ln.strip())
+    assert titles == ["Črtice (Cankar 1907-09)", "Črtice (Cankar 1914)"]  # both kept
+    assert stats.skip_counts.get("registry_identity", 0) == 0
+    assert any("content differs" in line for line in stats.registry_mismatch)
+
+
 def test_distinct_works_both_survive(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Two DIFFERENT works sharing a title that MinHash flags as near-dup must
     BOTH survive when the collision table marks them distinct (M2 protect path;

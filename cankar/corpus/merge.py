@@ -46,6 +46,12 @@ WIKIPEDIA_SLUG = "wikipedia"  # the one non-literary shard - not quality-gated, 
 # a containment "whole" must have at least this many unique 5-grams; ~ a few
 # thousand words, the scale of a collected volume vs a single poem/sketch
 CONTAINER_MIN_SHINGLES = 3000
+# registry work-identity is CONFIRMED by content before dropping: normalize_for_author
+# collapses year-disambiguated titles ('Črtice (Cankar 1914)' -> 'črtice'), so a bare
+# work_id match can pair genuinely different collections. Measured 2026-07: true dups
+# (Domov OCR-vs-clean 0.89, a story inside its collection 0.92) sit far above distinct
+# same-id collections (the two Črtice, 0.00). 0.5 is the empty band between them.
+REGISTRY_CONFIRM_CONTAINMENT = 0.5
 
 
 def is_general_shard(slug: str) -> bool:
@@ -140,6 +146,9 @@ class MergeStats:
     skip_counts: dict[str, int] = field(default_factory=lambda: defaultdict(int))
     cross_author: list[str] = field(default_factory=list)  # report lines
     registry_identity: list[str] = field(default_factory=list)  # dropped -> kept (auditability)
+    registry_mismatch: list[str] = field(
+        default_factory=list
+    )  # same work_id, different text - kept
     containment: list[str] = field(default_factory=list)  # report lines
     reattributed: list[str] = field(default_factory=list)  # report lines
     conflicts: list[str] = field(default_factory=list)  # attribution overrides that disagreed
@@ -209,10 +218,21 @@ def merge(*, corpus_dir: Path, out: Path, resolution_path: Path, report_out: Pat
                 drop_as_dup(loc, "exact_dup", hash_root[h], author, title)
                 continue
 
+            sh = shingles(text) if literary else None  # reused by registry-confirm + containment
             wk = _work_key(author, title, regs)
-            if wk is not None and wk in work_root:
-                drop_as_dup(loc, "registry_identity", work_root[wk], author, title)
-                continue
+            if wk is not None and wk in work_root and sh is not None:
+                root_sh = lit_shingles[work_root[wk]].shingles
+                if max(containment(sh, root_sh), containment(root_sh, sh)) >= (
+                    REGISTRY_CONFIRM_CONTAINMENT
+                ):
+                    drop_as_dup(loc, "registry_identity", work_root[wk], author, title)
+                    continue
+                # same work_id but different text - a normalize_for_author over-collapse;
+                # keep both and surface for registry cleanup (never silent text loss)
+                stats.registry_mismatch.append(
+                    f"- {title!r} shares work_id with {key_meta[work_root[wk]].title!r} "
+                    "but content differs - kept both"
+                )
 
             root = ndx.add_or_match(key, text)
             if root is not None:
@@ -233,8 +253,8 @@ def merge(*, corpus_dir: Path, out: Path, resolution_path: Path, report_out: Pat
             if wk is not None:
                 work_root[wk] = key
             key_meta[key] = RootRecord(loc=loc, author=author, title=title)
-            if literary:
-                lit_shingles[key] = LitDoc(author or "?", title, shingles(text))
+            if sh is not None:
+                lit_shingles[key] = LitDoc(author or "?", title, sh)
 
     _measure_containment(lit_shingles, stats)
 
@@ -308,7 +328,11 @@ def write_merge_report(stats: MergeStats, out: Path) -> None:
         ("Attribution conflicts (collision table disagreed - REVIEW)", stats.conflicts),
         ("Re-attributions (collision table)", stats.reattributed),
         ("Cross-author dedup drops", stats.cross_author),
-        ("Registry-identity drops (same work_id across sources)", stats.registry_identity),
+        ("Registry-identity drops (same work_id, content-confirmed)", stats.registry_identity),
+        (
+            "Registry-identity mismatches (same work_id, DIFFERENT text - kept both)",
+            stats.registry_mismatch,
+        ),
         ("Containment (reported, not dropped)", stats.containment),
     ):
         lines += ["", f"## {heading}", ""]
