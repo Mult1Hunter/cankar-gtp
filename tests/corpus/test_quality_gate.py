@@ -27,6 +27,7 @@ def _text(name: str) -> str:
         ("keep_verse_short", GateVerdict.KEPT),  # Angelini - short lyric, verb-sparse
         ("keep_prose_archaic", GateVerdict.KEPT),  # Trdina - 19th-c orthography
         ("keep_ocr_cankar", GateVerdict.KEPT),  # dLib OCR must survive (S1)
+        ("keep_foreign_preamble", GateVerdict.KEPT),  # Slovene work w/ Latin+German preamble
     ],
 )
 def test_gate_on_real_docs(fixture: str, expected: GateVerdict) -> None:
@@ -37,7 +38,9 @@ def test_keep_docs_clear_language_floor_with_margin() -> None:
     """Real verse/prose sit well above the language floor - the poem-amputation
     guard. If this margin ever narrows, the floor is miscalibrated."""
     for keep in ("keep_verse_short", "keep_prose_archaic", "keep_ocr_cankar"):
-        assert slovene_ratio(_text(keep)) >= 0.09
+        # true observed floor is archaic prose ~0.09; assert real slack to the
+        # 0.05 gate floor, not a razor edge (design-review should-fix)
+        assert slovene_ratio(_text(keep)) >= 0.07
 
 
 def test_bibliography_year_density_separates_from_prose() -> None:
@@ -45,7 +48,9 @@ def test_bibliography_year_density_separates_from_prose() -> None:
     assert year_ratio(_text("keep_prose_archaic")) < 0.02
 
 
-def test_empty_and_degenerate_safe() -> None:
-    assert gate("") == GateVerdict.NOT_SLOVENE  # empty -> ratio 0 < floor
+def test_empty_is_distinct_from_foreign() -> None:
+    # empty must not inflate the not_slovene contamination counter (telemetry honesty)
+    assert gate("") == GateVerdict.EMPTY
+    assert gate("   \n  ") == GateVerdict.EMPTY
     assert slovene_ratio("") == 0.0
     assert year_ratio("") == 0.0
