@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "source": "dlib",
+  "script": "cankar corpus reconcile-dlib --pull",
+  "git_sha": "b3d9e5b",
+  "retrieved_at": "2026-07-23T08:48:05+00:00",
+  "args": {
+    "query_contributor": "Cankar, Ivan",
+    "author": "Ivan Cankar",
+    "min_alpha": 0.84,
+    "n_candidates": 27
+  },
+  "n_docs": 25,
+  "n_chars": 344695,
+  "n_words": 63467,
+  "sha256": "625bd04ebbf566224e1a050c6c2a65737d11885ccca56662a7417b5e3a445562",
+  "expected_band_words": null,
+  "skip_counts": null
+}

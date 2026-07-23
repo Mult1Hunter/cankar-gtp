@@ -7,4 +7,4 @@ reworded stubs. Feeds the merge stage (keep by source preference).
 | group | docs | near-dup docs | clusters | rate |
 |---|--:|--:|--:|--:|
 | wikipedia | 125,670 | 284 | 119 | 0.23% |
-| literary | 1,028 | 20 | 20 | 1.95% |
+| literary | 1,053 | 22 | 22 | 2.09% |
