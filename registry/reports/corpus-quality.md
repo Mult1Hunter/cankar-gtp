@@ -5,27 +5,31 @@ Length-invariant statistical signals of training quality (MATTR, duplicate-line 
 
 **126,698 docs, 72,960,279 words** across 17 shards.
 
-| shard | docs | words | MATTR | dup-line | unknown% | med words | p95 words |
-|---|--:|--:|--:|--:|--:|--:|--:|
-| askerc | 45 | 178,246 | 0.687 | 0.019 | 0.095% | 322 | 17,693 |
-| cankar | 218 | 1,649,007 | 0.601 | 0.012 | 0.005% | 1560 | 38,680 |
-| dlib-cankar | 18 | 47,942 | 0.619 | 0.013 | 0.014% | 1283 | 18,715 |
-| erjavec | 25 | 290,088 | 0.653 | 0.002 | 0.006% | 6822 | 38,183 |
-| govekar | 24 | 562,419 | 0.630 | 0.008 | 0.016% | 11374 | 68,184 |
-| jenko | 17 | 56,741 | 0.671 | 0.011 | 0.009% | 300 | 26,840 |
-| jurcic | 69 | 1,033,699 | 0.654 | 0.006 | 0.016% | 7829 | 50,479 |
-| kersnik | 47 | 481,009 | 0.663 | 0.004 | 0.015% | 4144 | 37,417 |
-| kette | 84 | 42,764 | 0.687 | 0.027 | 0.026% | 117 | 731 |
-| kveder | 95 | 443,125 | 0.633 | 0.004 | 0.010% | 1692 | 18,326 |
-| levstik | 100 | 380,598 | 0.680 | 0.021 | 0.081% | 187 | 14,857 |
-| milcinski | 125 | 517,702 | 0.632 | 0.007 | 0.018% | 1121 | 22,124 |
-| murn | 16 | 6,504 | 0.672 | 0.001 | 0.000% | 245 | 1,069 |
-| stritar | 41 | 411,220 | 0.637 | 0.010 | 0.011% | 2269 | 51,148 |
-| tavcar | 58 | 901,817 | 0.656 | 0.007 | 0.028% | 4700 | 61,199 |
-| trdina | 46 | 685,102 | 0.663 | 0.001 | 0.029% | 1053 | 79,067 |
-| wikipedia | 125,670 | 65,272,296 | 0.660 | 0.031 | 0.514% | 232 | 1,876 |
+| shard | docs | words | MATTR | dup-line | unknown% | exact-dup% | med words | p95 words |
+|---|--:|--:|--:|--:|--:|--:|--:|--:|
+| askerc | 45 | 178,246 | 0.687 | 0.019 | 0.095% | 0.00% | 322 | 17,693 |
+| cankar | 218 | 1,649,007 | 0.601 | 0.012 | 0.005% | 0.00% | 1560 | 38,680 |
+| dlib-cankar | 18 | 47,942 | 0.619 | 0.013 | 0.014% | 0.00% | 1283 | 18,715 |
+| erjavec | 25 | 290,088 | 0.653 | 0.002 | 0.006% | 0.00% | 6822 | 38,183 |
+| govekar | 24 | 562,419 | 0.630 | 0.008 | 0.016% | 0.00% | 11374 | 68,184 |
+| jenko | 17 | 56,741 | 0.671 | 0.011 | 0.009% | 0.00% | 300 | 26,840 |
+| jurcic | 69 | 1,033,699 | 0.654 | 0.006 | 0.016% | 0.00% | 7829 | 50,479 |
+| kersnik | 47 | 481,009 | 0.663 | 0.004 | 0.015% | 0.00% | 4144 | 37,417 |
+| kette | 84 | 42,764 | 0.687 | 0.027 | 0.026% | 0.00% | 117 | 731 |
+| kveder | 95 | 443,125 | 0.633 | 0.004 | 0.010% | 0.00% | 1692 | 18,326 |
+| levstik | 100 | 380,598 | 0.680 | 0.021 | 0.081% | 0.00% | 187 | 14,857 |
+| milcinski | 125 | 517,702 | 0.632 | 0.007 | 0.018% | 0.00% | 1121 | 22,124 |
+| murn | 16 | 6,504 | 0.672 | 0.001 | 0.000% | 0.00% | 245 | 1,069 |
+| stritar | 41 | 411,220 | 0.637 | 0.010 | 0.011% | 0.00% | 2269 | 51,148 |
+| tavcar | 58 | 901,817 | 0.656 | 0.007 | 0.028% | 0.00% | 4700 | 61,199 |
+| trdina | 46 | 685,102 | 0.663 | 0.001 | 0.029% | 0.00% | 1053 | 79,067 |
+| wikipedia | 125,670 | 65,272,296 | 0.660 | 0.031 | 0.514% | 0.00% | 232 | 1,876 |
+
+## Residual markup probes
+
+Nonzero probe hits (doc fraction): cankar:image_frag=0.46%, cankar:template=0.46%, erjavec:image_frag=4.00%, govekar:template=8.33%, levstik:wikitable=1.00%, milcinski:image_frag=0.80%, milcinski:wikilink=0.80%, wikipedia:heading=0.01%, wikipedia:image_frag=0.29%, wikipedia:ref_tag=0.03%, wikipedia:template=0.45%, wikipedia:wikilink=0.77%, wikipedia:wikitable=0.27%.
 
 ## Reading the numbers
-- **MATTR** (moving-average type-token ratio, window 500): lexical diversity, length-invariant. Uniform ~0.6-0.7 = consistent clean prose; an anomalously low shard would signal boilerplate.
+- **MATTR** (moving-average type-token ratio, window 500): lexical diversity, length-invariant above the window. Caveat: docs shorter than 500 words contribute raw TTR (upward-biased), so cross-shard comparison is soft where the median doc is short. Uniform ~0.6-0.7 = consistent clean prose; an anomalously low shard would signal boilerplate.
 - **dup-line**: mean fraction of duplicate lines per doc (Gopher-style); high = templated/list garbage.
 - **unknown%**: chars outside the Slovene+Latin+punctuation set; the OCR-garbage / foreign-script signal.
