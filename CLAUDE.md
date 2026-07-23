@@ -97,7 +97,7 @@ Act as this project's senior engineer and tech lead, not an assistant:
 
 ## Current phase
 
-Phase 2 - tokenizer. Phase 0 env wrapped (torch cu130 verified, nanochat read,
-RunPod capped); Phase 1 corpus complete: 126,355 docs / 72.33M words merged.
-Next: Slovene BPE - nanochat's rustbpe stage fed by our JSONL via its
-text-iterator seam. (Canonical status: ROADMAP checkboxes.)
+Phase 2 - tokenizer. BPE trained + selected: v8192 (ADR 0011, numbers in
+registry/reports/tokenizer-eval.md). Remaining in phase: corpus chunking
+(context-length decision) + per-author token stats; then Phase 2.25 eval
+harness. (Canonical status: ROADMAP checkboxes.)
