@@ -8,11 +8,11 @@ only the shard IO is shared here.
 from __future__ import annotations
 
 import hashlib
-import json
 from collections.abc import Iterator
 from pathlib import Path
 from typing import TextIO
 
+from cankar.core.jsonl import iter_jsonl_docs
 from cankar.core.manifest import ShardManifest, git_sha, sha256_of, utc_now_iso, write_manifest
 from cankar.core.paths import dataset_manifest
 from cankar.core.schema import CorpusDoc
@@ -20,11 +20,9 @@ from cankar.core.schema import CorpusDoc
 
 def read_shard(path: Path) -> Iterator[dict]:
     """Stream a shard's docs without materializing it (the wikipedia shard is
-    65M words - a list would defeat the single-pass consumers)."""
-    with path.open(encoding="utf-8") as fh:
-        for line in fh:
-            if line.strip():
-                yield json.loads(line)
+    65M words - a list would defeat the single-pass consumers). Delegates to
+    the core reader (promoted at third consumer - design-review 2026-07)."""
+    return iter_jsonl_docs(path)
 
 
 def content_hash(text: str) -> str:

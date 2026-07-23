@@ -21,6 +21,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from statistics import median
 
+from cankar.core.metrics import percentile
 from cankar.core.reports import generated_marker, write_report
 from cankar.corpus.shard import content_hash
 
@@ -135,7 +136,7 @@ def compute_metrics(name: str, docs: Iterable[dict]) -> ShardMetrics:
         sw = sorted(word_counts)
         m.words_min = sw[0]
         m.words_median = median(sw)
-        m.words_p95 = sw[min(len(sw) - 1, int(len(sw) * 0.95))]
+        m.words_p95 = int(percentile(sw, 0.95))
         m.words_max = sw[-1]
         m.mattr = round(mattr_weighted / m.n_words, 5) if m.n_words else 0.0
         m.dup_line_frac = round(dupline_weighted / m.n_words, 5) if m.n_words else 0.0

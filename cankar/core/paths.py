@@ -95,3 +95,18 @@ def tokenizer_eval_report() -> Path:
 
 def tokenizer_probes_config() -> Path:
     return repo_root() / "configs" / "tokenizer" / "probes.toml"
+
+
+def chunks_shard() -> Path:
+    """Training chunks (ADR 0012) - own dir so corpus globs never see them."""
+    return repo_root() / "data" / "chunks" / "chunks.jsonl"
+
+
+def chunks_report() -> Path:
+    """Snapshot report (computed from gitignored data/) - see reports README."""
+    return repo_root() / "registry" / "reports" / "chunks.md"
+
+
+def token_stats_report() -> Path:
+    """Snapshot report (computed from gitignored data/) - see reports README."""
+    return repo_root() / "registry" / "reports" / "token-stats.md"

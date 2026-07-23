@@ -3,6 +3,8 @@
 Registered under the single `cankar` console entry (ADR 0007):
     cankar tokenizer train --vocab-size 8192 [--skip-determinism-check]
     cankar tokenizer eval [--select v8192 --reason "..."]
+    cankar tokenizer chunk --name v8192 [--budget 2048]
+    cankar tokenizer stats --name v8192
     cankar tokenizer install --name v8192
 """
 
@@ -21,14 +23,17 @@ import tiktoken
 from cankar.core.errors import CankarError
 from cankar.core.manifest import git_sha, sha256_of, utc_now_iso, write_manifest
 from cankar.core.paths import (
+    chunks_report,
+    chunks_shard,
     dataset_manifest,
     merged_shard,
+    token_stats_report,
     tokenizer_base_dir,
     tokenizer_dir,
     tokenizer_eval_report,
     tokenizer_probes_config,
 )
-from cankar.tokenizer import evaluate, train
+from cankar.tokenizer import chunk, evaluate, stats, train
 from cankar.tokenizer.vendored import NANOCHAT_COMMIT, SPECIAL_TOKENS, SPLIT_PATTERN
 
 log = logging.getLogger("cankar.tokenizer")
@@ -99,7 +104,7 @@ def _eval(args: argparse.Namespace) -> int:
     encodings = {name: _load_encoding(name) for name in names}
     evals, notes = evaluate.evaluate_candidates(merged_shard(), encodings)
     probes = evaluate.load_probes(tokenizer_probes_config())
-    out = evaluate.write_report(
+    out = evaluate.write_eval_report(
         tokenizer_eval_report(),
         sha256_of(merged_shard()),
         evals,
@@ -109,6 +114,46 @@ def _eval(args: argparse.Namespace) -> int:
         args.select,
         args.reason,
     )
+    log.info("wrote %s", out)
+    return 0
+
+
+def _chunk(args: argparse.Namespace) -> int:
+    enc = _load_encoding(args.name)
+    corpus = merged_shard()
+    log.info("chunking %s with %s at budget %d", corpus, args.name, args.budget)
+    run = chunk.run_chunking(corpus, enc, args.budget, chunks_shard())
+    log.info("simulating bestfit crop over %d chunks", run.n_chunks)
+    crop = chunk.simulate_bestfit_crop(run.chunk_token_lengths, args.budget)
+    manifest = chunk.ChunksManifest(
+        budget=args.budget,
+        ladder_version=chunk.LADDER_VERSION,
+        tokenizer_name=args.name,
+        tokenizer_pkl_sha256=sha256_of(tokenizer_dir(args.name) / "tokenizer.pkl"),
+        corpus_sha256=sha256_of(corpus),
+        n_docs=run.n_docs,
+        n_docs_split=run.n_docs_split,
+        n_chunks=run.n_chunks,
+        n_tokens_total=run.n_tokens_total,
+        seam_hard_splits=run.seam_hard_splits,
+        ladder_by_source=run.ladder_by_source,
+        chunks_sha256=sha256_of(chunks_shard()),
+        git_sha=git_sha(),
+        created_at=utc_now_iso(),
+    )
+    write_manifest(manifest, dataset_manifest("tokenizer", "chunks"))
+    out = chunk.write_chunks_report(
+        chunks_report(), run, args.budget, crop, args.name, manifest.corpus_sha256
+    )
+    log.info("wrote %s + manifest + %s", chunks_shard(), out)
+    return 0
+
+
+def _stats(args: argparse.Namespace) -> int:
+    enc = _load_encoding(args.name)
+    corpus = merged_shard()
+    groups = stats.collect(corpus, enc)
+    out = stats.write_stats_report(token_stats_report(), groups, args.name, sha256_of(corpus))
     log.info("wrote %s", out)
     return 0
 
@@ -145,6 +190,20 @@ def register(parser: argparse.ArgumentParser) -> None:
     p.add_argument("--select", help="record the winning candidate in the report")
     p.add_argument("--reason", help="one-line selection rationale for the report")
     p.set_defaults(func=_eval)
+
+    p = sub.add_parser("chunk", help="chunk merged corpus to <= budget tokens (ADR 0012)")
+    p.add_argument("--name", required=True, help="tokenizer candidate (the selected one)")
+    p.add_argument(
+        "--budget",
+        type=int,
+        default=chunk.DEFAULT_BUDGET,
+        help="max tokens per chunk == Phase 3 max_seq_len (re-chunk if that changes)",
+    )
+    p.set_defaults(func=_chunk)
+
+    p = sub.add_parser("stats", help="token stats per source x author + sizing inputs")
+    p.add_argument("--name", required=True, help="tokenizer candidate (the selected one)")
+    p.set_defaults(func=_stats)
 
     p = sub.add_parser("install", help="copy a candidate to $NANOCHAT_BASE_DIR/tokenizer/")
     p.add_argument("--name", required=True)
