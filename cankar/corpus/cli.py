@@ -16,13 +16,15 @@ from pathlib import Path
 from cankar.core.paths import (
     collisions_report,
     corpus_dir,
+    corpus_shard,
     coverage_report,
+    dlib_reconcile_report,
     near_duplicates_report,
     quality_report,
     works_registries,
     works_registry,
 )
-from cankar.corpus import dlib, ingest, seed, wikipedia, wikivir
+from cankar.corpus import dlib, ingest, reconcile, seed, wikipedia, wikivir
 from cankar.corpus.coverage import cross_author_collisions, write_collisions, write_coverage
 from cankar.corpus.dedup import find_near_duplicates, write_dedup_report
 from cankar.corpus.registry import Registry
@@ -52,6 +54,19 @@ def _crawl_dlib(args: argparse.Namespace) -> int:
         registry_path=args.registry,
         out=args.out,
         triage=args.triage,
+        min_alpha=args.min_alpha,
+        min_chars=args.min_chars,
+    )
+    return 0
+
+
+def _reconcile_dlib(args: argparse.Namespace) -> int:
+    reconcile.reconcile(
+        query_contributor=args.query_contributor,
+        author=args.author,
+        registry_path=args.registry,
+        report_out=args.report,
+        pull_out=corpus_shard(args.pull_shard) if args.pull_shard else None,
         min_alpha=args.min_alpha,
         min_chars=args.min_chars,
     )
@@ -149,6 +164,18 @@ def register(parser: argparse.ArgumentParser) -> None:
     p.add_argument("--min-alpha", type=float, default=0.84)
     p.add_argument("--min-chars", type=int, default=400)
     p.set_defaults(func=_crawl_dlib)
+
+    p = sub.add_parser(
+        "reconcile-dlib", help="audit dLib coverage; --pull-shard ingests the recoverable gap"
+    )
+    p.add_argument("--query-contributor", required=True)
+    p.add_argument("--author", required=True)
+    p.add_argument("--registry", required=True, type=Path)
+    p.add_argument("--report", type=Path, default=dlib_reconcile_report())
+    p.add_argument("--pull-shard", default=None, help="shard slug, e.g. dlib-cankar-gapfill")
+    p.add_argument("--min-alpha", type=float, default=0.84)
+    p.add_argument("--min-chars", type=int, default=400)
+    p.set_defaults(func=_reconcile_dlib)
 
     p = sub.add_parser("seed", help="seed/refresh a works registry from catalog pages")
     p.add_argument("--author", required=True)

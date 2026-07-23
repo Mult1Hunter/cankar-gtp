@@ -54,5 +54,10 @@ def near_duplicates_report() -> Path:
     return repo_root() / "registry" / "reports" / "near-duplicates.md"
 
 
+def dlib_reconcile_report() -> Path:
+    """Snapshot report (live dLib state at run time) - see reports README."""
+    return repo_root() / "registry" / "reports" / "dlib-reconcile.md"
+
+
 def authors_config() -> Path:
     return repo_root() / "configs" / "corpus" / "authors.toml"
