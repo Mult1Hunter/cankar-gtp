@@ -14,7 +14,8 @@ This repo is public from commit #1 - anything pushed is permanently public
    `gitleaks detect --redact` from the repo root - must be clean.
 2. **Tracked-file audit:**
    - `git ls-files | grep -E '(^|/)\.env$|\.(pem|key)$'` -> must be empty
-   - `git ls-files data/ checkpoints/` -> must be empty
+   - `git ls-files data/ checkpoints/ | grep -v 'README\.md$'` -> must be empty
+     (data/README.md is the governed-dir contract - ADR 0007, not a dataset)
 3. **Private-info grep over full history:**
    `git log --all -p | grep -nE '([0-9]{1,3}\.){3}[0-9]{1,3}|/home/[a-z]+|ssh://|BEGIN (RSA|OPENSSH|EC) PRIVATE'`
    Review every hit: real IPs, private paths, host aliases, VPS details are leaks.
