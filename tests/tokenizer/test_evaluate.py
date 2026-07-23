@@ -33,7 +33,7 @@ def test_classify_slice_key() -> None:
 def test_evaluate_slices_and_notes(enc) -> None:
     evals, notes = evaluate.evaluate_candidates(FIXTURE, {"v300": enc})
     (ev,) = evals
-    assert ev.slices[Slice.CANKAR].n_docs == 2  # Na klancu + Hlapci
+    assert ev.slices[Slice.CANKAR].n_docs == 3  # Na klancu + Hlapci + Ada
     assert ev.slices[Slice.WIKIPEDIA].n_docs == 2
     assert ev.slices[Slice.LITERARY].n_docs == 4
     for sl in Slice:
@@ -41,7 +41,7 @@ def test_evaluate_slices_and_notes(enc) -> None:
         assert st.n_tokens > 0 and st.tokens_per_word > 0
         assert len(st.per_doc_fertility) == st.n_docs
         assert st.fertility_p95 >= sorted(st.per_doc_fertility)[0]
-    assert notes.n_docs == 8
+    assert notes.n_docs == 9
     assert notes.docs_with_soft_hyphen == 1  # the OCR fixture doc
     assert notes.docs_with_tabs == 1
 
@@ -68,14 +68,14 @@ def test_report_is_deterministic(enc, tmp_path: Path) -> None:
     """Byte-identical regeneration (report drift rule, ADR 0007)."""
     evals, notes = evaluate.evaluate_candidates(FIXTURE, {"v300": enc})
     probes = evaluate.load_probes(tokenizer_probes_config())
-    a = evaluate.write_report(
+    a = evaluate.write_eval_report(
         tmp_path / "a.md", "sha", evals, notes, probes, {"v300": enc}, None, None
     )
-    b = evaluate.write_report(
+    b = evaluate.write_eval_report(
         tmp_path / "b.md", "sha", evals, notes, probes, {"v300": enc}, None, None
     )
     assert a.read_bytes() == b.read_bytes()
-    sel = evaluate.write_report(
+    sel = evaluate.write_eval_report(
         tmp_path / "c.md", "sha", evals, notes, probes, {"v300": enc}, "v300", "test reason"
     )
     assert "Selected candidate: **v300**. test reason" in sel.read_text()

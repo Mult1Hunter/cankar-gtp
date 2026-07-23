@@ -102,9 +102,15 @@ Do not build serving or the Laravel orchestrator before the styler exists.
       -> README material: probe tables in tokenizer-eval.md (case paradigms
       consolidate at 8k: misli|jo, ža|lost; archaic solnce stays so|l|nce at
       every size - the model sees morpheme-ish units, not memorized words)
-- [ ] Chunk merged corpus (moved from Phase 1 - chunk size is a tokenizer/context decision)
-- [ ] Stats report: tokens per source/author (moved from Phase 1 - needs this
-      tokenizer; words-per-source shipped in corpus-quality.md)
+- [x] Chunk merged corpus (ADR 0012): 126,355 docs -> 160,065 chunks <= 2048
+      tokens (== Phase 3 max_seq_len - re-chunk if that changes). Recursive
+      ladder paragraph -> line -> sentence -> hard (hard never fired on real
+      data); byte-exact reconstruction + char spans for the 2.25 holdout key;
+      simulated BOS-bestfit crop 11.52% vs ~35% FineWeb reference
+      (registry/reports/chunks.md)
+- [x] Stats report: tokens per source/author -> registry/reports/token-stats.md.
+      **142.77M total tokens** (the real Phase 3 budget), Cankar slice 2.92M
+      tokens; steps/epoch reference math + parquet-ordering warning recorded
 
 ## Phase 2.25 - Evaluation harness (1 session) *(added per Agent A4)*
 

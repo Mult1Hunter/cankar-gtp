@@ -16,7 +16,6 @@ is a mix decision in favor of the literary slice (critique A-2).
 from __future__ import annotations
 
 import hashlib
-import json
 import logging
 import pickle
 from collections.abc import Iterator
@@ -29,6 +28,7 @@ import torch
 from pydantic import BaseModel
 
 from cankar.core.errors import CankarError
+from cankar.core.jsonl import iter_jsonl_docs
 from cankar.tokenizer.vendored import SPECIAL_TOKENS, SPLIT_PATTERN
 
 log = logging.getLogger("cankar.tokenizer")
@@ -59,14 +59,9 @@ class TokenizerManifest(BaseModel):
 
 
 def iter_corpus_docs(corpus_path: Path) -> Iterator[dict]:
-    """Parsed docs in file order. Single JSONL iterator for the stage
-    (design-review 2026-07); promoting a shared reader to core is deferred
-    to the chunking work - the third consumer (ROADMAP Phase 2)."""
-    if not corpus_path.exists():
-        raise CankarError(f"merged corpus not found: {corpus_path} (run: cankar corpus merge)")
-    with corpus_path.open(encoding="utf-8") as f:
-        for line in f:
-            yield json.loads(line)
+    """Merged-corpus stream via the core reader (promoted at third consumer -
+    the chunking work, honoring the design-review deferral)."""
+    return iter_jsonl_docs(corpus_path, missing_hint="run: cankar corpus merge")
 
 
 def iter_corpus_texts(corpus_path: Path) -> Iterator[str]:
