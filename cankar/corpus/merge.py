@@ -27,6 +27,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import StrEnum
 from pathlib import Path
+from typing import NamedTuple
 
 from pydantic import BaseModel
 
@@ -41,7 +42,31 @@ from cankar.corpus.shard import ShardWriter, content_hash, read_shard
 
 logger = logging.getLogger(__name__)
 
-CONTAINER_MIN_WORDS = 3000  # a doc must be at least this big to be a containment "whole"
+WIKIPEDIA_SLUG = "wikipedia"  # the one non-literary shard - not quality-gated, lowest preference
+# a containment "whole" must have at least this many unique 5-grams; ~ a few
+# thousand words, the scale of a collected volume vs a single poem/sketch
+CONTAINER_MIN_SHINGLES = 3000
+
+
+def is_general_shard(slug: str) -> bool:
+    """Wikipedia is general-reference (no author, no quality gate); everything
+    else is authored literature."""
+    return slug == WIKIPEDIA_SLUG
+
+
+@dataclass(frozen=True)
+class RootRecord:
+    """The kept doc a duplicate was matched against (M2 attribution needs it)."""
+
+    loc: tuple[str, int]
+    author: str | None
+    title: str
+
+
+class LitDoc(NamedTuple):
+    author: str
+    title: str
+    shingles: set[bytes]
 
 
 class ResolutionKind(StrEnum):
@@ -68,12 +93,14 @@ def load_resolutions(path: Path) -> dict[str, CollisionResolution]:
 
 
 def shard_tier(slug: str) -> int:
-    """Keep-preference tier from the shard filename (M1). Lower wins."""
-    if slug == "wikipedia":
+    """Keep-preference tier from the shard filename (M1). Lower wins. Patterns,
+    not exact names, so a future dLib shard for another author is ranked, not
+    silently promoted to top-preference literary."""
+    if slug == WIKIPEDIA_SLUG:
         return 3
-    if slug == "dlib-cankar-gapfill":
+    if slug.startswith("dlib-") and slug.endswith("-gapfill"):
         return 2
-    if slug == "dlib-cankar":
+    if slug.startswith("dlib-"):
         return 1
     return 0  # hand-transcribed Wikivir literary shards
 
@@ -112,8 +139,10 @@ class MergeStats:
     kept_words: int = 0
     skip_counts: dict[str, int] = field(default_factory=lambda: defaultdict(int))
     cross_author: list[str] = field(default_factory=list)  # report lines
+    registry_identity: list[str] = field(default_factory=list)  # dropped -> kept (auditability)
     containment: list[str] = field(default_factory=list)  # report lines
     reattributed: list[str] = field(default_factory=list)  # report lines
+    conflicts: list[str] = field(default_factory=list)  # attribution overrides that disagreed
 
 
 def merge(*, corpus_dir: Path, out: Path, resolution_path: Path, report_out: Path) -> MergeStats:
@@ -128,33 +157,39 @@ def merge(*, corpus_dir: Path, out: Path, resolution_path: Path, report_out: Pat
     hash_root: dict[str, str] = {}  # content hash -> kept root's meta key
     work_root: dict[tuple[str, str], str] = {}  # (author, work_id) -> kept root's meta key
     ndx = NearDupIndex()
-    key_meta: dict[str, dict] = {}  # meta key -> loc/author/title
-    lit_shingles: dict[str, tuple[str, str, set[bytes]]] = {}  # literary only (never wikipedia)
+    key_meta: dict[str, RootRecord] = {}
+    lit_shingles: dict[str, LitDoc] = {}  # literary only (never wikipedia)
     counter = 0
 
     def drop_as_dup(
         loc: tuple[str, int], reason: str, root_key: str, author: str | None, title: str
     ) -> None:
-        """Record a duplicate drop and, when it crosses authors, consult the
-        collision table so attribution is resolved for ANY signal - not just
-        near-dup (cross-author same-works are often byte-identical exact dups)."""
+        """Record a duplicate drop. registry_identity (same work_id, same author)
+        is enumerated for audit; a cross-author drop consults the collision table
+        so attribution is resolved for ANY signal - not just near-dup, since
+        cross-author same-works are often byte-identical exact dups."""
         drop[loc] = reason
         stats.skip_counts[reason] += 1
         root = key_meta[root_key]
-        if author == root["author"]:
+        if reason == "registry_identity":
+            stats.registry_identity.append(f"- dropped {loc[0]}:{title!r} ~ kept {root.title!r}")
+        if author == root.author:
             return
         stats.cross_author.append(
             f"- {reason}: dropped {loc[0]}:{title!r} ({author}) ~ kept "
-            f"{root['loc'][0]}:{root['title']!r} ({root['author']})"
+            f"{root.loc[0]}:{root.title!r} ({root.author})"
         )
         res = resolutions.get(normalize_title(title))
         if res is not None and res.attribution:
-            reattribute[root["loc"]] = res.attribution
-            stats.reattributed.append(f"- {root['title']!r} -> {res.attribution} ({res.note})")
+            prior = reattribute.get(root.loc)
+            if prior is not None and prior != res.attribution:
+                stats.conflicts.append(f"- {root.title!r}: {prior!r} vs {res.attribution!r}")
+            reattribute[root.loc] = res.attribution
+            stats.reattributed.append(f"- {root.title!r} -> {res.attribution} ({res.note})")
 
     for path in shards:
         slug = path.stem
-        literary = slug != "wikipedia"
+        literary = not is_general_shard(slug)
         for idx, doc in enumerate(read_shard(path)):
             loc = (slug, idx)
             text, title, author = doc["text"], doc["title"], doc.get("author")
@@ -183,7 +218,7 @@ def merge(*, corpus_dir: Path, out: Path, resolution_path: Path, report_out: Pat
             if root is not None:
                 res = resolutions.get(normalize_title(title))
                 distinct_cross = (
-                    author != key_meta[root]["author"]
+                    author != key_meta[root].author
                     and res is not None
                     and res.resolution is ResolutionKind.DISTINCT
                 )
@@ -197,9 +232,9 @@ def merge(*, corpus_dir: Path, out: Path, resolution_path: Path, report_out: Pat
             hash_root[h] = key
             if wk is not None:
                 work_root[wk] = key
-            key_meta[key] = {"loc": loc, "author": author, "title": title}
+            key_meta[key] = RootRecord(loc=loc, author=author, title=title)
             if literary:
-                lit_shingles[key] = (author or "?", title, shingles(text))
+                lit_shingles[key] = LitDoc(author or "?", title, shingles(text))
 
     _measure_containment(lit_shingles, stats)
 
@@ -237,24 +272,22 @@ def merge(*, corpus_dir: Path, out: Path, resolution_path: Path, report_out: Pat
     return stats
 
 
-def _measure_containment(
-    lit_shingles: dict[str, tuple[str, str, set[bytes]]], stats: MergeStats
-) -> None:
+def _measure_containment(lit_shingles: dict[str, LitDoc], stats: MergeStats) -> None:
     """Report (do not drop) kept literary docs contained in a larger same-author
     doc - the collected-volume subpart class MinHash misses (M4)."""
-    by_author: dict[str, list[tuple[str, set[bytes]]]] = defaultdict(list)
-    for author, title, sh in lit_shingles.values():
-        by_author[author].append((title, sh))
+    by_author: dict[str, list[LitDoc]] = defaultdict(list)
+    for lit in lit_shingles.values():
+        by_author[lit.author].append(lit)
     for docs in by_author.values():
-        containers = [(t, s) for t, s in docs if len(s) >= CONTAINER_MIN_WORDS]
-        for title, sh in docs:
-            for ctitle, csh in containers:
+        containers = [d for d in docs if len(d.shingles) >= CONTAINER_MIN_SHINGLES]
+        for d in docs:
+            for c in containers:
                 if (
-                    ctitle != title
-                    and len(csh) > len(sh)
-                    and containment(sh, csh) > (CONTAINMENT_THRESHOLD)
+                    c.title != d.title
+                    and len(c.shingles) > len(d.shingles)
+                    and containment(d.shingles, c.shingles) > CONTAINMENT_THRESHOLD
                 ):
-                    stats.containment.append(f"- {title!r} contained in {ctitle!r}")
+                    stats.containment.append(f"- {d.title!r} contained in {c.title!r}")
                     break
 
 
@@ -272,8 +305,10 @@ def write_merge_report(stats: MergeStats, out: Path) -> None:
     ]
     lines += [f"| {r} | {n:,} |" for r, n in sorted(stats.skip_counts.items())]
     for heading, rows in (
+        ("Attribution conflicts (collision table disagreed - REVIEW)", stats.conflicts),
         ("Re-attributions (collision table)", stats.reattributed),
-        ("Cross-author near-dup drops", stats.cross_author),
+        ("Cross-author dedup drops", stats.cross_author),
+        ("Registry-identity drops (same work_id across sources)", stats.registry_identity),
         ("Containment (reported, not dropped)", stats.containment),
     ):
         lines += ["", f"## {heading}", ""]

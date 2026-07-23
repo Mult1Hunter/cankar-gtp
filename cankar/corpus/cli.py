@@ -30,6 +30,7 @@ from cankar.core.paths import (
 from cankar.corpus import dlib, ingest, merge, reconcile, seed, wikipedia, wikivir
 from cankar.corpus.coverage import cross_author_collisions, write_collisions, write_coverage
 from cankar.corpus.dedup import find_near_duplicates, write_dedup_report
+from cankar.corpus.merge import is_general_shard
 from cankar.corpus.registry import Registry
 from cankar.corpus.shard import read_shard
 from cankar.corpus.stats import compute_metrics, write_quality_report
@@ -83,7 +84,7 @@ def _dedup(args: argparse.Namespace) -> int:
 
     def group(bucket: str) -> Iterator[dict]:  # lazy per-group stream - no 65M-word list
         for shard in shards:
-            if (shard.stem == "wikipedia") == (bucket == "wikipedia"):
+            if is_general_shard(shard.stem) == (bucket == "wikipedia"):
                 yield from read_shard(shard)
 
     results = {name: find_near_duplicates(group(name))[0] for name in ("wikipedia", "literary")}

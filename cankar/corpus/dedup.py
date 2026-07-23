@@ -78,6 +78,12 @@ class NearDupIndex:
         self._lsh.insert(key, mh)
         return None
 
+    def insert(self, key: str, text: str) -> None:
+        """Force-insert regardless of matches - for keeping a doc the caller has
+        decided is NOT a duplicate (e.g. a collision-table 'distinct' pair that
+        MinHash flagged as a false positive)."""
+        self._lsh.insert(key, minhash(text))
+
 
 @dataclass
 class DedupResult:

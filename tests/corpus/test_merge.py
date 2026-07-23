@@ -194,10 +194,63 @@ def test_wikipedia_biography_survives(merged) -> None:
     assert by_title["Ivan Cankar"]["author"] is None
 
 
-def test_merged_is_deterministic(merged, tmp_path, monkeypatch) -> None:
-    """Same inputs -> byte-identical merged output (seeded MinHash + fixed order)."""
+def test_expected_kept_set(merged) -> None:
     _, _, docs = merged
     titles = [d["title"] for d in docs]
     # Domov kept once (Wikivir), German gated, Dvojnik exact-dup, gapfill identity-dropped,
-    # one Rokovnjači, the wiki bio -> deterministic kept set
+    # Pismo Murna kept once, one Rokovnjači, the wiki bio - in preference order
     assert titles == ["Domov", "Pismo Murna", "Rokovnjači", "Ivan Cankar"]
+
+
+def test_distinct_works_both_survive(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Two DIFFERENT works sharing a title that MinHash flags as near-dup must
+    BOTH survive when the collision table marks them distinct (M2 protect path;
+    exercises NearDupIndex.insert - the method that was uncommitted)."""
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    # near-identical text but declared distinct works by two authors
+    _write(corpus / "cankar.jsonl", [_doc("Slovo", ROKOVNJACI, "wikivir", "Ivan Cankar")])
+    _write(
+        corpus / "kveder.jsonl",
+        [_doc("Slovo", ROKOVNJACI.replace("temnih", "gostih"), "wikivir", "Zofka Kveder")],
+    )
+    res = tmp_path / "res.toml"
+    res.write_text('[[collision]]\ntitle = "Slovo"\nresolution = "distinct"\n')
+    monkeypatch.setattr(merge, "_author_registries", dict)
+    monkeypatch.setattr(
+        "cankar.corpus.shard.dataset_manifest",
+        lambda stage, name: tmp_path / f"{name}.manifest.json",
+    )
+    out = tmp_path / "m.jsonl"
+    stats = merge.merge(
+        corpus_dir=corpus, out=out, resolution_path=res, report_out=tmp_path / "m.md"
+    )
+    authors = sorted(
+        json.loads(line)["author"] for line in out.read_text().splitlines() if line.strip()
+    )
+    assert authors == ["Ivan Cankar", "Zofka Kveder"]  # both kept, not merged
+    assert stats.skip_counts["near_dup"] == 0
+
+
+def test_merge_is_byte_reproducible(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Two runs on the same inputs produce identical bytes (seeded MinHash)."""
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    _write(
+        corpus / "cankar.jsonl",
+        [
+            _doc("A", DOMOV, "wikivir", "Ivan Cankar"),
+            _doc("B", ROKOVNJACI, "wikivir", "Ivan Cankar"),
+        ],
+    )
+    res = tmp_path / "res.toml"
+    res.write_text("")
+    monkeypatch.setattr(merge, "_author_registries", dict)
+    monkeypatch.setattr(
+        "cankar.corpus.shard.dataset_manifest",
+        lambda stage, name: tmp_path / f"{name}.manifest.json",
+    )
+    out1, out2 = tmp_path / "1.jsonl", tmp_path / "2.jsonl"
+    merge.merge(corpus_dir=corpus, out=out1, resolution_path=res, report_out=tmp_path / "r1.md")
+    merge.merge(corpus_dir=corpus, out=out2, resolution_path=res, report_out=tmp_path / "r2.md")
+    assert out1.read_bytes() == out2.read_bytes()
