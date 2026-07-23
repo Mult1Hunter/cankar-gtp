@@ -149,6 +149,20 @@ def parse_edm(data: dict) -> EdmRecord:
     )
 
 
+def clean_and_gate(
+    raw: bytes, *, min_alpha: float = 0.84, min_chars: int = 400
+) -> tuple[str | None, str | None]:
+    """OCR-clean a TEXT stream and apply the calibrated quality gates.
+    Returns (text, None) on pass, (None, reason) on fail - one place holds the
+    gate sequence so crawl and reconcile can never drift apart."""
+    text, metrics = ocr_clean(decode_stream(raw))
+    if metrics["early_noise"] > EARLY_NOISE_MAX:
+        return None, f"severe opening corruption (early_noise={metrics['early_noise']})"
+    if metrics["alpha_ratio"] < min_alpha or metrics["n_chars"] < min_chars:
+        return None, f"alpha={metrics['alpha_ratio']} chars={metrics['n_chars']}"
+    return text, None
+
+
 def crawl(
     *,
     query_contributor: str,
@@ -280,12 +294,10 @@ def crawl(
                 )
                 continue
 
-            # the gap-filler: fetch + clean + gate
+            # the gap-filler: fetch + clean + gate (shared gate sequence)
             raw = session.get(meta.text_url, headers={"Referer": f"{BASE}/details/{urn}"}).content
-            text, metrics = ocr_clean(decode_stream(raw))
-            if metrics["early_noise"] > EARLY_NOISE_MAX:
-                # severely corrupted opening (mangled decorated title page) -
-                # corpus-qa finding: these docs are unreadable, exclude wholesale
+            text, gate_fail = clean_and_gate(raw, min_alpha=min_alpha, min_chars=min_chars)
+            if text is None:
                 stats.low_quality += 1
                 reg.add_source(
                     work,
@@ -294,20 +306,7 @@ def crawl(
                         id=urn,
                         status=SourceStatus.SKIPPED_QUALITY,
                         year=meta.year,
-                        note=f"severe opening corruption (early_noise={metrics['early_noise']})",
-                    ),
-                )
-                continue
-            if metrics["alpha_ratio"] < min_alpha or metrics["n_chars"] < min_chars:
-                stats.low_quality += 1
-                reg.add_source(
-                    work,
-                    SourceRef(
-                        source=Source.DLIB,
-                        id=urn,
-                        status=SourceStatus.SKIPPED_QUALITY,
-                        year=meta.year,
-                        note=f"alpha={metrics['alpha_ratio']} chars={metrics['n_chars']}",
+                        note=gate_fail or "",
                     ),
                 )
                 continue
