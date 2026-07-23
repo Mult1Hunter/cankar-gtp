@@ -53,18 +53,19 @@ Do not build serving or the Laravel orchestrator before the styler exists.
       tier (Wikivir > dLib > gapfill > Wikipedia); cross-author attribution
       via committed collision_resolution.toml (never silent). Built to the
       architect critique (M1-M4); real-pair fixtures pin every signal.
-      -> 126,403 docs / 72.34M words (dropped: 11 gate, 7 registry-identity,
-      6 exact, 296 near-dup). Registry-identity is content-confirmed (max
-      bidirectional containment >= 0.5): a bare work_id match was collapsing
-      distinct-year collections ('Črtice 1914' vs '1907-09', 0.00 overlap) -
-      caught by enumerating the drops, ~54k words recovered, mismatches
-      surfaced for registry cleanup. Committed merge report + manifest.
-      - [ ] FOLLOW-UP: containment drops. The merge REPORTS (not drops) 100+
-            works duplicated inside collected volumes (Kette poems in
-            'Poezije 1907', Aškerc ballads in 'Balade in romance', Cankar
-            vignettes in 'Vinjete'). Dropping needs a keep-policy decision
-            (individual work vs collected volume) - deferred per M4, evidence
-            committed in registry/reports/merge.md.
+      -> 126,355 docs / 72.33M words (dropped: 11 gate, 7 registry-identity,
+      6 exact, 296 near-dup, 48 containment). Registry-identity is content-
+      confirmed (max bidirectional containment >= 0.5): a bare work_id match
+      was collapsing distinct-year collections ('Črtice 1914' vs '1907-09',
+      0.00 overlap) - caught by enumerating the drops, ~54k words recovered,
+      mismatches surfaced for registry cleanup. Committed merge report + manifest.
+      - [x] Containment drops (user policy 2026-07: keep collected volumes,
+            drop contained works). 48 works >0.95 contained in a kept volume
+            dropped (text survives in the volume, <=5% residual; ~10.6k words
+            of duplication removed); 58 partial (0.80-0.95) kept and reported;
+            volumes never dropped. 0.95 boundary pinned on real works (Zapuščeni
+            0.956 drop vs Aleš 0.945 keep). Aškerc ballads in 'Balade in
+            romance', Kette poems in 'Poezije 1907', etc.
 - [ ] Chunk (moves to Phase 2 - chunk size is a tokenizer/context decision)
 - [ ] Stats report: tokens per source/author (words-per-source shipped in
       corpus-quality.md; token counts need the Phase 2 tokenizer)

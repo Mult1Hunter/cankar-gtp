@@ -49,8 +49,9 @@ and shard manifests:
   of Slovenia) - digitized public-domain editions. Only works carrying dLib's
   public-domain rights mark are ingested, and dLib.si is cited here as their
   source, per the dLib terms of use.
-- **Wikipedia (Slovenian)** - planned; text is CC BY-SA, attributed to Wikipedia
-  contributors.
+- **Wikipedia (Slovenian)** (sl.wikipedia.org) - general-language text from the
+  official dump; CC BY-SA 4.0, attributed to Wikipedia contributors (dump
+  filename, sha256, and license are recorded in the shard manifest).
 
 The merged training corpus is **not redistributed** (CC BY-SA share-alike vs.
 public-domain mixing - see ROADMAP Phase 1). Any published artifact built from
