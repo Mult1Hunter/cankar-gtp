@@ -12,6 +12,7 @@ are plain ns-0 pages; category listings are richer than index pages (Cankar:
 from __future__ import annotations
 
 import logging
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -49,9 +50,16 @@ def make_session() -> PoliteSession:
 
 
 def api_get(session: PoliteSession, params: dict) -> dict:
-    params = {"format": "json", "formatversion": "2", **params}
+    # maxlag: MediaWiki etiquette - back off when replication lag is high
+    # (https://www.mediawiki.org/wiki/Manual:Maxlag_parameter)
+    params = {"format": "json", "formatversion": "2", "maxlag": "5", **params}
     data = session.get(API, params=params).json()
     if "error" in data:
+        if data["error"].get("code") == "maxlag":
+            time.sleep(5)
+            data = session.get(API, params=params).json()
+            if "error" not in data:
+                return data
         raise RuntimeError(f"API error: {data['error']}")
     return data
 

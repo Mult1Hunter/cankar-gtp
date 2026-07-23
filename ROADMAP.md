@@ -37,10 +37,25 @@ Do not build serving or the Laravel orchestrator before the styler exists.
       acquisition sides, API/EDM/dump-stream, are genuinely divergent, so no further
       SourceCrawler protocol - that would be one-shape-fits-none)
 - [x] Clean (mwparserfromhell), NFC-normalize -> JSONL shards with manifests
-- [ ] Dedupe + chunk (merge stage; consumes registry/works/NOTES.md annotations; Wikipedia geo-stub near-dups)
-- [ ] Stats report: tokens per source/author
-- ⚠️ **Yield correction (measured 2026-07):** Cankar 1.65M words; 14 PD authors 6.0M;
-      Wikipedia 65.3M -> corpus ~73M words ≈ **~110-140M tokens**. The original
+- [x] dLib coverage reconciliation (`reconcile-dlib`): 27 recoverable PD works
+      against live dLib, 25 pulled through OCR gates (incl. the play Hlapci -
+      never on Wikivir). Two review layers corrected the pull before landing:
+      corpus-qa caught 3 non-Cankar docs (fixed: creator-based authorship
+      check), design-review caught 19 re-editions pulled via discovery
+      loop-back (fixed: segment matching + 27 parallel identities merged).
+      MinHash marks 2 spelling/disambiguator variants for the merge stage,
+      so genuinely new: 23 works / 60k words, author corpus 1.70M -> ~1.76M
+      post-merge; registry is ledger-not-gate (ADR 0004 amendment 2);
+      committed audit report in registry/reports/
+- [ ] Dedupe + chunk (merge stage; consumes registry/works/NOTES.md annotations
+      + near-duplicates.md clusters; keep-preference = source ordering, see
+      dedup.py contract; real-pair calibration fixtures required before drops)
+- [ ] Stats report: tokens per source/author (words-per-source shipped in
+      corpus-quality.md; token counts need the Phase 2 tokenizer)
+- ⚠️ **Yield correction (measured 2026-07, incl. dLib gap-fill):** Cankar ~1.76M
+      words post-merge (1.65M Wikivir + 0.11M dLib after variant drops);
+      14 PD authors 6.0M; Wikipedia 65.3M -> corpus ~73.0M words ≈
+      **~110-140M tokens**. The original
       ~200-300M general-Slovene target is **unreachable from Wikipedia alone** (~half
       the low end). Options at Phase 3 sizing: accept ~120M tokens (data-constrained;
       a ~15-30M model is the honest compute-optimal-with-repetition size, not 40M -

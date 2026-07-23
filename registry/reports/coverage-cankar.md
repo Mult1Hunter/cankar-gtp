@@ -3,16 +3,16 @@
 
 Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 
-**1079 known works.**
+**1049 known works.**
 
 | Status | Works |
 |---|---|
-| candidate (text exists, not fetched) | 49 |
-| ingested (dlib) | 18 |
+| candidate (text exists, not fetched) | 2 |
+| ingested (dlib) | 43 |
 | ingested (wikivir) | 212 |
-| missing (no usable source known) | 760 |
+| missing (no usable source known) | 749 |
 | skipped-quality | 2 |
-| skipped-rights | 38 |
+| skipped-rights | 41 |
 
 | Work | Year | Genre | Status | Sources |
 |---|---|---|---|---|
@@ -59,8 +59,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Bolnik |  | Pesmi | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
 | Božična zgodba |  | Proza | ingested (wikivir) | wikivir:ingested |
 | Božične zgodbe |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested |
-| Brat Edvard |  | Pripovedni spisi | missing (no usable source known) | - |
-| Brat Edvard; Zgodba iz sanj [dlib-discovered] | 1907 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Brat Edvard |  | Pripovedni spisi | ingested (dlib) | dlib:ingested |
 | Brat Francelj |  |  | ingested (wikivir) | wikivir:ingested |
 | Brez doma (INK 1907) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Brez doma (Ska 1902) |  | Pripovedni spisi | missing (no usable source known) | - |
@@ -84,15 +83,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Čisto navadna, znana stvar |  | Pripovedni spisi | missing (no usable source known) | - |
 | Človek (Ivan Cankar) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Črni piruh |  |  | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
-| Črtice |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested; wikivir:ingested; wikivir:ingested; wikivir:ingested; dlib:candidate; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights |
-| Črtice; Ciganska sirota [dlib-discovered] | 1914 |  | candidate (text exists, not fetched) | dlib:candidate |
-| Črtice; Listje [dlib-discovered] | 1914 |  | candidate (text exists, not fetched) | dlib:candidate |
-| Črtice; Majska noč [dlib-discovered] | 1914 |  | candidate (text exists, not fetched) | dlib:candidate |
-| Črtice; Menice [dlib-discovered] | 1914 |  | candidate (text exists, not fetched) | dlib:candidate |
-| Črtice; Nenapisani romani [dlib-discovered] | 1914 |  | candidate (text exists, not fetched) | dlib:candidate |
-| Črtice; Ponočni spomini [dlib-discovered] | 1914 |  | candidate (text exists, not fetched) | dlib:candidate |
-| Črtice; Sošolec Tone [dlib-discovered] | 1914 |  | candidate (text exists, not fetched) | dlib:candidate |
-| Črtice; Z druge plati [dlib-discovered] | 1914 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Črtice |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested; wikivir:ingested; wikivir:ingested; wikivir:ingested; dlib:candidate; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:candidate; dlib:candidate; dlib:candidate; dlib:candidate; dlib:candidate; dlib:candidate; dlib:candidate; dlib:candidate |
 | Čudna cvetica [prevod] |  | Pesmi | missing (no usable source known) | - |
 | Čudna povest |  | Dela, objavljena v ''[[Slovenski narod|Slovenskem narodu]]'' | ingested (wikivir) | wikivir:ingested |
 | D'Annunzio |  | Publicistika | missing (no usable source known) | - |
@@ -114,7 +105,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Doma |  | Pripovedni spisi | missing (no usable source known) | - |
 | »Domače novice« |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
 | Domače ognjišče |  | Pripovedni spisi | missing (no usable source known) | - |
-| Domov [dlib-discovered] | 1902 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Domov [dlib-discovered] | 1902 |  | ingested (dlib) | dlib:ingested |
 | Domov (S 1898) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Domovina (1902–1903) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Don Alfonso |  | Dela, objavljena v ''[[Slovenski narod|Slovenskem narodu]]'' | ingested (wikivir) | wikivir:ingested |
@@ -131,10 +122,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Dva trpina (1894/95) |  | Pesmi | missing (no usable source known) | - |
 | Dve družini |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested |
 | Dve izvirni drami |  | Publicistika | missing (no usable source known) | - |
-| Dve noči |  | Pesmi | missing (no usable source known) | - |
-| Dve noči; Romanca [dlib-discovered] | 1896 |  | candidate (text exists, not fetched) | dlib:candidate |
-| Dve zgodbi; Zgodba o nepoštenosti [dlib-discovered] | 1914 |  | candidate (text exists, not fetched) | dlib:candidate |
-| Dve zgodbi; Zgodba o poštenosti [dlib-discovered] | 1914 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Dve noči |  | Pesmi | ingested (dlib) | dlib:ingested |
 | Dvoje srečnih ljudi |  | Dela, objavljena v ''[[Slovenski narod|Slovenskem narodu]]'' | ingested (wikivir) | wikivir:ingested |
 | Dvojna resnica |  | Pripovedni spisi | missing (no usable source known) | - |
 | Dvorec ob Ljubiji |  | Pesmi | missing (no usable source known) | - |
@@ -192,8 +180,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Greh (LZ 1903) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Greh (SN 1912) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Greh (Zk 1902) |  | Pripovedni spisi | skipped-quality | dlib:skipped-quality |
-| Grešnik Lenart | 1921 | Proza | ingested (wikivir) | wikivir:ingested |
-| Grešnik Lenart| življenjepis otroka [dlib-discovered] | 1921 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Grešnik Lenart | 1921 | Proza | ingested (wikivir) | wikivir:ingested; dlib:candidate |
 | Groba nehvaležnost |  | Dela, objavljena v ''[[Slovenski narod|Slovenskem narodu]]'' | ingested (wikivir) | wikivir:ingested |
 | Grobovi |  | Pripovedni spisi | missing (no usable source known) | - |
 | Groha nehvaležnost |  | Publicistika | missing (no usable source known) | - |
@@ -207,9 +194,8 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Heleni Pehani: Hlapci, 1910 |  | Publicistika | missing (no usable source known) | - |
 | Henriku Tumi |  | Pisma | missing (no usable source known) | - |
 | Hiša Marije pomočnice | 1904 | Proza | ingested (wikivir) | wikivir:ingested; dlib:skipped-manuscript; dlib:skipped-rights; dlib:skipped-rights; dlib:candidate; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights |
-| Hlapci | 1910 | Dramatika | skipped-rights | dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights |
-| Hlapci| drama v petih aktih [dlib-discovered] | 1910 |  | candidate (text exists, not fetched) | dlib:candidate |
-| Hlapec Jernej in njegova pravica | 1907 | Proza | ingested (dlib) | dlib:ingested; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights |
+| Hlapci | 1910 | Dramatika | ingested (dlib) | dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:ingested; dlib:skipped-manuscript; dlib:skipped-rights; dlib:skipped-rights |
+| Hlapec Jernej in njegova pravica | 1907 | Proza | ingested (dlib) | dlib:ingested; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights |
 | Hofra |  | Pesmi | missing (no usable source known) | - |
 | Hoja v šolo |  | Pripovedni spisi | missing (no usable source known) | - |
 | Hrepenenje (Ivan Cankar) |  | Dramatika | missing (no usable source known) | - |
@@ -244,7 +230,6 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Iz samotne družine |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested |
 | Iz tujega življenja |  | Pripovedni spisi | skipped-rights | dlib:skipped-rights |
 | Iz življenja odličnega rodoljuba |  | Pripovedni spisi | missing (no usable source known) | - |
-| Izbrane pesmi| za stoletnico pesnikovega rojstva 1844-1944 [dlib-discovered] | 1944 |  | candidate (text exists, not fetched) | dlib:candidate |
 | Izdajstvo brata |  | Pesmi | missing (no usable source known) | - |
 | Izgredi v Sarajevu |  | Publicistika | missing (no usable source known) | - |
 | Izidor Cankar |  |  | ingested (wikivir) | wikivir:ingested |
@@ -257,8 +242,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Jabolko (Ivan Cankar) |  |  | ingested (wikivir) | wikivir:ingested |
 | Jadac |  |  | ingested (wikivir) | wikivir:ingested |
 | Jadvigi Erzin, 1898 |  | Publicistika | missing (no usable source known) | - |
-| Jakob Ruda | 1901 | Dramatika | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
-| Jakob Ruda| drama v treh dejanjih [dlib-discovered] | 1900 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Jakob Ruda | 1901 | Dramatika | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:candidate |
 | Jakobovo hudodelstvo |  | Pripovedni spisi | missing (no usable source known) | - |
 | Jakopičev paviljon |  | Publicistika | skipped-rights | dlib:skipped-rights |
 | Janez Trdina: Zbranih spisov druga knjiga |  | Publicistika | skipped-rights | dlib:skipped-rights |
@@ -281,7 +265,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Judežev pozdrav |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested; dlib:candidate |
 | Julija |  | Pripovedni spisi | missing (no usable source known) | - |
 | Junaška pesem iz naših dnij |  | Pesmi | missing (no usable source known) | - |
-| Jure [dlib-discovered] | 1907 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Jure [dlib-discovered] | 1907 |  | ingested (dlib) | dlib:ingested |
 | Jutranja cigareta |  | Dela, objavljena v ''[[Slovenski narod|Slovenskem narodu]]'' | ingested (wikivir) | wikivir:ingested |
 | Jutranji gost |  |  | ingested (wikivir) | wikivir:ingested |
 | Kadar siješ mi v srce |  | Pesmi | missing (no usable source known) | - |
@@ -319,7 +303,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Kam se ti tako mudi |  | Pesmi | missing (no usable source known) | - |
 | Kamor jim veli veli vihar |  | Pesmi | missing (no usable source known) | - |
 | Kancelist Jareb |  | Pripovedni spisi | missing (no usable source known) | - |
-| Kancijoni [dlib-discovered] | 1894 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Kancijoni [dlib-discovered] | 1894 |  | ingested (dlib) | dlib:ingested |
 | Kancioni |  | Pesmi | missing (no usable source known) | - |
 | Karlu Bergmanu |  | Pisma | missing (no usable source known) | - |
 | Karlu Široku |  | Pisma | missing (no usable source known) | - |
@@ -346,13 +330,11 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Kontrolor Škrobar |  | Publicistika | missing (no usable source known) | - |
 | Kostanj posebne sorte |  | Pripovedni spisi | skipped-rights | dlib:skipped-rights |
 | Kot začarane stoje |  | Pesmi | missing (no usable source known) | - |
-| Kovač Damjan |  | Pripovedni spisi | missing (no usable source known) | - |
-| Kovač Damjan; Novela [dlib-discovered] | 1908 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Kovač Damjan |  | Pripovedni spisi | ingested (dlib) | dlib:ingested |
 | Kralj |  | Pesmi | missing (no usable source known) | - |
 | Kralj Malhus |  | Pripovedni spisi | missing (no usable source known) | - |
 | Kralj Matjaž (Ivan Cankar) |  | Pripovedni spisi | missing (no usable source known) | - |
-| Kralj na Betajnovi | 1902 | Dramatika | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights |
-| Kralj na Betajnovi| drama v treh dejanjih [dlib-discovered] | 1902 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Kralj na Betajnovi | 1902 | Dramatika | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:candidate; dlib:skipped-rights |
 | Kralji v cunjah |  | Dramatika | missing (no usable source known) | - |
 | Krčma ob cesti |  | Pripovedni spisi | missing (no usable source known) | - |
 | Krčmar Elija |  | Pripovedni spisi | skipped-rights | dlib:skipped-rights |
@@ -368,7 +350,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Krivica (Hrvatski dnevnik 1906) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Krivica (LZ 1909) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Križ in sulica |  | Pripovedni spisi | missing (no usable source known) | - |
-| Križ na gori | 1904 | Proza | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights |
+| Križ na gori | 1904 | Proza | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights |
 | Križev pot (Ivan Cankar) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Krona |  | Pripovedni spisi | missing (no usable source known) | - |
 | Krpa na čevlju |  | Pripovedni spisi | missing (no usable source known) | - |
@@ -377,8 +359,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Krvavi dnevi v Ljubljani |  | Publicistika | missing (no usable source known) | - |
 | Kulturni pomen Ivana Cankarja |  |  | ingested (wikivir) | wikivir:ingested |
 | Kulturni škandal |  | Publicistika | missing (no usable source known) | - |
-| Kurent | 1909 | Proza | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights |
-| Kurent| starodavna pripovedka [dlib-discovered] | 1909 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Kurent | 1909 | Proza | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:candidate |
 | Kurentova modrost |  |  | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
 | La Fontainova basen |  |  | ingested (wikivir) | wikivir:ingested |
 | La Fontainova sulica |  | Pripovedni spisi | missing (no usable source known) | - |
@@ -394,7 +375,6 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Lepa Vida |  | Dramatika | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:candidate; dlib:skipped-manuscript; dlib:skipped-rights; dlib:skipped-rights |
 | Lepa Vida (1911, zbirka) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Lepa Vida (LZ 1904) |  | Pripovedni spisi | missing (no usable source known) | - |
-| Lirske in epske poezije; Napisal A. Aškerc [dlib-discovered] | 1896 |  | candidate (text exists, not fetched) | dlib:candidate |
 | Lisjak (Ivan Cankar) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Listje |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested |
 | Literarna družba |  | Publicistika | missing (no usable source known) | - |
@@ -403,7 +383,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Literarno izobraženi ljudje |  | Pripovedni spisi | missing (no usable source known) | - |
 | Literarno pismo |  | Publicistika | missing (no usable source known) | - |
 | Ljuba žalost, sestra mila |  | Pesmi | missing (no usable source known) | - |
-| Ljubezen [dlib-discovered] | 1893 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Ljubezen [dlib-discovered] | 1893 |  | ingested (dlib) | dlib:ingested |
 | Ljubezen moja, moja sreča |  | Pesmi | missing (no usable source known) | - |
 | Ljubezen z novo spet močjo |  | Pesmi | missing (no usable source known) | - |
 | Ljubezni mlada sreča |  | Pesmi | missing (no usable source known) | - |
@@ -422,12 +402,12 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Mariji Reisner, 1908 |  | Publicistika | missing (no usable source known) | - |
 | Marijina podoba |  | Pripovedni spisi | missing (no usable source known) | - |
 | Marjaš |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested |
-| Marjaž [dlib-discovered] | 1912 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Marjaž [dlib-discovered] | 1912 |  | ingested (dlib) | dlib:ingested |
 | Marko, Luka in Dioniz |  | Dela, objavljena v ''[[Slovenski narod|Slovenskem narodu]]'' | ingested (wikivir) | wikivir:ingested |
 | Marta |  | Pripovedni spisi | missing (no usable source known) | - |
 | Marta in Magdalena |  | Dela, objavljena v ''[[Slovenski narod|Slovenskem narodu]]'' | ingested (wikivir) | wikivir:ingested |
 | Marta in Magdalena (Vinjete 1899) |  | Pripovedni spisi | missing (no usable source known) | - |
-| Martin Kačur | 1906 | Proza | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights |
+| Martin Kačur | 1906 | Proza | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights |
 | Materi (Ivan Cankar) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Materi (Mati! Vsak me zaničuje) |  | Pesmi | missing (no usable source known) | - |
 | Materi (Ne zabim jaz te srce milo) |  | Pesmi | missing (no usable source known) | - |
@@ -446,8 +426,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Mici Pfeiferjevi |  | Pisma | missing (no usable source known) | - |
 | Mignon (Goethe, prevod) |  | Pesmi | missing (no usable source known) | - |
 | Miha |  | Pripovedni spisi | missing (no usable source known) | - |
-| Milan in Milena | 1913 | Proza | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:skipped-rights |
-| Milan in Milena| ljubezenska pravljica [dlib-discovered] | 1913 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Milan in Milena | 1913 | Proza | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:skipped-rights; dlib:candidate |
 | Mileni Rohrmann, 1918 |  | Publicistika | missing (no usable source known) | - |
 | Mileni Rohrmann: Flaubert, Die Versuchung des heiligen Antonius |  | Publicistika | missing (no usable source known) | - |
 | Mileni Rohrmann: Milan in Milena, 1913 |  | Publicistika | missing (no usable source known) | - |
@@ -489,7 +468,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Moji materi |  | Pesmi | skipped-rights | dlib:skipped-rights |
 | Molil sem sinoči v cerkvi |  | Pesmi | missing (no usable source known) | - |
 | Monna Lisa | 1914 | Proza | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:skipped-rights |
-| Morála [dlib-discovered] | 1894 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Morála [dlib-discovered] | 1894 |  | ingested (dlib) | dlib:ingested |
 | Moralni ljudje | 1902 | Dramatika | missing (no usable source known) | - |
 | Motovilo |  |  | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
 | Mož pri oknu |  | Dela, objavljena v ''[[Slovenski narod|Slovenskem narodu]]'' | ingested (wikivir) | wikivir:ingested |
@@ -503,9 +482,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Na Golgato (Sn 1903/1904) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Na gori razvalina tam razpala |  | Pesmi | missing (no usable source known) | - |
 | Na izprehodu |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested |
-| Na klancu | 1902 | Proza | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights |
-| Na klancu| Ant. Knezova knjižnica| zbirka zabavnih in poučnih spisov [dlib-discovered] | 1902 |  | candidate (text exists, not fetched) | dlib:candidate |
-| Na klancu; Spisal Ivan Cankar [dlib-discovered] | 1903 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Na klancu | 1902 | Proza | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:candidate; dlib:candidate |
 | Na licu nobenem gorja ni |  | Pesmi | missing (no usable source known) | - |
 | Na mojo pot ne trosi rož dišečih |  | Pesmi | missing (no usable source known) | - |
 | Na mostu (1891) |  | Pesmi | missing (no usable source known) | - |
@@ -514,8 +491,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Na pomoč! |  | Publicistika | missing (no usable source known) | - |
 | Na pragu (Ivan Cankar) |  |  | ingested (wikivir) | wikivir:ingested |
 | Na roko cvetoče lice |  | Pesmi | missing (no usable source known) | - |
-| Na svatbenem potovanju |  | Pesmi | missing (no usable source known) | - |
-| Na svatbenem potovanju; Balada [dlib-discovered] | 1896 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Na svatbenem potovanju |  | Pesmi | ingested (dlib) | dlib:ingested |
 | Na večer |  | Pripovedni spisi | missing (no usable source known) | - |
 | Na veke, nezvesta mladenka |  | Pesmi | missing (no usable source known) | - |
 | Na vekomaj ostane |  | Pesmi | missing (no usable source known) | - |
@@ -524,10 +500,10 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Na zemljo, v spanju zimskem onemelo |  | Pesmi | missing (no usable source known) | - |
 | Nad menoj se prva zvezda |  | Pesmi | missing (no usable source known) | - |
 | Nadi Kočevar, 1918 |  | Publicistika | missing (no usable source known) | - |
-| Nagnilo se je solnce [dlib-discovered] | 1912 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Nagnilo se je solnce [dlib-discovered] | 1912 |  | ingested (dlib) | dlib:ingested |
 | Nagnilo se je sonce |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested |
 | Naj hudič vse pijance vzame |  | Pesmi | missing (no usable source known) | - |
-| Naj pojde! |  | Pripovedni spisi | missing (no usable source known) | - |
+| Naj pojde! |  | Pripovedni spisi | skipped-rights | dlib:skipped-rights |
 | Najhujše |  |  | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
 | Naredba |  | Dela, objavljena v ''[[Slovenski narod|Slovenskem narodu]]'' | ingested (wikivir) | wikivir:ingested |
 | Narisal sem nekdaj podobo tvojo |  | Pesmi | missing (no usable source known) | - |
@@ -539,7 +515,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Naši umetniki |  | Publicistika | missing (no usable source known) | - |
 | Nauk ljubezni |  | Pesmi | missing (no usable source known) | - |
 | Naznanilo ocene Župančičeve zbirke Čez plan |  | Publicistika | missing (no usable source known) | - |
-| Ne boj se več [dlib-discovered] | 1896 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Ne boj se več [dlib-discovered] | 1896 |  | ingested (dlib) | dlib:ingested |
 | Ne ljubi me! |  | Pesmi | missing (no usable source known) | - |
 | Ne vstajaj, ne vstajaj! … Ah moj bog, — kako |  | Pesmi | missing (no usable source known) | - |
 | Nebo gori od zvezd neštetih |  | Pesmi | missing (no usable source known) | - |
@@ -560,7 +536,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Nikdar nisem tebe ljubil |  | Pesmi | missing (no usable source known) | - |
 | Nina | 1906 | Proza | ingested (wikivir) | wikivir:ingested; dlib:candidate; dlib:skipped-rights |
 | Nina (Vinjete 1899) (Ivan Cankar) |  | Pripovedni spisi | missing (no usable source known) | - |
-| Nioba |  | Dramatika | missing (no usable source known) | - |
+| Nioba |  | Dramatika | skipped-rights | dlib:skipped-rights |
 | Nj. visokorodnost v Beli vasi |  | Pripovedni spisi | missing (no usable source known) | - |
 | Njegova mati |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested |
 | Njen grob |  |  | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
@@ -607,13 +583,12 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | O vojski |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested; dlib:candidate |
 | O življenju dunajskih delavcev (1913) |  | Publicistika | missing (no usable source known) | - |
 | Ob grahu |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
-| Ob grobu tiranovem |  | Pesmi | missing (no usable source known) | - |
-| Ob grobu tiranovem; Romanca [dlib-discovered] | 1895 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Ob grobu tiranovem |  | Pesmi | ingested (dlib) | dlib:ingested |
 | Ob izvirku |  | Pesmi | missing (no usable source known) | - |
 | Ob Krekovem pogrebu |  | Publicistika | missing (no usable source known) | - |
 | Ob morju |  | Pripovedni spisi | missing (no usable source known) | - |
 | Ob selitvi |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested |
-| Ob smrtni postelji [dlib-discovered] | 1898 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Ob smrtni postelji [dlib-discovered] | 1898 |  | ingested (dlib) | dlib:ingested |
 | Ob svetem grobu |  | Pripovedni spisi | missing (no usable source known) | - |
 | Ob Trubarjevi štiristoletnici |  | Publicistika | missing (no usable source known) | - |
 | Ob zori | 1903 | Proza | ingested (wikivir) | wikivir:ingested; wikivir:ingested; dlib:skipped-rights; dlib:candidate; dlib:skipped-rights |
@@ -693,7 +668,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Pobratimi |  | Pripovedni spisi | missing (no usable source known) | - |
 | Pod jasnim soncem rdeča roža |  | Pesmi | missing (no usable source known) | - |
 | Pod streho (Ivan Cankar) |  | Pripovedni spisi | missing (no usable source known) | - |
-| Podobe iz sanj | 1920 | Proza | ingested (wikivir) | wikivir:ingested; dlib:skipped-manuscript; dlib:candidate; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:candidate; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights |
+| Podobe iz sanj | 1920 | Proza | ingested (wikivir) | wikivir:ingested; dlib:skipped-manuscript; dlib:candidate; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:candidate; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights |
 | Poet (Ivan Cankar) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Poet Peter |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested; dlib:candidate |
 | Poetična drama o sanjarjenju |  | Dramatika | missing (no usable source known) | - |
@@ -701,8 +676,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Pogled iz škatlice |  | Pripovedni spisi | missing (no usable source known) | - |
 | Pogovor na verandi |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested |
 | Pogovor pod lipo |  |  | ingested (wikivir) | wikivir:ingested |
-| Pohujšanje v dolini šentflorjanski | 1908 | Dramatika | ingested (wikivir) | wikivir:ingested; dlib:skipped-manuscript; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights |
-| Pohujšanje v dolini šentflorjanski| farsa v treh aktih [dlib-discovered] | 1908 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Pohujšanje v dolini šentflorjanski | 1908 | Dramatika | ingested (wikivir) | wikivir:ingested; dlib:skipped-manuscript; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:candidate; dlib:skipped-rights |
 | Pojte, bratje, pojte glasno |  | Pesmi | missing (no usable source known) | - |
 | Pokoj |  | Pesmi | missing (no usable source known) | - |
 | Pokojne duše |  | Pripovedni spisi | skipped-rights | dlib:skipped-rights |
@@ -722,7 +696,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | »Popevčice milemu narodu« |  | Publicistika | missing (no usable source known) | - |
 | Popotovanje Nikolaja Nikiča | 1900 | Proza | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
 | Poset |  | Pripovedni spisi | missing (no usable source known) | - |
-| Poslednji dnevi Štefana Poljanca |  |  | ingested (wikivir) | wikivir:ingested |
+| Poslednji dnevi Štefana Poljanca |  |  | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
 | Poslednji dnevi Štefana Poljanca (1907) |  |  | ingested (wikivir) | wikivir:ingested |
 | Posvečenje (1911) |  | Pesmi | missing (no usable source known) | - |
 | Posvečenje Simonu Gregorčiču |  | Publicistika | skipped-rights | dlib:skipped-rights |
@@ -784,7 +758,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Razžalostilo se je solnce vroče |  | Pesmi | missing (no usable source known) | - |
 | Rdeča lisa |  | Pripovedni spisi | missing (no usable source known) | - |
 | Realka |  | Publicistika | skipped-rights | dlib:skipped-rights |
-| Resignacija [dlib-discovered] | 1899 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Resignacija [dlib-discovered] | 1899 |  | ingested (dlib) | dlib:ingested |
 | Resignacija (Pogledal sem ji tisti dan v oči) |  | Pesmi | missing (no usable source known) | - |
 | Rojenice |  | Pesmi | missing (no usable source known) | - |
 | Rokovnjači (1895/1896, soavtor Kette) |  | Dramatika | missing (no usable source known) | - |
@@ -793,8 +767,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Romance |  | Pesmi | missing (no usable source known) | - |
 | romantična komedija (1902) |  | Dramatika | missing (no usable source known) | - |
 | Romantična noveleta |  | Pesmi | missing (no usable source known) | - |
-| Romantične duše | 1922 | Dramatika | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
-| Romantične duše| dramatična slika v treh dejanjih [dlib-discovered] | 1922 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Romantične duše | 1922 | Dramatika | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:candidate |
 | Romantika |  | Pesmi | missing (no usable source known) | - |
 | Romeo in Julija (Shakespeare) |  | Prevodi | missing (no usable source known) | - |
 | Romeo in Julija| tragedija v petih dejanjih [dlib-discovered] | 1904 |  | candidate (text exists, not fetched) | dlib:candidate |
@@ -817,7 +790,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Sedel sem pri ljubici svoji |  | Pesmi | missing (no usable source known) | - |
 | Sedela v polumraku sva |  | Pesmi | missing (no usable source known) | - |
 | Sedmina |  | Pripovedni spisi | missing (no usable source known) | - |
-| Sence |  | Pripovedni spisi | missing (no usable source known) | - |
+| Sence |  | Pripovedni spisi | skipped-rights | dlib:skipped-rights |
 | Sentimentalni album |  | Pesmi | missing (no usable source known) | - |
 | Sestanek(Ivan Cankar) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Sestanek na Rušah |  | Pripovedni spisi | ingested (dlib) | dlib:ingested |
@@ -853,7 +826,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Smrt in pogreb Jakoba Nesreče | 1906 | Proza | ingested (wikivir) | wikivir:ingested |
 | Smrt kontrolorja Stepnika (Ivan Cankar) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Sočutni Jakob |  | Dela, objavljena v ''[[Slovenski narod|Slovenskem narodu]]'' | ingested (wikivir) | wikivir:ingested |
-| Sodba [dlib-discovered] | 1894 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Sodba [dlib-discovered] | 1894 |  | ingested (dlib) | dlib:ingested |
 | Sodba (Gosti svetli vso dvorano) |  | Pesmi | missing (no usable source known) | - |
 | Sodba (Kako bliščí se nad goro) |  | Pesmi | missing (no usable source known) | - |
 | Solnce! … Solnce! |  |  | ingested (wikivir) | wikivir:ingested |
@@ -861,22 +834,20 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Sonet (Deset let, mislim, da je že minilo) |  | Pesmi | missing (no usable source known) | - |
 | Soneti (epilog h Kurentu) |  | Pesmi | missing (no usable source known) | - |
 | Šopek cvetic |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested |
-| Sosed Luka | 1909 | Proza | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
-| Sosed Luka| 63. zvezek| kmečka novela| Slovenske večernice za poduk in kratek čas [dlib-discovered] | 1909 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Sosed Luka | 1909 | Proza | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:candidate |
 | Sošolci |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested |
 | Sošolec Tone |  | Pripovedni spisi | missing (no usable source known) | - |
 | Sova |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested |
 | Španska romanca |  | Pesmi | ingested (dlib) | dlib:ingested |
 | Spomini na mojo mater |  | Pripovedni spisi | missing (no usable source known) | - |
 | Spominjaj se šole! |  | Pesmi | missing (no usable source known) | - |
-| Spominu Ivana Cankarja| (1876-1918) [dlib-discovered] | 1919 |  | candidate (text exists, not fetched) | dlib:candidate |
 | Spomladanska noč |  | Pripovedni spisi | missing (no usable source known) | - |
 | Spomladi |  |  | ingested (wikivir) | wikivir:ingested; dlib:candidate |
 | Spoznanje (Ivan Cankar) |  | Pesmi | missing (no usable source known) | - |
 | Spremljevalec |  | Pripovedni spisi | missing (no usable source known) | - |
 | Sraka in lastovice |  | Pripovedni spisi | missing (no usable source known) | - |
 | Srcu |  | Pesmi | missing (no usable source known) | - |
-| Sreča [dlib-discovered] | 1894 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Sreča [dlib-discovered] | 1894 |  | ingested (dlib) | dlib:ingested |
 | Sreča (Oj to je sončen, krasen dan) |  | Pesmi | missing (no usable source known) | - |
 | Sreča (S 1896) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Sreča (Sn 1903/1904) |  | Pripovedni spisi | missing (no usable source known) | - |
@@ -924,7 +895,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Tišina (Ivan Cankar) |  | Publicistika | missing (no usable source known) | - |
 | Tisti lepi večeri |  | Pripovedni spisi | missing (no usable source known) | - |
 | Tisto vprašanje |  | Pripovedni spisi | skipped-rights | dlib:skipped-rights |
-| Tja ne morem! [dlib-discovered] | 1895 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Tja ne morem! [dlib-discovered] | 1895 |  | ingested (dlib) | dlib:ingested |
 | Tkalci (Hauptmann) |  | Prevodi | missing (no usable source known) | - |
 | »To so pa rože!« |  | Pripovedni spisi | skipped-rights | dlib:skipped-rights |
 | Točajka |  | Pesmi | missing (no usable source known) | - |
@@ -934,7 +905,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Tragedija |  | Pesmi | missing (no usable source known) | - |
 | Trenotki |  | Pripovedni spisi | missing (no usable source known) | - |
 | Tretja ura |  | Pripovedni spisi | missing (no usable source known) | - |
-| Triolet [dlib-discovered] | 1894 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Triolet [dlib-discovered] | 1894 |  | ingested (dlib) | dlib:ingested |
 | Triolet (In vendar, dekle, ni mi srce mrlo) |  | Pesmi | missing (no usable source known) | - |
 | Trnovska procesija |  | Publicistika | missing (no usable source known) | - |
 | Troje povesti | 1911 | Proza | ingested (wikivir) | wikivir:ingested; dlib:candidate; dlib:skipped-rights; dlib:skipped-rights |
@@ -956,13 +927,13 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Umirajoči ljudje |  | Pripovedni spisi | missing (no usable source known) | - |
 | Unfug |  | Pesmi | missing (no usable source known) | - |
 | Ungnadovi gostje (Ivan Cankar) |  | Pesmi | missing (no usable source known) | - |
-| Ungnadovi gostje; Romanca [dlib-discovered] | 1895 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Ungnadovi gostje; Romanca [dlib-discovered] | 1895 |  | ingested (dlib) | dlib:ingested |
 | Unnutzer Vorwurf |  | Pesmi | missing (no usable source known) | - |
 | Ura (Ivan Cankar) |  |  | ingested (wikivir) | wikivir:ingested |
 | Urlavb |  | Pripovedni spisi | missing (no usable source known) | - |
 | Usode temne jaz se ne bojim |  | Pesmi | missing (no usable source known) | - |
 | Utrinek iz mladosti |  | Pripovedni spisi | missing (no usable source known) | - |
-| Utrujen [dlib-discovered] | 1898 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Utrujen [dlib-discovered] | 1898 |  | ingested (dlib) | dlib:ingested |
 | Utrujen in poten domu pribežim |  | Pesmi | missing (no usable source known) | - |
 | Uvod (k Podobam iz sanj) |  | Pripovedni spisi | skipped-rights | dlib:skipped-rights |
 | V album (Lani v tem času so rože cvetele) |  | Pesmi | missing (no usable source known) | - |
@@ -996,7 +967,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | V tujino (V nebu visokem roj ptičic leti) |  | Pesmi | missing (no usable source known) | - |
 | V življenji |  | Pripovedni spisi | missing (no usable source known) | - |
 | Vaški farizej |  | Pripovedni spisi | missing (no usable source known) | - |
-| Večer na Dunaju [dlib-discovered] | 1913 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Večer na Dunaju [dlib-discovered] | 1913 |  | ingested (dlib) | dlib:ingested |
 | Večer na vrtu |  | Pripovedni spisi | missing (no usable source known) | - |
 | Večerna molitev |  |  | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
 | Večerne sence |  |  | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
@@ -1008,7 +979,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Vedomec (LZ 1903) |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
 | Vekoslavu Vrtovcu: Za križem, 1918 |  | Publicistika | missing (no usable source known) | - |
 | Velik shod v Zagorju ob Savi |  | Publicistika | missing (no usable source known) | - |
-| Velika maša |  |  | ingested (wikivir) | wikivir:ingested |
+| Velika maša |  |  | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
 | Velika maša (DS 1917) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Velika maša (LZ 1922) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Velikonočni zvon |  | Pesmi | missing (no usable source known) | - |
@@ -1017,7 +988,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Veri Rohrmann, 1918 |  | Publicistika | missing (no usable source known) | - |
 | Verovšek |  | Publicistika | missing (no usable source known) | - |
 | Vertrauen in die Zukunft |  | Pesmi | missing (no usable source known) | - |
-| Veselejša pesem |  | Pripovedni spisi | missing (no usable source known) | - |
+| Veselejša pesem |  | Pripovedni spisi | skipped-rights | dlib:skipped-rights |
 | Vinjete | 1899 | Proza | ingested (wikivir) | wikivir:ingested; dlib:candidate; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights |
 | Vinjete (1897) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Vladimiri Jelovšek, 1914 |  | Publicistika | missing (no usable source known) | - |
@@ -1040,8 +1011,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Za en poljub |  | Pripovedni spisi | skipped-rights | dlib:skipped-rights |
 | Za križem | 1909 | Proza | ingested (wikivir) | wikivir:ingested; dlib:candidate |
 | Za križem (RP 1907) |  | Pripovedni spisi | missing (no usable source known) | - |
-| Za narodov blagor | 1901 | Dramatika | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights |
-| Za narodov blagor| komedija v štirih dejanjih [dlib-discovered] | 1901 |  | candidate (text exists, not fetched) | dlib:candidate |
+| Za narodov blagor | 1901 | Dramatika | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:candidate; dlib:skipped-rights |
 | Za nobenega ne maram |  | Pesmi | missing (no usable source known) | - |
 | Za »Pisarja« |  | Pesmi | missing (no usable source known) | - |
 | Zadnji bledi sončni žarek |  | Pesmi | missing (no usable source known) | - |
@@ -1068,14 +1038,14 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Zdenki Marković, 1912 |  | Publicistika | missing (no usable source known) | - |
 | Zdenko Petersilka |  | Pripovedni spisi | skipped-quality | dlib:skipped-quality |
 | Zemlja od toge neskončne |  | Pesmi | missing (no usable source known) | - |
-| Ženitba kancelista Jareba |  |  | ingested (wikivir) | wikivir:ingested |
+| Ženitba kancelista Jareba |  |  | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
 | Ženitnina v Kani Galilejski (1914–1918) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Zgodba o dveh mladih ljudeh |  | Pripovedni spisi | skipped-rights | dlib:skipped-rights |
-| Zgodba o nepoštenosti |  | Pripovedni spisi | missing (no usable source known) | - |
-| Zgodba o poštenosti |  | Pripovedni spisi | missing (no usable source known) | - |
+| Zgodba o nepoštenosti |  | Pripovedni spisi | ingested (dlib) | dlib:ingested |
+| Zgodba o poštenosti |  | Pripovedni spisi | ingested (dlib) | dlib:ingested |
 | Zgodba o Šimnu Sirotniku |  | Pripovedni spisi | skipped-rights | dlib:skipped-rights |
 | Zgodba o zaplenjenem pravičniku |  |  | ingested (wikivir) | wikivir:ingested |
-| Zgodbe iz doline šentflorjanske | 1908 | Proza | ingested (wikivir) | wikivir:ingested; dlib:candidate |
+| Zgodbe iz doline šentflorjanske | 1908 | Proza | ingested (wikivir) | wikivir:ingested; dlib:candidate; dlib:skipped-rights |
 | Zgodilo se je včeraj (Ivan Cankar) |  | Pesmi | missing (no usable source known) | - |
 | Zgodovinska seja |  | Dela, objavljena v ''[[Slovenski narod|Slovenskem narodu]]'' | ingested (wikivir) | wikivir:ingested |
 | Zimska noč |  | Pesmi | missing (no usable source known) | - |

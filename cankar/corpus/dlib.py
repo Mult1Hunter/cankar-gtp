@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-"""Crawl dLib.si (National Library digital archive) to fill registry gaps.
+"""dLib.si (National Library digital archive) machinery - EDM metadata, URN
+enumeration, OCR gates, authorship checks.
 
-Registry-first (ADR 0004): only works matched by title to the author's registry
-are ingested; whole-journal-issue records and other unmatched DOC items go to a
-triage report, never silently dropped. Manuscripts are recorded and skipped.
-Wikivir-ingested works are recorded as dLib `candidate` without fetching text
-(hand transcription beats OCR).
+Manuscripts are recorded and skipped; wikivir-ingested works are covered
+without fetching text (hand transcription beats OCR).
 
 Terms-of-use compliance (dlib.si/Help.aspx, checked 2026-07): only records
 carrying dLib's public-domain rights mark are ingested (everything else is
@@ -20,45 +18,29 @@ Verified dLib API surface (2026-07):
 - TEXT streams need a session cookie (visit a details page first) + referer,
   and are usually windows-1250 encoded (cankar.ocr_clean handles both)
 
-CLI: `cankar corpus crawl-dlib` (cankar.corpus.cli). ADR 0007: importable module,
-no standalone script.
+The original registry-gated `crawl-dlib` flow is retired (ADR 0004 amendment 2
+declared its gating the bug class; `cankar corpus reconcile-dlib` is its
+superset - audit + authorship-checked pull). This module keeps the shared dLib
+machinery: EDM parsing, URN enumeration, the OCR gate chain, and the layered
+authorship check.
 """
 
 from __future__ import annotations
 
 import logging
 import re
-from dataclasses import dataclass, field
-from pathlib import Path
+from dataclasses import dataclass
 from urllib.parse import quote
 
 from cankar.core.http import PoliteSession
-from cankar.core.schema import CorpusDoc
 from cankar.corpus.ocr_clean import decode_stream, ocr_clean
-from cankar.corpus.registry import Registry, Source, SourceRef, SourceStatus
-from cankar.corpus.shard import ShardWriter
 
 logger = logging.getLogger(__name__)
 
 BASE = "https://www.dlib.si"
 EARLY_NOISE_MAX = 10  # ocr_clean early_noise gate; calibrated on the first dLib audit
-
-
-@dataclass
-class DlibStats:
-    """Typed crawl outcome counters (ADR 0008)."""
-
-    ingested: int = 0
-    candidate_covered: int = 0
-    manuscript: int = 0
-    not_pd: int = 0
-    not_slovene: int = 0
-    no_text: int = 0
-    unmatched: int = 0
-    not_author: int = 0
-    low_quality: int = 0
-    duplicate_edition: int = 0
-    triage: list[str] = field(default_factory=list)
+DEFAULT_MIN_ALPHA = 0.84  # alpha_ratio floor; calibrated on the first dLib audit
+DEFAULT_MIN_CHARS = 400  # shortest acceptable cleaned text
 
 
 URN_RE = re.compile(r"URN:NBN:SI:[A-Z]+-[A-Z0-9]+")
@@ -106,7 +88,8 @@ class EdmRecord:
     year: int | None
     types: frozenset[str]
     langs: frozenset[str]
-    people: frozenset[str]
+    people: frozenset[str]  # creators + contributors merged (back-compat)
+    creators: frozenset[str]  # dc:creator only - the authorship claim
     rights: str
     text_url: str | None
     is_part_of: str | None
@@ -124,6 +107,7 @@ def parse_edm(data: dict) -> EdmRecord:
     people = {
         (txt(p) or "") for key in ("dc:contributor", "dc:creator") for p in as_list(cho.get(key))
     }
+    creators = {(txt(p) or "") for p in as_list(cho.get("dc:creator"))}
     rights = (as_list(agg.get("edm:rights"))[0] or {}).get("@rdf:resource", "") if agg else ""
     text_url = next(
         (
@@ -143,201 +127,60 @@ def parse_edm(data: dict) -> EdmRecord:
         types=frozenset(types),
         langs=frozenset(langs),
         people=frozenset(people),
+        creators=frozenset(creators),
         rights=rights,
         text_url=text_url,
         is_part_of=is_part_of,
     )
 
 
-def crawl(
-    *,
-    query_contributor: str,
-    author: str,
-    registry_path: Path,
-    out: Path,
-    triage: Path | None = None,
-    min_alpha: float = 0.84,
-    min_chars: int = 400,
-) -> DlibStats:
-    triage_path = triage or out.parent / f"{out.stem}-triage.md"
+def clean_and_gate(
+    raw: bytes, *, min_alpha: float = DEFAULT_MIN_ALPHA, min_chars: int = DEFAULT_MIN_CHARS
+) -> tuple[str | None, str | None]:
+    """OCR-clean a TEXT stream and apply the calibrated quality gates.
+    Returns (text, None) on pass, (None, reason) on fail - one place holds the
+    gate sequence so crawl and reconcile can never drift apart."""
+    text, metrics = ocr_clean(decode_stream(raw))
+    if metrics["early_noise"] > EARLY_NOISE_MAX:
+        return None, f"severe opening corruption (early_noise={metrics['early_noise']})"
+    if metrics["alpha_ratio"] < min_alpha or metrics["n_chars"] < min_chars:
+        return None, f"alpha={metrics['alpha_ratio']} chars={metrics['n_chars']}"
+    return text, None
 
-    reg = Registry.load(registry_path, author)
-    surname = query_contributor.split(",")[0].strip().casefold()
 
-    session = PoliteSession()
-    # session bootstrap: streams 302 to the details page without cookies
-    bootstrap_q = quote(f"'contributor={query_contributor}'")
-    session.get(f"{BASE}/results/?query={bootstrap_q}&pageSize=25")
+# title-embedded attribution: "Napisal A. Askerc" etc. names the true author
+_ATTRIB_RE = re.compile(r"(napisal|spisal|zložil)", re.IGNORECASE)
+# memorial/tribute titles are ABOUT the person, not by them
+_MEMORIAL_RE = re.compile(r"^spominu\b|\bv spomin\b", re.IGNORECASE)
 
-    urns = enumerate_urns(session, query_contributor)
-    doc_urns = [u for u in urns if u.split(":")[-1].startswith("DOC-")]
-    logger.info(f"{len(urns)} URNs listed, {len(doc_urns)} DOC records")
 
-    stats = DlibStats()
-    ingested_work_ids: set[str] = set()
+def is_by_author(meta: EdmRecord, query_contributor: str) -> bool:
+    """Layered authorship check, calibrated on real contamination the corpus-qa
+    audit caught in the first gap-fill pull (all three committed as fixtures):
 
-    writer = ShardWriter(
-        out,
-        source=Source.DLIB,
-        script="cankar corpus crawl-dlib",
-        args={"query_contributor": query_contributor, "author": author, "min_alpha": min_alpha},
-    )
-    with writer:
-        for i, urn in enumerate(doc_urns, 1):
-            if i % 25 == 0:
-                logger.info(f"  metadata {i}/{len(doc_urns)}")
-            try:
-                meta = parse_edm(session.get(f"{BASE}/{urn}/EDM/JSON").json())
-            except Exception as exc:  # noqa: BLE001 - record and continue the crawl
-                stats.triage.append(f"- {urn}: EDM fetch/parse failed ({exc})")
-                continue
-
-            if not any(surname in p.casefold() for p in meta.people):
-                stats.not_author += 1
-                continue
-            if "rokopisi" in meta.types or "rokopis" in meta.types:
-                stats.manuscript += 1
-                work = reg.find(meta.title)
-                if work:
-                    reg.add_source(
-                        work,
-                        SourceRef(
-                            source=Source.DLIB,
-                            id=urn,
-                            status=SourceStatus.SKIPPED_MANUSCRIPT,
-                            year=meta.year,
-                        ),
-                    )
-                continue
-            if meta.langs and "sl" not in meta.langs:
-                stats.not_slovene += 1
-                continue
-            if PD_MARKER not in meta.rights:
-                stats.not_pd += 1
-                work = reg.find(meta.title)
-                if work:
-                    reg.add_source(
-                        work,
-                        SourceRef(
-                            source=Source.DLIB,
-                            id=urn,
-                            status=SourceStatus.SKIPPED_RIGHTS,
-                            year=meta.year,
-                        ),
-                    )
-                continue
-
-            work = reg.find(meta.title)
-            if work is None:
-                stats.unmatched += 1
-                part = f" (in: {meta.is_part_of})" if meta.is_part_of else ""
-                stats.triage.append(
-                    f"- {urn}: no registry match for {meta.title!r} [{meta.year}]{part}"
-                )
-                continue
-
-            covered = any(
-                s.source is Source.WIKIVIR and s.status is SourceStatus.INGESTED
-                for s in work.sources
-            )
-            if covered:
-                stats.candidate_covered += 1
-                reg.add_source(
-                    work,
-                    SourceRef(
-                        source=Source.DLIB,
-                        id=urn,
-                        status=SourceStatus.CANDIDATE,
-                        year=meta.year,
-                        note="wikivir transcription preferred",
-                    ),
-                )
-                continue
-            if work.work_id in ingested_work_ids:
-                stats.duplicate_edition += 1
-                reg.add_source(
-                    work,
-                    SourceRef(
-                        source=Source.DLIB,
-                        id=urn,
-                        status=SourceStatus.CANDIDATE,
-                        year=meta.year,
-                        note="another edition already ingested",
-                    ),
-                )
-                continue
-            if not meta.text_url:
-                stats.no_text += 1
-                reg.add_source(
-                    work,
-                    SourceRef(
-                        source=Source.DLIB,
-                        id=urn,
-                        status=SourceStatus.CANDIDATE,
-                        year=meta.year,
-                        note="no TEXT stream",
-                    ),
-                )
-                continue
-
-            # the gap-filler: fetch + clean + gate
-            raw = session.get(meta.text_url, headers={"Referer": f"{BASE}/details/{urn}"}).content
-            text, metrics = ocr_clean(decode_stream(raw))
-            if metrics["early_noise"] > EARLY_NOISE_MAX:
-                # severely corrupted opening (mangled decorated title page) -
-                # corpus-qa finding: these docs are unreadable, exclude wholesale
-                stats.low_quality += 1
-                reg.add_source(
-                    work,
-                    SourceRef(
-                        source=Source.DLIB,
-                        id=urn,
-                        status=SourceStatus.SKIPPED_QUALITY,
-                        year=meta.year,
-                        note=f"severe opening corruption (early_noise={metrics['early_noise']})",
-                    ),
-                )
-                continue
-            if metrics["alpha_ratio"] < min_alpha or metrics["n_chars"] < min_chars:
-                stats.low_quality += 1
-                reg.add_source(
-                    work,
-                    SourceRef(
-                        source=Source.DLIB,
-                        id=urn,
-                        status=SourceStatus.SKIPPED_QUALITY,
-                        year=meta.year,
-                        note=f"alpha={metrics['alpha_ratio']} chars={metrics['n_chars']}",
-                    ),
-                )
-                continue
-
-            doc = CorpusDoc(
-                title=work.title,
-                url=f"{BASE}/details/{urn}",
-                text=text,
-                n_chars=len(text),
-                source=Source.DLIB,
-                author=author,
-            )
-            writer.write(doc)
-            reg.add_source(
-                work,
-                SourceRef(source=Source.DLIB, id=urn, status=SourceStatus.INGESTED, year=meta.year),
-            )
-            ingested_work_ids.add(work.work_id)
-            stats.ingested += 1
-    reg.save(registry_path)
-
-    triage_path.parent.mkdir(parents=True, exist_ok=True)
-    triage_path.write_text(
-        "# dLib triage - unmatched/failed records (regenerated by crawl_dlib.py)\n\n"
-        + "\n".join(stats.triage)
-        + "\n"
-    )
-
-    logger.info(f"wrote {out}: {writer.n_docs} docs, {writer.n_words:,} words")
-    for k, v in vars(stats).items():
-        logger.info(f"  {k}: {v}")
-    logger.info(f"  triage report: {triage_path} ({len(stats.triage)} lines)")
-    return stats
+    1. dc:creator is the authorship claim - when present, it decides, and it
+       must match the full queried name ("Cankar, Ivan"), not the bare surname:
+       Izidor Cankar edited Ivan's collected works, and a surname match would
+       accept him. A trailing qualifier ("Cankar, Ivan (1876-1918)") still
+       matches via prefix. (Caught: Gregorcic's collected poems where Cankar
+       is only dc:contributor.)
+    2. dLib often omits dc:creator on journal records, so fall back to the
+       merged people set by surname - but reject titles carrying an
+       attribution phrase without the author's surname after it (caught:
+       'Lirske in epske poezije; Napisal A. Askerc') and memorial-pattern
+       titles (caught: 'Spominu Ivana Cankarja' - a tribute ABOUT the author).
+    Residual risk (accepted, documented): a work by someone else where dLib
+    lists only the author as contributor AND the title carries no attribution.
+    """
+    query = query_contributor.casefold()
+    surname = query.split(",")[0].strip()
+    if meta.creators:
+        return any(c.casefold().startswith(query) for c in meta.creators)
+    if not any(surname in p.casefold() for p in meta.people):
+        return False
+    m = _ATTRIB_RE.search(meta.title)
+    if m and surname not in meta.title[m.start() :].casefold():
+        return False
+    if _MEMORIAL_RE.search(meta.title):
+        return False
+    return True

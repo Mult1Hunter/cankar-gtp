@@ -65,3 +65,27 @@ redirects and stubs.
 CLAUDE.md's engineering-system rule is updated to match: authored-source
 documents map to a registry entry; non-authored sources carry dataset-manifest
 provenance with per-reason skip counts (the manifest's `skip_counts` field).
+
+## Amendment 2 (2026-07) - the registry is a ledger, not an ingestion gate
+
+An external methodological review argued (point 1D) that making a hand-curated
+registry the ingestion gatekeeper during discovery invites confirmation bias -
+"only what I already know about exists". The critique was half right, and the
+half that was right had already cost us: the dLib crawl sent any record whose
+title failed registry matching to a gitignored triage file, which silently
+buried recoverable PD works whose dLib titles are journal-issue titles (the
+1914 crtice class). The registry surfaced unknowns too (dlib-discovered
+candidates), so the instrument was sound - the GATING was the bug.
+
+Resolution, mechanized in `cankar corpus reconcile-dlib`:
+
+- The registry remains the source of truth for what is KNOWN - but failing to
+  match it must never destroy information. Unmatched-but-PD records are now
+  upserted into the committed registry as `dlib-discovered` candidates with
+  their `is_part_of` context, instead of dying in gitignored triage.
+- Coverage against the source is audited by an explicit bucket classification
+  (every DOC record lands in exactly one enumerated class) written to a
+  committed snapshot report - the miss class is now measurable, permanently.
+- Title matching gains one relaxation (subtitle stripping on dLib's " : "
+  separator), still exact-on-normalized - no fuzzy matching, preserving the
+  name-collision guarantees that motivated this ADR.

@@ -3,13 +3,14 @@
 
 Length-invariant statistical signals of training quality (MATTR, duplicate-line fraction, unknown-char rate, residual markup). Snapshot; regenerate with `cankar corpus stats`.
 
-**126,698 docs, 72,960,279 words** across 17 shards.
+**126,723 docs, 73,023,746 words** across 18 shards.
 
 | shard | docs | words | MATTR | dup-line | unknown% | exact-dup% | med words | p95 words |
 |---|--:|--:|--:|--:|--:|--:|--:|--:|
 | askerc | 45 | 178,246 | 0.687 | 0.019 | 0.095% | 0.00% | 322 | 17,693 |
 | cankar | 218 | 1,649,007 | 0.601 | 0.012 | 0.005% | 0.00% | 1560 | 38,680 |
 | dlib-cankar | 18 | 47,942 | 0.619 | 0.013 | 0.014% | 0.00% | 1283 | 18,715 |
+| dlib-cankar-gapfill | 25 | 63,467 | 0.612 | 0.012 | 0.014% | 0.00% | 417 | 9,106 |
 | erjavec | 25 | 290,088 | 0.653 | 0.002 | 0.006% | 0.00% | 6822 | 38,183 |
 | govekar | 24 | 562,419 | 0.630 | 0.008 | 0.016% | 0.00% | 11374 | 68,184 |
 | jenko | 17 | 56,741 | 0.671 | 0.011 | 0.009% | 0.00% | 300 | 26,840 |
