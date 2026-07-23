@@ -11,6 +11,8 @@ dependencies = [
     "mwparserfromhell>=0.6.6",
     "pydantic>=2.7",
     "datasketch>=2.0.0",
+    # Phase 2+ - tokenizer/training
+    "torch>=2.13.0",
 ]
 
 [project.urls]
@@ -32,7 +34,7 @@ tooling = [
     "graphifyy>=0.9.23",
 ]
 
-# Phase 2+ deps (torch, tokenizers, anthropic, wandb) are added when those
+# Remaining phase deps (tokenizer libs, anthropic, wandb) are added when their
 # phases start - keep the lockfile honest about what each stage needs.
 
 [build-system]
