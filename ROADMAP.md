@@ -61,9 +61,10 @@ Do not build serving or the Laravel orchestrator before the styler exists.
       mismatches surfaced for registry cleanup. Committed merge report + manifest.
       - [x] Containment drops (user policy 2026-07: keep collected volumes,
             drop contained works). 48 works >0.95 contained in a kept volume
-            dropped losslessly (their text survives in the volume; ~10.6k
-            words of duplication removed); 58 partial (0.80-0.95) kept and
-            reported; volumes never dropped. Aškerc ballads in 'Balade in
+            dropped (text survives in the volume, <=5% residual; ~10.6k words
+            of duplication removed); 58 partial (0.80-0.95) kept and reported;
+            volumes never dropped. 0.95 boundary pinned on real works (Zapuščeni
+            0.956 drop vs Aleš 0.945 keep). Aškerc ballads in 'Balade in
             romance', Kette poems in 'Poezije 1907', etc.
 - [ ] Chunk (moves to Phase 2 - chunk size is a tokenizer/context decision)
 - [ ] Stats report: tokens per source/author (words-per-source shipped in

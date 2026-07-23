@@ -2,8 +2,8 @@
   "schema_version": 1,
   "source": "merged",
   "script": "cankar corpus merge",
-  "git_sha": "4cd8759",
-  "retrieved_at": "2026-07-23T11:05:55+00:00",
+  "git_sha": "72d5f11",
+  "retrieved_at": "2026-07-23T11:20:20+00:00",
   "args": {
     "shards": [
       "askerc",

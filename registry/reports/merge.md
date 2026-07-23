@@ -53,7 +53,7 @@
 - 'Črtice (Ivan Cankar)' shares work_id with 'Črtice (Cankar 1914)' but content differs - kept both
 - 'Roža (Fran Levstik)' shares work_id with 'Roža' but content differs - kept both
 
-## Containment drops (>0.95 inside a kept volume - lossless)
+## Containment drops (>0.95 inside a kept volume - <=5% residual)
 
 - 'Brodnik' dropped (in 'Balade in romance')
 - 'Godčeva balada' dropped (in 'Balade in romance')
