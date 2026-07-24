@@ -228,17 +228,17 @@ def merge(*, corpus_dir: Path, out: Path, resolution_path: Path, report_out: Pat
         for idx, doc in enumerate(read_shard(path)):
             loc = (slug, idx)
             text, title, author = doc["text"], doc["title"], doc.get("author")
+            wk = _work_key(author, title, regs)  # (author, work_id) or None; reused below
 
             # misattribution: text filed under this author but written by someone
             # else - excluded from the corpus outright, before gate/dedup (ADR 0014).
             # Not the cross-author-reattribution path (that KEEPS the text under its
             # true author via the collision table); this text belongs to no shard.
-            wk_flag = _work_key(author, title, regs)
-            if wk_flag is not None and wk_flag in flagged:
+            if wk is not None and wk in flagged:
                 drop[loc] = "not_by_author"
                 stats.skip_counts["not_by_author"] += 1
                 stats.not_by_author.append(f"- {slug}:{title!r} (filed under {author}, excluded)")
-                fired.add(wk_flag)
+                fired.add(wk)
                 continue
 
             if literary:
@@ -257,7 +257,6 @@ def merge(*, corpus_dir: Path, out: Path, resolution_path: Path, report_out: Pat
                 continue
 
             sh = shingles(text) if literary else None  # reused by registry-confirm + containment
-            wk = _work_key(author, title, regs)
             if wk is not None and wk in work_root and sh is not None:
                 root_sh = lit_shingles[work_root[wk]].shingles
                 if max(containment(sh, root_sh), containment(root_sh, sh)) >= (
