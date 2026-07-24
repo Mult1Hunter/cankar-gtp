@@ -114,11 +114,24 @@ Do not build serving or the Laravel orchestrator before the styler exists.
 
 ## Phase 2.25 - Evaluation harness (1 session) *(added per Agent A4)*
 
-- [ ] Held-out perplexity set: unseen Cankar chapters
+- [x] Held-out perplexity set (ADR 0013): whole-work, not chapters - chapter
+      holdout leaks (model trains on a work's other chapters). Dominant leak on
+      THIS corpus is collected-volume containment, so selection is containment-
+      closed (a candidate <0.5 contained in every kept doc). Frozen, provenance-
+      stamped registry/evals/holdout.json: **50 Cankar prose works, 146,268
+      tokens (5.01%)**. BPB harness (nanochat metric vendored + drift-tested,
+      own deterministic batcher) ships tested against a stub; real numbers at
+      Phase 3. registry/reports/eval-holdout.md
 - [ ] Style classifier (Cankar vs plain Slovene): TF-IDF + logistic regression baseline, SloBERTa if needed
-- [ ] LLM-judge template for meaning preservation (used from Phase 6 on)
-- [ ] Dev set design: 200 held-out pairs **+ 50 fresh drafts** (measures the distribution gap explicitly, per A1)
+      *(next PR: prose-vs-prose, group-split by work, holdout excluded - critique A-1)*
+- [ ] LLM-judge template for meaning preservation *(deferred to Phase 6 - needs Phase-5 pairs; building now is speculative)*
+- [ ] Dev set design: 200 held-out pairs **+ 50 fresh drafts** *(deferred to Phase 5 - pairs do not exist yet)*
 - Rule: every quality claim in README/blog gets a number from this harness
+- ⚠️ **Corpus follow-up (found 2026-07 by the holdout audit):** 3 works ABOUT
+      Cankar by others (2 memoirs, 1 essay) are misattributed author="Ivan
+      Cankar" in the merged corpus - excluded from the holdout, but they also
+      pollute the Cankar training slice. Needs registry re-attribution +
+      re-merge before Phase 4 continued-pretraining.
 
 ## Phase 2.5 - TinyCankar micro-win (few hours) *(added per Agent C2)*
 
