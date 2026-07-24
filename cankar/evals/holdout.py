@@ -52,12 +52,14 @@ CANKAR_AUTHOR = "Ivan Cankar"
 # that evals is a second cross-boundary consumer (deferred: 11-file refactor).
 HOLDOUT_SOURCE = "wikivir"
 # Corpus MISATTRIBUTIONS surfaced by the holdout audit (2026-07): texts ABOUT
-# Cankar by others (two memoirs written after his death, one critic's essay),
-# wrongly carrying author="Ivan Cankar". Excluded from candidacy so the
-# held-out set is Cankar's own voice. Enumerated real cases, not a fragile
-# "about-Cankar" detector (ADR 0006). NOTE: they also sit in the Cankar
-# TRAINING slice and need a corpus-stage re-attribution + re-merge (ROADMAP
-# Phase 1 follow-up) - this list is the eval-side stopgap, not the root fix.
+# Cankar by others (two Vera Albreht memoirs, one critic's essay) that carried
+# author="Ivan Cankar". The ROOT fix now lives in the corpus stage - they are
+# WorkFlag.NOT_BY_AUTHOR in registry/works/cankar.jsonl and merge.py excludes
+# them (ADR 0014), so they no longer reach the merged Cankar slice. This set is
+# kept as the eval stage's independent LAST line of defence (the module ethos):
+# evals reads the merged corpus, never the corpus registry, so it cannot see the
+# flag - if a merge bug ever re-admits one, cankar_docs() fails loud instead of
+# silently scoring seen text. Defensive post-condition, not a candidacy filter.
 MISATTRIBUTED_URLS = frozenset(
     {
         "https://sl.wikisource.org/wiki/Kulturni_pomen_Ivana_Cankarja",
@@ -132,19 +134,28 @@ class SelectionResult:
 def cankar_docs(corpus_path: Path) -> list[dict]:
     """Every Cankar doc in the MERGED corpus (critique MF-3: the merged corpus
     is the training universe; the registry's 'ingested' flags are pre-merge
-    and include works whose text survives only inside a volume)."""
-    return [
+    and include works whose text survives only inside a volume).
+
+    Defensive post-condition (ADR 0014): the corpus stage excludes the audited
+    misattributions, but evals is the independent last line of defence - if one
+    ever re-appears in the Cankar slice, fail loud rather than score seen text."""
+    docs = [
         d
         for d in iter_jsonl_docs(corpus_path, missing_hint="run: cankar corpus merge")
         if d.get("author") == CANKAR_AUTHOR
     ]
+    leaked = sorted(d["url"] for d in docs if d["url"] in MISATTRIBUTED_URLS)
+    if leaked:
+        raise CankarError(
+            f"misattributed about-Cankar text in the merged Cankar slice: {leaked}. "
+            "The corpus-stage NOT_BY_AUTHOR exclusion (ADR 0014) regressed - re-merge."
+        )
+    return docs
 
 
 def _candidate(doc: dict, params: HoldoutParams) -> bool:
     return (
-        doc["source"] == HOLDOUT_SOURCE
-        and params.min_chars <= doc["n_chars"] <= params.max_chars
-        and doc["url"] not in MISATTRIBUTED_URLS
+        doc["source"] == HOLDOUT_SOURCE and params.min_chars <= doc["n_chars"] <= params.max_chars
     )
 
 
