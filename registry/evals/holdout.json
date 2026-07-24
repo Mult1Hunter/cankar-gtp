@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "corpus_sha256": "cdfea262ce5898e5b35001afb2fb8899ccb531ea1c6962c39a7f1ed917e418a2",
+  "corpus_sha256": "d9b05bf04db96db6d733a08540bda86f5458ed91b8182a61f5262b6d0dd22a6b",
   "tokenizer_name": "v8192",
   "author": "Ivan Cankar",
   "source": "wikivir",
@@ -11,11 +11,11 @@
     "target_token_fraction": 0.05,
     "min_works": 8
   },
-  "cankar_total_tokens": 2916840,
+  "cankar_total_tokens": 2912476,
   "holdout_tokens": 146268,
-  "holdout_fraction": 0.0501,
-  "git_sha": "be9bdf9",
-  "created_at": "2026-07-24T00:49:13+00:00",
+  "holdout_fraction": 0.0502,
+  "git_sha": "6d06087",
+  "created_at": "2026-07-24T08:54:15+00:00",
   "works": [
     {
       "url": "https://sl.wikisource.org/wiki/Otrok_se_smeje",
