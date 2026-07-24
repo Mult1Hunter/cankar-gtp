@@ -1,0 +1,422 @@
+{
+  "schema_version": 1,
+  "corpus_sha256": "cdfea262ce5898e5b35001afb2fb8899ccb531ea1c6962c39a7f1ed917e418a2",
+  "tokenizer_name": "v8192",
+  "author": "Ivan Cankar",
+  "source": "wikivir",
+  "params": {
+    "min_chars": 3000,
+    "max_chars": 45000,
+    "containment_reject": 0.5,
+    "target_token_fraction": 0.05,
+    "min_works": 8
+  },
+  "cankar_total_tokens": 2916840,
+  "holdout_tokens": 146268,
+  "holdout_fraction": 0.0501,
+  "git_sha": "be9bdf9",
+  "created_at": "2026-07-24T00:49:13+00:00",
+  "works": [
+    {
+      "url": "https://sl.wikisource.org/wiki/Otrok_se_smeje",
+      "title": "Otrok se smeje",
+      "n_chars": 18739,
+      "n_tokens": 5956,
+      "content_sha256": "11025d926e99c7d897fdb942d931123bc28d97a38b78d3be19280b3b074c2248",
+      "max_containment_elsewhere": 0.0066
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Polnočnica",
+      "title": "Polnočnica",
+      "n_chars": 10780,
+      "n_tokens": 3370,
+      "content_sha256": "7a7ec3867b49768900eec1504bfe2c309be0ffad2f08468292c6c2e0b3f04c50",
+      "max_containment_elsewhere": 0.0076
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Sveta_noč_Damijana_Gavriča",
+      "title": "Sveta noč Damijana Gavriča",
+      "n_chars": 7991,
+      "n_tokens": 2635,
+      "content_sha256": "0b68a8fc6351d5372e6239580060f4392daac8371c3e4db5ed974591a4ed9643",
+      "max_containment_elsewhere": 0.0092
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Očiščenje",
+      "title": "Očiščenje",
+      "n_chars": 11004,
+      "n_tokens": 3346,
+      "content_sha256": "852de01b66bbc4901fc83c4f278597524fbe0098ca9340ae2914ebe1e77e5c18",
+      "max_containment_elsewhere": 0.0021
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Prva_ječa",
+      "title": "Prva ječa",
+      "n_chars": 9082,
+      "n_tokens": 2976,
+      "content_sha256": "9518c5c400659fbf6d5255edb73d30c0b142d883b04ef4964e3c63b8b086260c",
+      "max_containment_elsewhere": 0.0019
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Tiha_smrt",
+      "title": "Tiha smrt",
+      "n_chars": 4559,
+      "n_tokens": 1407,
+      "content_sha256": "5fcf0efd2a51d95528e2ead4c3f45367fbab0f04c74afcebb0ce3012938e79ea",
+      "max_containment_elsewhere": 0.0061
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Koncert_na_vrtu",
+      "title": "Koncert na vrtu",
+      "n_chars": 4995,
+      "n_tokens": 1568,
+      "content_sha256": "0d37f8006c0e291e4bc7852aaf870983b006c4280a43a80c17bb643d056af9fd",
+      "max_containment_elsewhere": 0.0081
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Profesor_Maslovina_in_drugi",
+      "title": "Profesor Maslovina in drugi",
+      "n_chars": 12263,
+      "n_tokens": 3810,
+      "content_sha256": "67c7eccff62008a1b12375a92e92befe5adc43ddc621baa474aff465b429fa80",
+      "max_containment_elsewhere": 0.0028
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Solnce!_…_Solnce!",
+      "title": "Solnce! … Solnce!",
+      "n_chars": 6165,
+      "n_tokens": 2033,
+      "content_sha256": "45c1fde4ddfae7a10297de72566379e902cba13c3ae68d35eb224ec6ab43f07d",
+      "max_containment_elsewhere": 0.0038
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Pomlad_(Ivan_Cankar)",
+      "title": "Pomlad (Ivan Cankar)",
+      "n_chars": 4614,
+      "n_tokens": 1480,
+      "content_sha256": "e903de81b970f7dc5c7f50fcb02a167bb7493dea54f21752e76051966d24eb45",
+      "max_containment_elsewhere": 0.0037
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Pogovor_na_verandi",
+      "title": "Pogovor na verandi",
+      "n_chars": 5314,
+      "n_tokens": 1712,
+      "content_sha256": "01cf013a9ac309de111a7c1ce28957923b8864b17c5297b74c2e97d209f40cf8",
+      "max_containment_elsewhere": 0.0043
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Najhujše",
+      "title": "Najhujše",
+      "n_chars": 5688,
+      "n_tokens": 1922,
+      "content_sha256": "d32fe2454d690c8d43310443124456987903ed32a73b8df57118dce6b7338a39",
+      "max_containment_elsewhere": 0.002
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Jabolko_(Ivan_Cankar)",
+      "title": "Jabolko (Ivan Cankar)",
+      "n_chars": 5853,
+      "n_tokens": 1902,
+      "content_sha256": "bd649f9430c1bf20497202e9c3997fd4750a4cbe347b31e5be447e8b5d26a6eb",
+      "max_containment_elsewhere": 0.003
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Idila",
+      "title": "Idila",
+      "n_chars": 5104,
+      "n_tokens": 1648,
+      "content_sha256": "68109955b44e23805ed17842d75f69ba4efb22876043dd6eab970ce6b46566bb",
+      "max_containment_elsewhere": 0.0043
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Na_Drenovem",
+      "title": "Na Drenovem",
+      "n_chars": 24281,
+      "n_tokens": 7992,
+      "content_sha256": "008919f7c71fab1a4268cb088462a6d8d1b874eccb0a7900478e76c9718357a0",
+      "max_containment_elsewhere": 0.0022
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Češnje_in_prstan",
+      "title": "Češnje in prstan",
+      "n_chars": 4094,
+      "n_tokens": 1321,
+      "content_sha256": "86341dba83cf9d87b870393a9574d5b4af003170b3333bdda82962860257171f",
+      "max_containment_elsewhere": 0.004
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Odlomek_iz_romana",
+      "title": "Odlomek iz romana",
+      "n_chars": 26514,
+      "n_tokens": 8369,
+      "content_sha256": "5cf270efccb58c6afd68d1b2023936019000a8a70739a3d5d89c12cc090d737d",
+      "max_containment_elsewhere": 0.0032
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Tovariš_Severin",
+      "title": "Tovariš Severin",
+      "n_chars": 32479,
+      "n_tokens": 10484,
+      "content_sha256": "0b50899e141eb8cedac7bb9161f3d7f2273a424a7fc0861ce3edb2cc52967b98",
+      "max_containment_elsewhere": 0.0047
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Zgodovinska_seja",
+      "title": "Zgodovinska seja",
+      "n_chars": 10177,
+      "n_tokens": 3147,
+      "content_sha256": "12ff89a0960feee031822a29e6fb45e2887111150adf6909b6ef488ea8cc0e16",
+      "max_containment_elsewhere": 0.0025
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Božične_zgodbe",
+      "title": "Božične zgodbe",
+      "n_chars": 7553,
+      "n_tokens": 2323,
+      "content_sha256": "1454c374b9cac9c1b7fb3de73451a21a9c8612daef010ee9f9486f744b8a5118",
+      "max_containment_elsewhere": 0.0041
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Velika_maša",
+      "title": "Velika maša",
+      "n_chars": 5543,
+      "n_tokens": 1738,
+      "content_sha256": "f643cbdbdf6cd2bbce9222407a029fd3b541fae3303653fa6280c6320dffaff6",
+      "max_containment_elsewhere": 0.0104
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Sanje_infanterista_Blaža",
+      "title": "Sanje infanterista Blaža",
+      "n_chars": 6179,
+      "n_tokens": 1958,
+      "content_sha256": "ceb2b13b2cb7b94a670b6361d092ba37aed5962faf6159ef22ccd3d450b60292",
+      "max_containment_elsewhere": 0.0053
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Marko,_Luka_in_Dioniz",
+      "title": "Marko, Luka in Dioniz",
+      "n_chars": 4452,
+      "n_tokens": 1401,
+      "content_sha256": "211d81628a2c0c4884ef7decb1c15024b7ceaf0757311863e35617c235fad19d",
+      "max_containment_elsewhere": 0.0039
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Jubilej_(Ivan_Cankar)",
+      "title": "Jubilej (Ivan Cankar)",
+      "n_chars": 19194,
+      "n_tokens": 5847,
+      "content_sha256": "841f1255ce149467783104e38de27c33b61d03aa492d98776e66f00bba268c89",
+      "max_containment_elsewhere": 0.0015
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Idealist_(Ivan_Cankar)",
+      "title": "Idealist (Ivan Cankar)",
+      "n_chars": 5519,
+      "n_tokens": 1651,
+      "content_sha256": "01827597d626ce168896843be70de6b8b447ce9cefb9ca0658a24c72951fc123",
+      "max_containment_elsewhere": 0.0022
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Sveti_Janez_v_Biljkah",
+      "title": "Sveti Janez v Biljkah",
+      "n_chars": 17578,
+      "n_tokens": 5476,
+      "content_sha256": "6e71ba2117df7cbd497c7266bd03a40828f568c8b858af9c6240c12b14ef53e3",
+      "max_containment_elsewhere": 0.001
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Majsko_veselje",
+      "title": "Majsko veselje",
+      "n_chars": 5302,
+      "n_tokens": 1692,
+      "content_sha256": "988076ba9eb6205b991b13d8ab0d3e05bc02b61be53a945567372e449dc561c1",
+      "max_containment_elsewhere": 0.0033
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Sova_(Ivan_Cankar)",
+      "title": "Sova (Ivan Cankar)",
+      "n_chars": 6438,
+      "n_tokens": 2109,
+      "content_sha256": "8f724ddf15f656f42277e4a51fe5b79bd45e304600780225e9b29a37d0da9649",
+      "max_containment_elsewhere": 0.0046
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Na_izprehodu",
+      "title": "Na izprehodu",
+      "n_chars": 5064,
+      "n_tokens": 1629,
+      "content_sha256": "e7582bcde32eb0329e7ca4603812575d537d1fbeb63151d5cbfb0263947bf14e",
+      "max_containment_elsewhere": 0.0036
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Siv_las",
+      "title": "Siv las",
+      "n_chars": 5534,
+      "n_tokens": 1709,
+      "content_sha256": "af097215a6d49fa6f5073c9833d2130b1edd0fb5110598e22bd53e0f85ce1217",
+      "max_containment_elsewhere": 0.0041
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Don_Alfonso",
+      "title": "Don Alfonso",
+      "n_chars": 10971,
+      "n_tokens": 3340,
+      "content_sha256": "4a7f899e7c3283915c00817f779c81a719c54dae17b40661a37763373dd9a9ed",
+      "max_containment_elsewhere": 0.0031
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Znanec_od_one_strani",
+      "title": "Znanec od one strani",
+      "n_chars": 18212,
+      "n_tokens": 5774,
+      "content_sha256": "2ee9a3a6b13ea1f592afa9d17f0fbecfdd3fec4ea6a17f936dfc00e4810192e4",
+      "max_containment_elsewhere": 0.0018
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Groba_nehvaležnost",
+      "title": "Groba nehvaležnost",
+      "n_chars": 4200,
+      "n_tokens": 1330,
+      "content_sha256": "669c5a7b1404998d3bebee1750233f9af3048dd2bb98f13d5e827a0c6545a353",
+      "max_containment_elsewhere": 0.003
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Pred_pragom",
+      "title": "Pred pragom",
+      "n_chars": 5204,
+      "n_tokens": 1544,
+      "content_sha256": "475d1801a2340faedc3b95de568ce3763348fec4764cfdf544d896a76bf9c97a",
+      "max_containment_elsewhere": 0.0022
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Gomila_(Ivan_Cankar)",
+      "title": "Gomila (Ivan Cankar)",
+      "n_chars": 4273,
+      "n_tokens": 1325,
+      "content_sha256": "48497b192673e5e388a3542939da11714a000adcc74333e9560e95f14f604533",
+      "max_containment_elsewhere": 0.0094
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Pravljica_(Ivan_Cankar)",
+      "title": "Pravljica (Ivan Cankar)",
+      "n_chars": 4782,
+      "n_tokens": 1438,
+      "content_sha256": "7f9506b6fa47938c1eff453cf2b7a6559c8d5b37f51e04b686b296e9dbef4534",
+      "max_containment_elsewhere": 0.0049
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Njen_grob",
+      "title": "Njen grob",
+      "n_chars": 6610,
+      "n_tokens": 2023,
+      "content_sha256": "1698b2a8e7752ff555d1b1b43f6ff278ac28623ba8c7dc7d72d8f36aaf70997b",
+      "max_containment_elsewhere": 0.0042
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Melanholična_premišljevanja",
+      "title": "Melanholična premišljevanja",
+      "n_chars": 6465,
+      "n_tokens": 1966,
+      "content_sha256": "ab9e81a8863e41ec10eeb12007efcb6d9c21aff7028d490392930dd93b59bd1b",
+      "max_containment_elsewhere": 0.0029
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Tičnica",
+      "title": "Tičnica",
+      "n_chars": 4624,
+      "n_tokens": 1627,
+      "content_sha256": "229b52f96628522ba8b4d2dc8b3fe8581a07653ab206a89b345bacbf8294e477",
+      "max_containment_elsewhere": 0.0074
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Domóv",
+      "title": "Domóv",
+      "n_chars": 6165,
+      "n_tokens": 1906,
+      "content_sha256": "09dc6d603328da1c4c60ece5df9341b68bebe0b0482fdd2e1421dbffb1e34af7",
+      "max_containment_elsewhere": 0.0047
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Na_verandi",
+      "title": "Na verandi",
+      "n_chars": 4932,
+      "n_tokens": 1531,
+      "content_sha256": "210e9496fdf909fda914b1aa68e76a89f56a1d86b7c72f2295da4ac96f9d012e",
+      "max_containment_elsewhere": 0.0078
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Črtice_(Cankar_1907-09)",
+      "title": "Črtice (Cankar 1907-09)",
+      "n_chars": 26069,
+      "n_tokens": 7955,
+      "content_sha256": "de4c28a01f3cb6535b98ada9b9755d653ae8e8ecec16d7b4e2e0fe6ab6342552",
+      "max_containment_elsewhere": 0.0029
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Legenda_o_Kristovi_suknji",
+      "title": "Legenda o Kristovi suknji",
+      "n_chars": 3731,
+      "n_tokens": 1168,
+      "content_sha256": "85616dfdf696df5f6baf987b72ddc9a3fb07bab465fd4fc3459180667a3651ef",
+      "max_containment_elsewhere": 0.0047
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Muhe_(Ivan_Cankar)",
+      "title": "Muhe (Ivan Cankar)",
+      "n_chars": 9929,
+      "n_tokens": 3155,
+      "content_sha256": "a4f1a234edf72cd37a9ef70b68bbd0b67b9b10d93dfaf58c9256339d7fe2547d",
+      "max_containment_elsewhere": 0.0017
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Brat_Francelj",
+      "title": "Brat Francelj",
+      "n_chars": 6547,
+      "n_tokens": 2114,
+      "content_sha256": "e8b80058e7c9d452c4decc199ea258de64327215581a106add1fc0195d59d7aa",
+      "max_containment_elsewhere": 0.005
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Božična_zgodba",
+      "title": "Božična zgodba",
+      "n_chars": 6084,
+      "n_tokens": 2021,
+      "content_sha256": "bfee5be52bbe55deb2d3147ba92bd71659ec533caf3bde74ce7be2ad54354031",
+      "max_containment_elsewhere": 0.0028
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Edvard_in_Kunigunda",
+      "title": "Edvard in Kunigunda",
+      "n_chars": 9811,
+      "n_tokens": 3087,
+      "content_sha256": "d536cf8afbc933baf7ddebca0b55cc0b3c8163b7d7d7158f19a48c4b81c1d456",
+      "max_containment_elsewhere": 0.0058
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Blage_duše!_(Ivan_Cankar)",
+      "title": "Blage duše! (Ivan Cankar)",
+      "n_chars": 11090,
+      "n_tokens": 3706,
+      "content_sha256": "66e7aa6f8685b4a3c274d6bbb893ec6e38fedd8ed69b492fe45a797916633e91",
+      "max_containment_elsewhere": 0.0026
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Skodelica_kave",
+      "title": "Skodelica kave",
+      "n_chars": 5261,
+      "n_tokens": 1620,
+      "content_sha256": "de00b5cdc5831bf99303f15732f4af82978d10872f320d3f5976b00e91a52f50",
+      "max_containment_elsewhere": 0.0032
+    },
+    {
+      "url": "https://sl.wikisource.org/wiki/Dvoje_srečnih_ljudi",
+      "title": "Dvoje srečnih ljudi",
+      "n_chars": 9943,
+      "n_tokens": 3027,
+      "content_sha256": "1818a920aa344a4b56340fc5b1c51b7c4099cd850bdb7c8c65bbc30606c5db7d",
+      "max_containment_elsewhere": 0.0036
+    }
+  ],
+  "also_exclude_urls": []
+}
