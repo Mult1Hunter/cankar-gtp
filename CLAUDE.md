@@ -101,5 +101,5 @@ Phase 2.25 - evaluation harness (in progress). Held-out set FROZEN (ADR 0013:
 50 Cankar works, 146k tokens, containment-closed, registry/evals/holdout.json)
 + BPB harness scaffold. Next in phase: style classifier (prose-vs-prose,
 group-split). Deferred: LLM-judge -> Ph6, pairs dev-set -> Ph5. Corpus
-follow-up flagged: 3 about-Cankar misattributions in the training slice.
-(Canonical status: ROADMAP checkboxes.)
+misattribution follow-up RESOLVED (ADR 0014: NOT_BY_AUTHOR flag, re-merge,
+holdout re-frozen at 5.02%). (Canonical status: ROADMAP checkboxes.)

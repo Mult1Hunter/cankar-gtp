@@ -13,7 +13,7 @@ from cankar.corpus.merge import (
     ordered_shards,
     shard_tier,
 )
-from cankar.corpus.registry import Registry, normalize_title
+from cankar.corpus.registry import Registry, WorkFlag, normalize_title
 
 
 def test_shard_tier_and_ordering(tmp_path: Path) -> None:
@@ -353,3 +353,105 @@ def test_merge_is_byte_reproducible(tmp_path: Path, monkeypatch: pytest.MonkeyPa
     merge.merge(corpus_dir=corpus, out=out1, resolution_path=res, report_out=tmp_path / "r1.md")
     merge.merge(corpus_dir=corpus, out=out2, resolution_path=res, report_out=tmp_path / "r2.md")
     assert out1.read_bytes() == out2.read_bytes()
+
+
+def test_not_by_author_excluded(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A NOT_BY_AUTHOR-flagged work is dropped before gate/dedup and counted, while
+    the author's real work in the same shard survives (ADR 0014). This is the root
+    fix for the about-Cankar misattributions the holdout audit surfaced."""
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    reg = Registry("Ivan Cankar")
+    reg.upsert("Na klancu")  # a real Cankar work - kept
+    reg.upsert("Nekaj spominov na Cankarja", flags=[WorkFlag.NOT_BY_AUTHOR])  # memoir by another
+    _write(
+        corpus / "cankar.jsonl",
+        [
+            _doc("Na klancu", DOMOV, "wikivir", "Ivan Cankar"),
+            # the misattribution carries author="Ivan Cankar" in the shard, yet is excluded
+            _doc("Nekaj spominov na Cankarja", ROKOVNJACI, "wikivir", "Ivan Cankar"),
+        ],
+    )
+    res = tmp_path / "res.toml"
+    res.write_text("")
+    monkeypatch.setattr(merge, "_author_registries", lambda: {"Ivan Cankar": reg})
+    monkeypatch.setattr(
+        "cankar.corpus.shard.dataset_manifest",
+        lambda stage, name: tmp_path / f"{name}.manifest.json",
+    )
+    out = tmp_path / "m.jsonl"
+    stats = merge.merge(
+        corpus_dir=corpus, out=out, resolution_path=res, report_out=tmp_path / "m.md"
+    )
+    titles = sorted(json.loads(ln)["title"] for ln in out.read_text().splitlines() if ln.strip())
+    assert titles == ["Na klancu"]  # the memoir is gone, the real work stays
+    assert stats.skip_counts["not_by_author"] == 1
+    assert any("Nekaj spominov" in line for line in stats.not_by_author)
+
+
+def test_not_by_author_beats_the_gate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """The flag check runs BEFORE the quality gate (load-bearing): a flagged work
+    whose text would fail the gate is counted not_by_author, never gate_*, and
+    still registers as fired - otherwise it would trip the never-matched warning.
+    This is the real path for the two mis-crawled bibliography stubs (ADR 0014)."""
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    reg = Registry("Ivan Cankar")
+    # flagged AND gate-failing (German -> gate_not_slovene if it reached the gate)
+    reg.upsert("Vera Albreht bibliografija", flags=[WorkFlag.NOT_BY_AUTHOR])
+    _write(
+        corpus / "cankar.jsonl",
+        [
+            _doc(
+                "Vera Albreht bibliografija",
+                "Der Wald ist still und dunkel.",
+                "wikivir",
+                "Ivan Cankar",
+            )
+        ],
+    )
+    res = tmp_path / "res.toml"
+    res.write_text("")
+    monkeypatch.setattr(merge, "_author_registries", lambda: {"Ivan Cankar": reg})
+    monkeypatch.setattr(
+        "cankar.corpus.shard.dataset_manifest",
+        lambda stage, name: tmp_path / f"{name}.manifest.json",
+    )
+    out = tmp_path / "m.jsonl"
+    with caplog.at_level("WARNING"):
+        stats = merge.merge(
+            corpus_dir=corpus, out=out, resolution_path=res, report_out=tmp_path / "m.md"
+        )
+    assert stats.skip_counts["not_by_author"] == 1
+    assert stats.skip_counts.get("gate_not_slovene", 0) == 0  # caught before the gate
+    assert not any("never matched" in r.message for r in caplog.records)  # it fired
+    assert out.read_text().strip() == ""  # nothing kept
+
+
+def test_not_by_author_flag_that_never_fires_warns(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A flagged work whose title does not round-trip through reg.find must not
+    silently fail to exclude - the merge warns so the hole is visible (ADR 0014)."""
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    reg = Registry("Ivan Cankar")
+    reg.upsert("Ghost work never in any shard", flags=[WorkFlag.NOT_BY_AUTHOR])
+    _write(corpus / "cankar.jsonl", [_doc("Na klancu", DOMOV, "wikivir", "Ivan Cankar")])
+    res = tmp_path / "res.toml"
+    res.write_text("")
+    monkeypatch.setattr(merge, "_author_registries", lambda: {"Ivan Cankar": reg})
+    monkeypatch.setattr(
+        "cankar.corpus.shard.dataset_manifest",
+        lambda stage, name: tmp_path / f"{name}.manifest.json",
+    )
+    with caplog.at_level("WARNING"):
+        merge.merge(
+            corpus_dir=corpus,
+            out=tmp_path / "m.jsonl",
+            resolution_path=res,
+            report_out=tmp_path / "m.md",
+        )
+    assert any("never matched a shard doc" in r.message for r in caplog.records)

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "source": "merged",
   "script": "cankar corpus merge",
-  "git_sha": "72d5f11",
-  "retrieved_at": "2026-07-23T11:20:20+00:00",
+  "git_sha": "d47f789",
+  "retrieved_at": "2026-07-24T08:52:48+00:00",
   "args": {
     "shards": [
       "askerc",
@@ -27,15 +27,16 @@
     ],
     "resolution": "collision_resolution.toml"
   },
-  "n_docs": 126355,
-  "n_chars": 468074509,
-  "n_words": 72333337,
-  "sha256": "cdfea262ce5898e5b35001afb2fb8899ccb531ea1c6962c39a7f1ed917e418a2",
+  "n_docs": 126352,
+  "n_chars": 468059731,
+  "n_words": 72330812,
+  "sha256": "d9b05bf04db96db6d733a08540bda86f5458ed91b8182a61f5262b6d0dd22a6b",
   "expected_band_words": null,
   "skip_counts": {
     "gate_not_slovene": 6,
     "near_dup": 296,
-    "gate_bibliography": 4,
+    "gate_bibliography": 2,
+    "not_by_author": 5,
     "registry_identity": 7,
     "gate_index_list": 1,
     "exact_dup": 6,

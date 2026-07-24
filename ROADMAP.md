@@ -56,14 +56,23 @@ Do not build serving or the Laravel orchestrator before the styler exists.
       so genuinely new: 23 works / 60k words, author corpus 1.70M -> ~1.76M
       post-merge; registry is ledger-not-gate (ADR 0004 amendment 2);
       committed audit report in registry/reports/
+- [x] Misattribution exclusion (`WorkFlag.NOT_BY_AUTHOR`, ADR 0014): texts
+      crawled into an author's shard but written by someone else are flagged in
+      the registry and dropped at merge (distinct from cross-author works kept
+      under their true author via collision_resolution.toml). 5 about-Cankar
+      records flagged (2 Vera Albreht memoirs - in copyright, 1 critic's essay,
+      2 mis-crawled bibliography pages); 3 were in the merged Cankar slice, gone
+      after re-merge (249 -> 246 Cankar docs). Coverage stops counting them;
+      evals keeps an independent last-line assertion. Found by the 2.25 holdout
+      audit *(added in-flight - ADR 0014)*
 - [x] Merge stage (`cankar corpus merge`): quality-gated, deduplicated,
       deterministic merged corpus. Four dedup signals (exact hash, registry
       work-identity, MinHash near-dup, containment); keep-preference by shard
       tier (Wikivir > dLib > gapfill > Wikipedia); cross-author attribution
       via committed collision_resolution.toml (never silent). Built to the
       architect critique (M1-M4); real-pair fixtures pin every signal.
-      -> 126,355 docs / 72.33M words (dropped: 11 gate, 7 registry-identity,
-      6 exact, 296 near-dup, 48 containment). Registry-identity is content-
+      -> 126,352 docs / 72.33M words (dropped: 9 gate, 7 registry-identity,
+      6 exact, 296 near-dup, 48 containment, 5 not-by-author). Registry-identity is content-
       confirmed (max bidirectional containment >= 0.5): a bare work_id match
       was collapsing distinct-year collections ('Črtice 1914' vs '1907-09',
       0.00 overlap) - caught by enumerating the drops, ~54k words recovered,
@@ -119,19 +128,23 @@ Do not build serving or the Laravel orchestrator before the styler exists.
       THIS corpus is collected-volume containment, so selection is containment-
       closed (a candidate <0.5 contained in every kept doc). Frozen, provenance-
       stamped registry/evals/holdout.json: **50 Cankar prose works, 146,268
-      tokens (5.01%)**. BPB harness (nanochat metric vendored + drift-tested,
-      own deterministic batcher) ships tested against a stub; real numbers at
-      Phase 3. registry/reports/eval-holdout.md
+      tokens (5.02%)** (same 50 works after the ADR 0014 re-merge; the fraction
+      rose from 5.01% as 3 misattributions left the Cankar denominator). BPB
+      harness (nanochat metric vendored + drift-tested, own deterministic
+      batcher) ships tested against a stub; real numbers at Phase 3.
+      registry/reports/eval-holdout.md
 - [ ] Style classifier (Cankar vs plain Slovene): TF-IDF + logistic regression baseline, SloBERTa if needed
       *(next PR: prose-vs-prose, group-split by work, holdout excluded - critique A-1)*
 - [ ] LLM-judge template for meaning preservation *(deferred to Phase 6 - needs Phase-5 pairs; building now is speculative)*
 - [ ] Dev set design: 200 held-out pairs **+ 50 fresh drafts** *(deferred to Phase 5 - pairs do not exist yet)*
 - Rule: every quality claim in README/blog gets a number from this harness
-- ⚠️ **Corpus follow-up (found 2026-07 by the holdout audit):** 3 works ABOUT
-      Cankar by others (2 memoirs, 1 essay) are misattributed author="Ivan
-      Cankar" in the merged corpus - excluded from the holdout, but they also
-      pollute the Cankar training slice. Needs registry re-attribution +
-      re-merge before Phase 4 continued-pretraining.
+- [x] **Corpus follow-up RESOLVED (ADR 0014):** the 3 about-Cankar
+      misattributions the audit flagged (2 Vera Albreht memoirs, 1 critic's
+      essay) were the eval-side stopgap; the root fix flags them (plus 2
+      mis-crawled bibliography pages) `NOT_BY_AUTHOR` in the registry and drops
+      them at merge, so they no longer pollute the Cankar training slice. See
+      the Phase 1 misattribution-exclusion line; broadened sweep also caught a
+      Murn letter already correctly re-attributed by the collision table.
 
 ## Phase 2.5 - TinyCankar micro-win (few hours) *(added per Agent C2)*
 

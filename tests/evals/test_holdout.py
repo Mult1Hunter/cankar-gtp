@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -63,11 +64,66 @@ def test_reverse_closure_excludes_excerpt_of_heldout(enc, docs) -> None:
         assert hlapec_url in r.also_exclude_urls
 
 
-def test_misattribution_excluded(enc, docs) -> None:
-    """The audited about-Cankar essay is out of candidacy even though it is
-    Cankar-attributed, Wikivir, and in the length band."""
-    r = holdout.select_holdout(docs, enc, PARAMS)
-    assert "Kulturni pomen Ivana Cankarja" not in {w.title for w in r.works}
+def test_cankar_docs_rejects_leaked_misattribution(tmp_path: Path) -> None:
+    """Defense-in-depth (ADR 0014): the corpus stage excludes the about-Cankar
+    misattributions (WorkFlag.NOT_BY_AUTHOR), but evals is the independent last
+    line of defence. If a merge regression re-admits one into the Cankar slice,
+    cankar_docs() must fail loud, not silently score seen text."""
+    leaked_url = next(iter(holdout.MISATTRIBUTED_URLS))
+    corpus = tmp_path / "merged.jsonl"
+    corpus.write_text(
+        "\n".join(
+            json.dumps(d, ensure_ascii=False)
+            for d in (
+                {
+                    "title": "Skodelica kave",
+                    "url": "https://x/ok",
+                    "text": "a",
+                    "n_chars": 1,
+                    "source": "wikivir",
+                    "author": "Ivan Cankar",
+                },
+                {
+                    "title": "Kulturni pomen Ivana Cankarja",
+                    "url": leaked_url,
+                    "text": "b",
+                    "n_chars": 1,
+                    "source": "wikivir",
+                    "author": "Ivan Cankar",
+                },
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(CankarError, match="misattributed about-Cankar"):
+        holdout.cankar_docs(corpus)
+
+
+def test_clean_corpus_has_no_misattribution(docs) -> None:
+    """The committed fixture stands in for the post-fix merged corpus - none of
+    the known misattributions survive in it, so cankar_docs does not fire."""
+    assert not (holdout.MISATTRIBUTED_URLS & {d["url"] for d in docs})
+
+
+def test_eval_set_mirrors_registry_flags() -> None:
+    """Mechanize over remember (design-review S3): the eval-side defensive set
+    must mirror every Wikivir NOT_BY_AUTHOR work in the real registry. evals may
+    not IMPORT the corpus stage (import-linter, stage independence) - but a test
+    may cross stages. If a future misattribution is flagged without extending
+    MISATTRIBUTED_URLS, this fails instead of the last line silently under-covering."""
+    from cankar.core.paths import works_registry
+    from cankar.corpus.registry import Registry, Source, WorkFlag
+
+    reg = Registry.load(works_registry("cankar"), holdout.CANKAR_AUTHOR)
+    flagged = {
+        f"https://sl.wikisource.org/wiki/{s.id.replace(' ', '_')}"
+        for w in reg.works.values()
+        if WorkFlag.NOT_BY_AUTHOR in w.flags
+        for s in w.sources
+        if s.source is Source.WIKIVIR
+    }
+    assert flagged == holdout.MISATTRIBUTED_URLS
 
 
 def test_source_and_band_filters(enc, docs) -> None:

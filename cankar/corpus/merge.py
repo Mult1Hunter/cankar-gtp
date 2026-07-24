@@ -37,7 +37,7 @@ from cankar.core.schema import CorpusDoc
 from cankar.corpus.dedup import CONTAINMENT_THRESHOLD, NearDupIndex, containment, shingles
 from cankar.corpus.ingest import load_authors
 from cankar.corpus.quality_gate import GateVerdict, gate
-from cankar.corpus.registry import Registry, normalize_title
+from cankar.corpus.registry import Registry, WorkFlag, WorkRecord, normalize_title
 from cankar.corpus.shard import ShardWriter, content_hash, read_shard
 
 logger = logging.getLogger(__name__)
@@ -133,17 +133,32 @@ def _author_registries() -> dict[str, Registry]:
     return regs
 
 
+def _lookup_work(author: str | None, title: str, regs: dict[str, Registry]) -> WorkRecord | None:
+    """The registry WorkRecord a doc maps to (by its shard author + title), or None."""
+    if author is None:
+        return None
+    reg = regs.get(author)
+    return reg.find(title) if reg is not None else None
+
+
 def _work_key(author: str | None, title: str, regs: dict[str, Registry]) -> tuple[str, str] | None:
     """(author, work_id) if the doc maps to a known work, else None. Same key
     across sources = same work (Wikivir 'Domov (Ivan Cankar)' and dLib 'Domov'
     both resolve to cankar work_id 'domov')."""
-    if author is None:
-        return None
-    reg = regs.get(author)
-    if reg is None:
-        return None
-    work = reg.find(title)
-    return (author, work.work_id) if work else None
+    work = _lookup_work(author, title, regs)
+    return (author, work.work_id) if work and author is not None else None
+
+
+def _flagged_not_by_author(regs: dict[str, Registry]) -> set[tuple[str, str]]:
+    """(author, work_id) for every NOT_BY_AUTHOR-flagged work across all registries.
+    Used both to exclude at merge and to warn when a flagged work never fires (a
+    title that does not round-trip through reg.find would silently NOT be excluded)."""
+    return {
+        (author, w.work_id)
+        for author, reg in regs.items()
+        for w in reg.works.values()
+        if WorkFlag.NOT_BY_AUTHOR in w.flags
+    }
 
 
 @dataclass
@@ -160,6 +175,7 @@ class MergeStats:
     containment_partial: list[str] = field(default_factory=list)  # 0.80-0.95, kept both
     reattributed: list[str] = field(default_factory=list)  # report lines
     conflicts: list[str] = field(default_factory=list)  # attribution overrides that disagreed
+    not_by_author: list[str] = field(default_factory=list)  # excluded misattributions (ADR 0014)
 
 
 def merge(*, corpus_dir: Path, out: Path, resolution_path: Path, report_out: Path) -> MergeStats:
@@ -177,6 +193,8 @@ def merge(*, corpus_dir: Path, out: Path, resolution_path: Path, report_out: Pat
     key_meta: dict[str, RootRecord] = {}
     lit_shingles: dict[str, LitDoc] = {}  # literary only (never wikipedia)
     counter = 0
+    flagged = _flagged_not_by_author(regs)  # (author, work_id) misattributions to exclude
+    fired: set[tuple[str, str]] = set()  # which flagged works actually matched a shard doc
 
     def drop_as_dup(
         loc: tuple[str, int], reason: str, root_key: str, author: str | None, title: str
@@ -210,6 +228,18 @@ def merge(*, corpus_dir: Path, out: Path, resolution_path: Path, report_out: Pat
         for idx, doc in enumerate(read_shard(path)):
             loc = (slug, idx)
             text, title, author = doc["text"], doc["title"], doc.get("author")
+            wk = _work_key(author, title, regs)  # (author, work_id) or None; reused below
+
+            # misattribution: text filed under this author but written by someone
+            # else - excluded from the corpus outright, before gate/dedup (ADR 0014).
+            # Not the cross-author-reattribution path (that KEEPS the text under its
+            # true author via the collision table); this text belongs to no shard.
+            if wk is not None and wk in flagged:
+                drop[loc] = "not_by_author"
+                stats.skip_counts["not_by_author"] += 1
+                stats.not_by_author.append(f"- {slug}:{title!r} (filed under {author}, excluded)")
+                fired.add(wk)
+                continue
 
             if literary:
                 verdict = gate(text)
@@ -227,7 +257,6 @@ def merge(*, corpus_dir: Path, out: Path, resolution_path: Path, report_out: Pat
                 continue
 
             sh = shingles(text) if literary else None  # reused by registry-confirm + containment
-            wk = _work_key(author, title, regs)
             if wk is not None and wk in work_root and sh is not None:
                 root_sh = lit_shingles[work_root[wk]].shingles
                 if max(containment(sh, root_sh), containment(root_sh, sh)) >= (
@@ -263,6 +292,16 @@ def merge(*, corpus_dir: Path, out: Path, resolution_path: Path, report_out: Pat
             key_meta[key] = RootRecord(loc=loc, author=author, title=title)
             if sh is not None:
                 lit_shingles[key] = LitDoc(loc, author or "?", title, sh)
+
+    # a flagged work that never matched a shard doc means its registry title does
+    # not round-trip through reg.find - the exclusion silently did nothing. Surface
+    # it rather than ship a corpus that still carries the misattribution (ADR 0014).
+    for author, work_id in sorted(flagged - fired):
+        logger.warning(
+            "NOT_BY_AUTHOR work never matched a shard doc: %s/%s (title round-trip failed?)",
+            author,
+            work_id,
+        )
 
     for cloc in _measure_containment(lit_shingles, stats):
         drop[cloc] = "containment"
@@ -370,6 +409,7 @@ def write_merge_report(stats: MergeStats, out: Path) -> None:
     lines += [f"| {r} | {n:,} |" for r, n in sorted(stats.skip_counts.items())]
     for heading, rows in (
         ("Attribution conflicts (collision table disagreed - REVIEW)", stats.conflicts),
+        ("Misattributions excluded (NOT_BY_AUTHOR - ADR 0014)", stats.not_by_author),
         ("Re-attributions (collision table)", stats.reattributed),
         ("Cross-author dedup drops", stats.cross_author),
         ("Registry-identity drops (same work_id, content-confirmed)", stats.registry_identity),

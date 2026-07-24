@@ -8,8 +8,9 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Status | Works |
 |---|---|
 | candidate (text exists, not fetched) | 2 |
+| excluded (not by author) | 5 |
 | ingested (dlib) | 43 |
-| ingested (wikivir) | 212 |
+| ingested (wikivir) | 207 |
 | missing (no usable source known) | 749 |
 | skipped-quality | 2 |
 | skipped-rights | 41 |
@@ -226,13 +227,13 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Iz moje samotne, grenke mladosti |  | Pesmi | missing (no usable source known) | - |
 | Iz Ottakringa v Oberhollabrunn |  | Pripovedni spisi | missing (no usable source known) | - |
 | Iz predmestja (Ivan Cankar) |  | Pripovedni spisi | missing (no usable source known) | - |
-| Iz prvih spominov na Ivana Cankarja |  | Dela o njem | ingested (wikivir) | wikivir:ingested |
+| Iz prvih spominov na Ivana Cankarja [not-by-author] |  | Dela o njem | excluded (not by author) | wikivir:ingested |
 | Iz samotne družine |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested |
 | Iz tujega življenja |  | Pripovedni spisi | skipped-rights | dlib:skipped-rights |
 | Iz življenja odličnega rodoljuba |  | Pripovedni spisi | missing (no usable source known) | - |
 | Izdajstvo brata |  | Pesmi | missing (no usable source known) | - |
 | Izgredi v Sarajevu |  | Publicistika | missing (no usable source known) | - |
-| Izidor Cankar |  |  | ingested (wikivir) | wikivir:ingested |
+| Izidor Cankar [not-by-author] |  |  | excluded (not by author) | wikivir:ingested |
 | Izidorju Reji |  | Pisma | missing (no usable source known) | - |
 | Izjava Lojzki Štebi |  | Publicistika | missing (no usable source known) | - |
 | Izjava (NZ 1906) |  | Publicistika | missing (no usable source known) | - |
@@ -357,7 +358,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Krpanova kobila | 1907 | Esejistika | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:candidate |
 | Krpanova kobila (NZ 1906) |  | Publicistika | missing (no usable source known) | - |
 | Krvavi dnevi v Ljubljani |  | Publicistika | missing (no usable source known) | - |
-| Kulturni pomen Ivana Cankarja |  |  | ingested (wikivir) | wikivir:ingested |
+| Kulturni pomen Ivana Cankarja [not-by-author] |  | Dela o njem | excluded (not by author) | wikivir:ingested |
 | Kulturni škandal |  | Publicistika | missing (no usable source known) | - |
 | Kurent | 1909 | Proza | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:skipped-rights; dlib:candidate |
 | Kurentova modrost |  |  | ingested (wikivir) | wikivir:ingested; dlib:skipped-rights |
@@ -521,7 +522,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Nebo gori od zvezd neštetih |  | Pesmi | missing (no usable source known) | - |
 | Nedelja |  | Pripovedni spisi | missing (no usable source known) | - |
 | Nekaj iz dnevnika mojega prijatelja |  | Pripovedni spisi | missing (no usable source known) | - |
-| Nekaj mladostnih spominov na Ivana Cankarja |  |  | ingested (wikivir) | wikivir:ingested |
+| Nekaj mladostnih spominov na Ivana Cankarja [not-by-author] |  | Dela o njem | excluded (not by author) | wikivir:ingested |
 | Nenapisani romani |  | Pripovedni spisi | missing (no usable source known) | - |
 | Nenavaden pojav |  | Pripovedni spisi | ingested (wikivir) | wikivir:ingested |
 | Nepotreben človek |  | Pripovedni spisi | missing (no usable source known) | - |
@@ -983,7 +984,7 @@ Source registry: `cankar.jsonl`. Regenerate: `cankar corpus report --all`.
 | Velika maša (DS 1917) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Velika maša (LZ 1922) |  | Pripovedni spisi | missing (no usable source known) | - |
 | Velikonočni zvon |  | Pesmi | missing (no usable source known) | - |
-| Vera Albreht |  |  | ingested (wikivir) | wikivir:ingested |
+| Vera Albreht [not-by-author] |  |  | excluded (not by author) | wikivir:ingested |
 | Verhangnis |  | Pesmi | missing (no usable source known) | - |
 | Veri Rohrmann, 1918 |  | Publicistika | missing (no usable source known) | - |
 | Verovšek |  | Publicistika | missing (no usable source known) | - |

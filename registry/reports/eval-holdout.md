@@ -2,9 +2,9 @@
 
 # Held-out Cankar set (Phase 2.25 - ADR 0013)
 
-Corpus sha256 `cdfea262ce5898e5b35001afb2fb8899ccb531ea1c6962c39a7f1ed917e418a2`, tokenizer `v8192`.
+Corpus sha256 `d9b05bf04db96db6d733a08540bda86f5458ed91b8182a61f5262b6d0dd22a6b`, tokenizer `v8192`.
 Whole-work holdout, Wikivir prose, 3,000-45,000 chars, containment-closed at 0.5 (critique MF-1).
-**50 works, 146,268 tokens (5.01% of the 2,916,840-token Cankar slice).**
+**50 works, 146,268 tokens (5.02% of the 2,912,476-token Cankar slice).**
 
 ## Held-out works (audit these - the last check against a stray play/poem)
 
