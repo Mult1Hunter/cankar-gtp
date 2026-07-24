@@ -35,6 +35,33 @@ Remaining `dlib-discovered` entries are dormant candidates - any future pull
 re-verifies authorship at classify time; a human sweep of the discovered set
 is still worth doing before the merge stage.
 
+## 2026-07 about-Cankar misattribution purge (holdout-audit finding, ADR 0014)
+
+The ADR 0013 holdout audit found texts crawled into the cankar shard but
+written by others, carrying author="Ivan Cankar". A full-corpus sweep (genitive
+title + bare person-name + reading the text) enumerated the class - 5 records,
+now flagged `not-by-author` and excluded at merge:
+
+- `iz-prvih-spominov-na-ivana-cankarja`, `nekaj-mladostnih-spominov-na-ivana-cankarja`:
+  memoirs by Vera Albreht (Pionir 1948/49, 1962) - about Cankar, and in
+  copyright (Albreht d. 1982). Longer/shorter variants of one memoir; the merge
+  dedup missed them (Jaccard 0.17 - a rewrite, not a near-dup).
+- `kulturni-pomen-ivana-cankarja`: a critic's essay about Cankar, author
+  unidentified.
+- `vera-albreht`, `izidor-cankar`: Wikivir bibliography pages mis-crawled into
+  the cankar shard; already gate-dropped, flagged to clear the false `ingested`
+  record.
+
+Only the first three were in the merged Cankar slice (the rest gate-dropped).
+The genitive sweep alone was leaky (missed the two bare-name bibliography
+pages), so enumeration used three signals, not one.
+
+Hygiene follow-up (not done here): `pismo-josipa-murna-ivanu-cankarju-marec-1898`
+is a letter BY Murn - already correctly re-attributed to Josip Murn in the
+merged corpus by the collision table, so NOT flagged (that would drop his
+letter). Its cankar.jsonl record is a stray; move it to murn.jsonl in a future
+registry-hygiene pass.
+
 ## 2026-07 parallel-identity merge (design-review finding)
 
 The same discovery pass had also upserted 27 verbatim dLib titles whose
