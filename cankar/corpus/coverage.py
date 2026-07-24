@@ -11,12 +11,17 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 from cankar.core.reports import generated_marker, write_report
-from cankar.corpus.registry import Registry, SourceStatus, WorkRecord, normalize_title
+from cankar.corpus.registry import Registry, SourceStatus, WorkFlag, WorkRecord, normalize_title
 
 GENERATED_MARKER = generated_marker("cankar corpus report", snapshot=False)
 
 
 def work_status(w: WorkRecord) -> str:
+    # a misattribution is never Cankar coverage, even though its text was fetched
+    # (SourceRef stays 'ingested' - honest about the crawl); it must not inflate the
+    # ingested count that quality claims lean on (ADR 0014).
+    if WorkFlag.NOT_BY_AUTHOR in w.flags:
+        return "excluded (not by author)"
     statuses = {(s.source, s.status) for s in w.sources}
     if any(st is SourceStatus.INGESTED for _, st in statuses):
         srcs = sorted({str(src) for src, st in statuses if st is SourceStatus.INGESTED})

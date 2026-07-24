@@ -40,6 +40,10 @@ class WorkFlag(StrEnum):
 
     PREVOD = "prevod"  # the author's translation of someone else's work
     DLIB_DISCOVERED = "dlib-discovered"  # found via dLib, absent from Wikivir catalogs
+    NOT_BY_AUTHOR = "not-by-author"  # crawled into this author's shard but written by
+    # someone else (about-subject memoir/essay, misfiled bibliography) - excluded from the
+    # merged corpus by merge.py; distinct from cross-author works kept under their true
+    # author via collision_resolution.toml. See ADR 0014.
 
 
 _PUNCT_RE = re.compile(r"[^\w\s]", re.UNICODE)
