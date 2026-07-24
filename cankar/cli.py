@@ -13,6 +13,7 @@ import sys
 
 from cankar.core.errors import CankarError
 from cankar.corpus import cli as corpus_cli
+from cankar.evals import cli as evals_cli
 from cankar.tokenizer import cli as tokenizer_cli
 
 
@@ -21,7 +22,8 @@ def main(argv: list[str] | None = None) -> int:
     stages = ap.add_subparsers(dest="stage", required=True)
     corpus_cli.register(stages.add_parser("corpus", help="Phase 1: corpus acquisition"))
     tokenizer_cli.register(stages.add_parser("tokenizer", help="Phase 2: Slovene BPE"))
-    # future stages register here: evals (Ph2.25), train (Ph3), pairs (Ph5)
+    evals_cli.register(stages.add_parser("evals", help="Phase 2.25: eval harness"))
+    # future stages register here: train (Ph3), pairs (Ph5)
     args = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stderr)
     try:

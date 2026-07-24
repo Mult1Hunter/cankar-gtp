@@ -110,3 +110,15 @@ def chunks_report() -> Path:
 def token_stats_report() -> Path:
     """Snapshot report (computed from gitignored data/) - see reports README."""
     return repo_root() / "registry" / "reports" / "token-stats.md"
+
+
+def holdout_manifest() -> Path:
+    """Frozen held-out eval set (ADR 0013): generated once, committed,
+    provenance-stamped like registry/datasets/, load-bearing - never
+    hand-edited. JSON, not TOML: it is generated provenance, not curated input."""
+    return repo_root() / "registry" / "evals" / "holdout.json"
+
+
+def holdout_report() -> Path:
+    """Snapshot report (computed from gitignored data/) - see reports README."""
+    return repo_root() / "registry" / "reports" / "eval-holdout.md"

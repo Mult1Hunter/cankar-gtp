@@ -59,7 +59,7 @@ root_package = "cankar"
 [[tool.importlinter.contracts]]
 name = "core is the bottom layer; stages sit above it and stay independent"
 type = "layers"
-layers = ["cankar.corpus | cankar.tokenizer", "cankar.core"]
+layers = ["cankar.corpus | cankar.tokenizer | cankar.evals", "cankar.core"]
 
 [tool.mypy]
 files = ["cankar"]
