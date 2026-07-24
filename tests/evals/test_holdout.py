@@ -106,6 +106,26 @@ def test_clean_corpus_has_no_misattribution(docs) -> None:
     assert not (holdout.MISATTRIBUTED_URLS & {d["url"] for d in docs})
 
 
+def test_eval_set_mirrors_registry_flags() -> None:
+    """Mechanize over remember (design-review S3): the eval-side defensive set
+    must mirror every Wikivir NOT_BY_AUTHOR work in the real registry. evals may
+    not IMPORT the corpus stage (import-linter, stage independence) - but a test
+    may cross stages. If a future misattribution is flagged without extending
+    MISATTRIBUTED_URLS, this fails instead of the last line silently under-covering."""
+    from cankar.core.paths import works_registry
+    from cankar.corpus.registry import Registry, Source, WorkFlag
+
+    reg = Registry.load(works_registry("cankar"), holdout.CANKAR_AUTHOR)
+    flagged = {
+        f"https://sl.wikisource.org/wiki/{s.id.replace(' ', '_')}"
+        for w in reg.works.values()
+        if WorkFlag.NOT_BY_AUTHOR in w.flags
+        for s in w.sources
+        if s.source is Source.WIKIVIR
+    }
+    assert flagged == holdout.MISATTRIBUTED_URLS
+
+
 def test_source_and_band_filters(enc, docs) -> None:
     titles = {w.title for w in holdout.select_holdout(docs, enc, PARAMS).works}
     assert "Sultanove sandale" not in titles  # dlib source

@@ -51,20 +51,25 @@ CANKAR_AUTHOR = "Ivan Cankar"
 # (cankar/corpus/registry.py) - that StrEnum is a promote-to-core candidate now
 # that evals is a second cross-boundary consumer (deferred: 11-file refactor).
 HOLDOUT_SOURCE = "wikivir"
-# Corpus MISATTRIBUTIONS surfaced by the holdout audit (2026-07): texts ABOUT
-# Cankar by others (two Vera Albreht memoirs, one critic's essay) that carried
-# author="Ivan Cankar". The ROOT fix now lives in the corpus stage - they are
-# WorkFlag.NOT_BY_AUTHOR in registry/works/cankar.jsonl and merge.py excludes
-# them (ADR 0014), so they no longer reach the merged Cankar slice. This set is
-# kept as the eval stage's independent LAST line of defence (the module ethos):
-# evals reads the merged corpus, never the corpus registry, so it cannot see the
-# flag - if a merge bug ever re-admits one, cankar_docs() fails loud instead of
-# silently scoring seen text. Defensive post-condition, not a candidacy filter.
+# Corpus MISATTRIBUTIONS surfaced by the holdout audit (2026-07): Wikivir texts
+# ABOUT Cankar by others (two Vera Albreht memoirs, a critic's essay, two
+# mis-crawled bibliography pages) that carried author="Ivan Cankar". The ROOT
+# fix lives in the corpus stage - they are WorkFlag.NOT_BY_AUTHOR in
+# registry/works/cankar.jsonl and merge.py excludes them (ADR 0014). This set is
+# the eval stage's independent LAST line of defence (the module ethos): evals
+# reads the merged corpus, never the corpus registry, so it cannot see the flag
+# - if a merge bug re-admits one, cankar_docs() fails loud instead of silently
+# scoring seen text. It mirrors every Wikivir NOT_BY_AUTHOR url; the mirror is
+# not left to memory - test_eval_set_mirrors_registry_flags fails if the two
+# drift (mechanize over remember). Defensive post-condition, not a candidacy
+# filter, so the two gate-dropped bibliography urls are harmless padding here.
 MISATTRIBUTED_URLS = frozenset(
     {
         "https://sl.wikisource.org/wiki/Kulturni_pomen_Ivana_Cankarja",
         "https://sl.wikisource.org/wiki/Nekaj_mladostnih_spominov_na_Ivana_Cankarja",
         "https://sl.wikisource.org/wiki/Iz_prvih_spominov_na_Ivana_Cankarja",
+        "https://sl.wikisource.org/wiki/Vera_Albreht",
+        "https://sl.wikisource.org/wiki/Izidor_Cankar",
     }
 )
 # Medium prose band, calibrated on the real Cankar slice (median doc 8,211
