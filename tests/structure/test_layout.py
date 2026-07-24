@@ -10,7 +10,8 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent.parent
 
 # Rule 1: the root is frozen. Future entries arrive WITH their phase and an ADR:
-# apps/ (Ph4), evalsets/ (Ph2.25).
+# apps/ (Ph4). Ph2.25 eval set lives under registry/evals/ as a provenance-
+# stamped partition, not a root evalsets/ dir (ADR 0013 supersedes that line).
 ROOT_ALLOWLIST = {
     ".claude",
     ".editorconfig",
@@ -37,7 +38,7 @@ ROOT_ALLOWLIST = {
 }
 
 # Rule 4: a stage exists everywhere or nowhere. New stage = edit this tuple.
-STAGES = ("corpus", "tokenizer")  # tokenizer: Phase 2 (ADR 0011)
+STAGES = ("corpus", "tokenizer", "evals")  # evals: Phase 2.25 (ADR 0013)
 NON_STAGE_PACKAGES = {"core"}  # + "model" at Phase 3 (ADR 0007)
 
 BANNED_BASENAMES = {"utils.py", "helpers.py", "common.py", "misc.py"}
@@ -146,6 +147,7 @@ def test_directory_contracts_exist() -> None:
         "registry/works",
         "registry/reports",
         "registry/datasets",
+        "registry/evals",
         "tests",
     ]
     governed += [f"cankar/{s}" for s in STAGES]

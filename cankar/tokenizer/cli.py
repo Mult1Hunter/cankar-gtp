@@ -14,12 +14,10 @@ import argparse
 import hashlib
 import logging
 import os
-import pickle
 import shutil
 from pathlib import Path
 
-import tiktoken
-
+from cankar.core.encoding import load_encoding
 from cankar.core.errors import CankarError
 from cankar.core.manifest import git_sha, sha256_of, utc_now_iso, write_manifest
 from cankar.core.paths import (
@@ -37,15 +35,6 @@ from cankar.tokenizer import chunk, evaluate, stats, train
 from cankar.tokenizer.vendored import NANOCHAT_COMMIT, SPECIAL_TOKENS, SPLIT_PATTERN
 
 log = logging.getLogger("cankar.tokenizer")
-
-
-def _load_encoding(name: str) -> tiktoken.Encoding:
-    pkl = tokenizer_dir(name) / "tokenizer.pkl"
-    if not pkl.exists():
-        raise CankarError(f"no trained candidate '{name}' at {pkl} (run: cankar tokenizer train)")
-    with pkl.open("rb") as f:
-        enc: tiktoken.Encoding = pickle.load(f)
-    return enc
 
 
 def _trained_names() -> list[str]:
@@ -101,7 +90,7 @@ def _eval(args: argparse.Namespace) -> int:
         raise CankarError("no trained candidates found (run: cankar tokenizer train)")
     if args.select and args.select not in names:
         raise CankarError(f"--select {args.select} is not a trained candidate {names}")
-    encodings = {name: _load_encoding(name) for name in names}
+    encodings = {name: load_encoding(name) for name in names}
     evals, notes = evaluate.evaluate_candidates(merged_shard(), encodings)
     probes = evaluate.load_probes(tokenizer_probes_config())
     out = evaluate.write_eval_report(
@@ -119,7 +108,7 @@ def _eval(args: argparse.Namespace) -> int:
 
 
 def _chunk(args: argparse.Namespace) -> int:
-    enc = _load_encoding(args.name)
+    enc = load_encoding(args.name)
     corpus = merged_shard()
     log.info("chunking %s with %s at budget %d", corpus, args.name, args.budget)
     run = chunk.run_chunking(corpus, enc, args.budget, chunks_shard())
@@ -150,7 +139,7 @@ def _chunk(args: argparse.Namespace) -> int:
 
 
 def _stats(args: argparse.Namespace) -> int:
-    enc = _load_encoding(args.name)
+    enc = load_encoding(args.name)
     corpus = merged_shard()
     groups = stats.collect(corpus, enc)
     out = stats.write_stats_report(token_stats_report(), groups, args.name, sha256_of(corpus))

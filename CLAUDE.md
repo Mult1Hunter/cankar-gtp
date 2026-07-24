@@ -97,8 +97,9 @@ Act as this project's senior engineer and tech lead, not an assistant:
 
 ## Current phase
 
-Phase 2.25 - evaluation harness. Phase 2 complete: v8192 tokenizer (ADR 0011),
-corpus chunked to T=2048 (ADR 0012), 142.77M total tokens measured. Next:
-held-out Cankar chapters (holdout keys on url + char spans in chunks.jsonl),
-style classifier baseline, LLM-judge template.
+Phase 2.25 - evaluation harness (in progress). Held-out set FROZEN (ADR 0013:
+50 Cankar works, 146k tokens, containment-closed, registry/evals/holdout.json)
++ BPB harness scaffold. Next in phase: style classifier (prose-vs-prose,
+group-split). Deferred: LLM-judge -> Ph6, pairs dev-set -> Ph5. Corpus
+follow-up flagged: 3 about-Cankar misattributions in the training slice.
 (Canonical status: ROADMAP checkboxes.)

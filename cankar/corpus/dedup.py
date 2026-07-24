@@ -9,51 +9,31 @@ practice: MinHash over word 5-grams, ~0.75 Jaccard threshold, 128 permutations.
 
 from __future__ import annotations
 
-import re
 from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 
 from datasketch import MinHash, MinHashLSH
 
+# shingles/containment/SHINGLE/CONTAINMENT_THRESHOLD promoted to core.textsim
+# (second consumer: evals holdout-closure); re-exported here for merge + the
+# report command that already import them from dedup.
 from cankar.core.reports import generated_marker, write_report
+from cankar.core.textsim import CONTAINMENT_THRESHOLD, SHINGLE, containment, shingles
+
+__all__ = ["CONTAINMENT_THRESHOLD", "SHINGLE", "containment", "shingles"]
 
 NUM_PERM = 128
 SEED = 1  # pin MinHash permutations for reproducible drops (design-review S3)
 # 0.75 Jaccard follows FineWeb. Calibration rule (ADR 0006): the merge stage
-# DROPS docs at this threshold, so real labeled pairs are committed as fixtures -
-# a literary near-dup, a geo-stub pair, and hard negatives (distinct works in
-# shared register, and a Wikipedia article ABOUT an author, that must NOT
-# collapse). See tests/corpus/test_dedup.py and the merge fixtures.
+# DROPS docs at this threshold, so real labeled pairs are committed as fixtures.
 THRESHOLD = 0.75
-SHINGLE = 5  # word n-gram size
-CONTAINMENT_THRESHOLD = 0.80  # a's shingles this-fraction inside b -> a is contained
-
-_WORD_RE = re.compile(r"\w+", re.UNICODE)
-
-
-def shingles(text: str, k: int = SHINGLE) -> set[bytes]:
-    """Word k-gram set - the unit both MinHash and containment operate on."""
-    words = _WORD_RE.findall(text.casefold())
-    if len(words) < k:
-        return {" ".join(words).encode()} if words else set()
-    return {" ".join(words[i : i + k]).encode() for i in range(len(words) - k + 1)}
 
 
 def minhash(text: str) -> MinHash:
     m = MinHash(num_perm=NUM_PERM, seed=SEED)
     m.update_batch(list(shingles(text)))
     return m
-
-
-def containment(sub: set[bytes], whole: set[bytes]) -> float:
-    """Asymmetric overlap: fraction of `sub`'s shingles present in `whole`.
-    High = sub is CONTAINED in whole (a chapter inside its collected volume) -
-    the duplication class Jaccard/MinHash structurally miss, because a small
-    part's shingles are a tiny fraction of the whole's union (design-review M4)."""
-    if not sub:
-        return 0.0
-    return len(sub & whole) / len(sub)
 
 
 class NearDupIndex:
